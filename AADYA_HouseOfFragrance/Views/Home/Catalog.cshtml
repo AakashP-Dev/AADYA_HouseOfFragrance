@@ -2,16 +2,12 @@
     ViewData["Title"] = "All Fragrances - The Olfactory Collection";
 }
 
-<!-- 1. CATALOG HERO BANNER WITH IVORY TEXTURE -->
-<section style="position: relative; width: 100%; padding: 3rem 5% 2rem; background: url('/images/flat-ivory-texture.png') center/cover no-repeat; border-bottom: 1px solid var(--border-color); text-align: center;">
-    <div style="max-width: 800px; margin: 0 auto;">
-        <span style="font-size: 0.8rem; letter-spacing: 3px; color: var(--deep-burgundy); font-weight: 600; display: block; margin-bottom: 0.4rem; text-transform: uppercase;">
-            PURE • LUXURY • TIMELESS
-        </span>
-        <h1 style="font-family: var(--font-heading); color: var(--deep-burgundy); font-size: 2.4rem; margin: 0 0 0.5rem 0; letter-spacing: 1px;">
-            The Olfactory Collection
-        </h1>
-        <p style="color: var(--text-muted); font-size: 0.9rem; margin: 0;">
+<!-- 1. CATALOG HERO BANNER -->
+<section class="catalog-hero-banner">
+    <div class="catalog-hero-content">
+        <span class="catalog-tagline">PURE • LUXURY • TIMELESS</span>
+        <h1 class="catalog-title">The Olfactory Collection</h1>
+        <p class="catalog-subtitle">
             Explore our complete range of 100% alcohol-free concentrated attars and artisanal luxury blends.
         </p>
     </div>
@@ -22,349 +18,601 @@
 
     <!-- FILTER & SEARCH BAR -->
     <div class="filter-bar-container">
-
-        <!-- FILTER PILLS -->
-        <div class="filter-pills">
-            <button class="filter-btn active">All Scents</button>
-            <button class="filter-btn">Oud & Heritage</button>
-            <button class="filter-btn">Aquatic & Fresh</button>
-            <button class="filter-btn">Floral & Rose</button>
-            <button class="filter-btn">Gourmand & Amber</button>
+        <div class="filter-pills" id="filterPills">
+            <button class="filter-btn active" data-filter="all">All Scents</button>
+            <button class="filter-btn" data-filter="oud">Oud & Heritage</button>
+            <button class="filter-btn" data-filter="fresh">Aquatic & Fresh</button>
+            <button class="filter-btn" data-filter="floral">Floral & Rose</button>
+            <button class="filter-btn" data-filter="gourmand">Gourmand & Amber</button>
         </div>
 
-        <!-- SEARCH AND SORT INPUTS -->
         <div class="search-sort-inputs">
-            <input type="text" placeholder="Search fragrance..." class="custom-input" />
-            <select class="custom-select">
+            <input type="text" id="searchInput" placeholder="Search fragrance..." class="custom-input" />
+            <select id="sortSelect" class="custom-select">
+                <option value="popular">Most Popular</option>
                 <option value="low-high">Price: Low to High</option>
                 <option value="high-low">Price: High to Low</option>
-                <option value="popular">Most Popular</option>
             </select>
         </div>
     </div>
 
     <!-- PRODUCT COUNT -->
-    <div style="margin-bottom: 1.5rem; font-size: 0.85rem; font-weight: 600; color: var(--deep-burgundy); letter-spacing: 1px; text-transform: uppercase;">
-        Showing All 35 Fragrances
+    <div class="catalog-count-label" id="productCountLabel">
+        Showing All 34 Fragrances
     </div>
 
     <!-- COMPACT 4-COLUMN PRODUCT GRID -->
-    <div class="product-grid">
+    <div class="product-grid" id="productGrid">
 
-        <!-- 1. MARINE HAZE -->
-        <div class="product-card">
-            <img src="~/images/products/Marine Haze.jpeg" alt="Marine Haze" onerror="this.src='https://via.placeholder.com/300x220?text=Marine+Haze'" />
-            <h3><a href="/Home/Details?name=Marine%20Haze">Marine Haze</a></h3>
-            <span class="scent-tag">Aquatic • Citrus • Fresh</span>
-            <div class="product-price">₹349.00</div>
-            <a href="/Home/Cart" class="btn-gold">ADD TO CART</a>
-        </div>
-
-        <!-- 2. MIDNIGHT ICE -->
-        <div class="product-card">
-            <img src="~/images/products/Midnight Ice.jpeg" alt="Midnight Ice" onerror="this.src='https://via.placeholder.com/300x220?text=Midnight+Ice'" />
-            <h3><a href="/Home/Details?name=Midnight%20Ice">Midnight Ice</a></h3>
-            <span class="scent-tag">Cool • Aromatic • Fresh</span>
-            <div class="product-price">₹259.00</div>
-            <a href="/Home/Cart" class="btn-gold">ADD TO CART</a>
-        </div>
-
-        <!-- 3. HONEY EMBER -->
-        <div class="product-card">
-            <img src="~/images/products/Honey Ember.jpeg" alt="Honey Ember" onerror="this.src='https://via.placeholder.com/300x220?text=Honey+Ember'" />
-            <h3><a href="/Home/Details?name=Honey%20Ember">Honey Ember</a></h3>
-            <span class="scent-tag">Sweet • Warm • Amber</span>
-            <div class="product-price">₹259.00</div>
-            <a href="/Home/Cart" class="btn-gold">ADD TO CART</a>
-        </div>
-
-        <!-- 4. MAVERICK -->
-        <div class="product-card">
-            <img src="~/images/products/Maverick.jpeg" alt="Maverick" onerror="this.src='https://via.placeholder.com/300x220?text=Maverick'" />
-            <h3><a href="/Home/Details?name=Maverick">Maverick</a></h3>
-            <span class="scent-tag">Citrus • Fruity • Fresh</span>
-            <div class="product-price">₹349.00</div>
-            <a href="/Home/Cart" class="btn-gold">ADD TO CART</a>
-        </div>
-
-        <!-- 5. BERRY BLAST -->
-        <div class="product-card">
-            <img src="~/images/products/Berry Blast.jpeg" alt="Berry Blast" onerror="this.src='https://via.placeholder.com/300x220?text=Berry+Blast'" />
-            <h3><a href="/Home/Details?name=Berry%20Blast">Berry Blast</a></h3>
-            <span class="scent-tag">Fruity • Sweet • Fresh</span>
-            <div class="product-price">₹249.00</div>
-            <a href="/Home/Cart" class="btn-gold">ADD TO CART</a>
-        </div>
-
-        <!-- 6. OUD AL NOOR -->
-        <div class="product-card">
+        <!-- 1. OUD AL NOOR -->
+        <div class="product-card" id="card-OudAlNoor" data-name="Oud Al Noor" data-family="Oud • Woody • Fruity" data-category="oud" data-price6="240" data-price12="410" data-bought="920" data-desc="Experience the timeless elegance of Oud Al Noor. Rich oud accords beautifully balanced with warm, refined notes for a lasting impression of confidence and grace." data-img="/images/products/Oud Al Noor.jpeg">
             <img src="~/images/products/Oud Al Noor.jpeg" alt="Oud Al Noor" onerror="this.src='https://via.placeholder.com/300x220?text=Oud+Al+Noor'" />
-            <h3><a href="/Home/Details?name=Oud%20Al%20Noor">Oud Al Noor</a></h3>
+            <h3>Oud Al Noor</h3>
             <span class="scent-tag">Oud • Woody • Fruity</span>
-            <div class="product-price">₹409.00</div>
-            <a href="/Home/Cart" class="btn-gold">ADD TO CART</a>
+            <div class="product-price">₹240.00 – ₹410.00</div>
+            <button class="btn-gold quick-view-btn" onclick="openProductDrawer(this)">VIEW DETAILS</button>
         </div>
 
-        <!-- 7. GOLDEN ASH -->
-        <div class="product-card">
-            <img src="~/images/products/Golden Ash.jpeg" alt="Golden Ash" onerror="this.src='https://via.placeholder.com/300x220?text=Golden+Ash'" />
-            <h3><a href="/Home/Details?name=Golden%20Ash">Golden Ash</a></h3>
-            <span class="scent-tag">Warm • Woody • Amber</span>
-            <div class="product-price">₹349.00</div>
-            <a href="/Home/Cart" class="btn-gold">ADD TO CART</a>
-        </div>
-
-        <!-- 8. HONEY TOBACCO -->
-        <div class="product-card">
-            <img src="~/images/products/Honey Tobacco.jpeg" alt="Honey Tobacco" onerror="this.src='https://via.placeholder.com/300x220?text=Honey+Tobacco'" />
-            <h3><a href="/Home/Details?name=Honey%20Tobacco">Honey Tobacco</a></h3>
-            <span class="scent-tag">Honey • Tobacco • Warm</span>
-            <div class="product-price">₹349.00</div>
-            <a href="/Home/Cart" class="btn-gold">ADD TO CART</a>
-        </div>
-
-        <!-- 9. KESAR CHANDAN -->
-        <div class="product-card">
-            <img src="~/images/products/Kesar Chandan.jpeg" alt="Kesar Chandan" onerror="this.src='https://via.placeholder.com/300x220?text=Kesar+Chandan'" />
-            <h3><a href="/Home/Details?name=Kesar%20Chandan">Kesar Chandan</a></h3>
-            <span class="scent-tag">Saffron • Sandalwood • Warm</span>
-            <div class="product-price">₹449.00</div>
-            <a href="/Home/Cart" class="btn-gold">ADD TO CART</a>
-        </div>
-
-        <!-- 10. MUSK -->
-        <div class="product-card">
-            <img src="~/images/products/Musk.jpeg" alt="Musk" onerror="this.src='https://via.placeholder.com/300x220?text=Musk'" />
-            <h3><a href="/Home/Details?name=Musk">Musk</a></h3>
-            <span class="scent-tag">Musky • Warm • Animalic</span>
-            <div class="product-price">₹349.00</div>
-            <a href="/Home/Cart" class="btn-gold">ADD TO CART</a>
-        </div>
-
-        <!-- 11. OUD HABIB -->
-        <div class="product-card">
-            <img src="~/images/products/Oud Habib.jpeg" alt="Oud Habib" onerror="this.src='https://via.placeholder.com/300x220?text=Oud+Habib'" />
-            <h3><a href="/Home/Details?name=Oud%20Habib">Oud Habib</a></h3>
-            <span class="scent-tag">Oud • Warm • Amber</span>
-            <div class="product-price">₹349.00</div>
-            <a href="/Home/Cart" class="btn-gold">ADD TO CART</a>
-        </div>
-
-        <!-- 12. RED CRYSTAL -->
-        <div class="product-card">
-            <img src="~/images/products/Red Crystal.jpeg" alt="Red Crystal" onerror="this.src='https://via.placeholder.com/300x220?text=Red+Crystal'" />
-            <h3><a href="/Home/Details?name=Red%20Crystal">Red Crystal</a></h3>
-            <span class="scent-tag">Fruity • Floral • Fresh</span>
-            <div class="product-price">₹349.00</div>
-            <a href="/Home/Cart" class="btn-gold">ADD TO CART</a>
-        </div>
-
-        <!-- 13. TURKISH ROSE -->
-        <div class="product-card">
-            <img src="~/images/products/Turkish Rose.jpeg" alt="Turkish Rose" onerror="this.src='https://via.placeholder.com/300x220?text=Turkish+Rose'" />
-            <h3><a href="/Home/Details?name=Turkish%20Rose">Turkish Rose</a></h3>
-            <span class="scent-tag">Rose • Floral • Fresh</span>
-            <div class="product-price">₹749.00</div>
-            <a href="/Home/Cart" class="btn-gold">ADD TO CART</a>
-        </div>
-
-        <!-- 14. ROYAL OUD -->
-        <div class="product-card">
+        <!-- 2. ROYAL OUD -->
+        <div class="product-card" id="card-RoyalOud" data-name="Royal Oud" data-family="Oud • Woody • Amber" data-category="oud" data-price6="330" data-price12="600" data-bought="850" data-desc="Crafted for those who appreciate timeless luxury, Royal Oud showcases the majestic character of oud with smooth, elegant warmth." data-img="/images/products/Royal Oud.jpeg">
             <img src="~/images/products/Royal Oud.jpeg" alt="Royal Oud" onerror="this.src='https://via.placeholder.com/300x220?text=Royal+Oud'" />
-            <h3><a href="/Home/Details?name=Royal%20Oud">Royal Oud</a></h3>
+            <h3>Royal Oud</h3>
             <span class="scent-tag">Oud • Woody • Amber</span>
-            <div class="product-price">₹599.00</div>
-            <a href="/Home/Cart" class="btn-gold">ADD TO CART</a>
+            <div class="product-price">₹330.00 – ₹600.00</div>
+            <button class="btn-gold quick-view-btn" onclick="openProductDrawer(this)">VIEW DETAILS</button>
         </div>
 
-        <!-- 15. POLO SPORT -->
-        <div class="product-card">
-            <img src="~/images/products/Polo Sport.jpeg" alt="Polo Sport" onerror="this.src='https://via.placeholder.com/300x220?text=Polo+Sport'" />
-            <h3><a href="/Home/Details?name=Polo%20Sport">Polo Sport</a></h3>
-            <span class="scent-tag">Citrus • Aquatic • Aromatic</span>
-            <div class="product-price">₹225.00</div>
-            <a href="/Home/Cart" class="btn-gold">ADD TO CART</a>
+        <!-- 3. OUD HABIB -->
+        <div class="product-card" id="card-OudHabib" data-name="Oud Habib" data-family="Oud • Warm • Amber" data-category="oud" data-price6="200" data-price12="350" data-bought="640" data-desc="Rich oud complemented by warm, refined accords creating a fragrance that feels smooth, luxurious, and irresistibly captivating." data-img="/images/products/Oud Habib.jpeg">
+            <img src="~/images/products/Oud Habib.jpeg" alt="Oud Habib" onerror="this.src='https://via.placeholder.com/300x220?text=Oud+Habib'" />
+            <h3>Oud Habib</h3>
+            <span class="scent-tag">Oud • Warm • Amber</span>
+            <div class="product-price">₹200.00 – ₹350.00</div>
+            <button class="btn-gold quick-view-btn" onclick="openProductDrawer(this)">VIEW DETAILS</button>
         </div>
 
-        <!-- 16. JASMINE -->
-        <div class="product-card">
-            <img src="~/images/products/Jasmine.jpeg" alt="Jasmine" onerror="this.src='https://via.placeholder.com/300x220?text=Jasmine'" />
-            <h3><a href="/Home/Details?name=Jasmine">Jasmine</a></h3>
-            <span class="scent-tag">White Floral • Jasmine • Fresh</span>
-            <div class="product-price">₹225.00</div>
-            <a href="/Home/Cart" class="btn-gold">ADD TO CART</a>
-        </div>
-
-        <!-- 17. RIDHAAN -->
-        <div class="product-card">
+        <!-- 4. RIDHAAN -->
+        <div class="product-card" id="card-Ridhaan" data-name="Ridhaan" data-family="Fresh • Aromatic • Musky" data-category="fresh" data-price6="240" data-price12="430" data-bought="510" data-desc="Refined, confident, and effortlessly elegant. A smooth, well-balanced character crafted for understated luxury." data-img="/images/products/Ridhaan.jpeg">
             <img src="~/images/products/Ridhaan.jpeg" alt="Ridhaan" onerror="this.src='https://via.placeholder.com/300x220?text=Ridhaan'" />
-            <h3><a href="/Home/Details?name=Ridhaan">Ridhaan</a></h3>
+            <h3>Ridhaan</h3>
             <span class="scent-tag">Fresh • Aromatic • Musky</span>
-            <div class="product-price">₹429.00</div>
-            <a href="/Home/Cart" class="btn-gold">ADD TO CART</a>
+            <div class="product-price">₹240.00 – ₹430.00</div>
+            <button class="btn-gold quick-view-btn" onclick="openProductDrawer(this)">VIEW DETAILS</button>
         </div>
 
-        <!-- 18. MAYA -->
-        <div class="product-card">
-            <img src="~/images/products/Maya.jpeg" alt="Maya" onerror="this.src='https://via.placeholder.com/300x220?text=Maya'" />
-            <h3><a href="/Home/Details?name=Maya">Maya</a></h3>
-            <span class="scent-tag">Citrus • Floral • Sweet</span>
-            <div class="product-price">₹199.00</div>
-            <a href="/Home/Cart" class="btn-gold">ADD TO CART</a>
+        <!-- 5. MIDNIGHT ICE -->
+        <div class="product-card" id="card-MidnightIce" data-name="Midnight Ice" data-family="Cool • Aromatic • Fresh" data-category="fresh" data-price6="150" data-price12="260" data-bought="1100" data-desc="Cool, crisp, and refined. Opens with refreshing citrus and aromatic notes, unfolding into an invigorating fragrance." data-img="/images/products/Midnight Ice.jpeg">
+            <img src="~/images/products/Midnight Ice.jpeg" alt="Midnight Ice" onerror="this.src='https://via.placeholder.com/300x220?text=Midnight+Ice'" />
+            <h3>Midnight Ice</h3>
+            <span class="scent-tag">Cool • Aromatic • Fresh</span>
+            <div class="product-price">₹150.00 – ₹260.00</div>
+            <button class="btn-gold quick-view-btn" onclick="openProductDrawer(this)">VIEW DETAILS</button>
         </div>
 
-        <!-- 19. FANTASY -->
-        <div class="product-card">
-            <img src="~/images/products/Fantasy.jpeg" alt="Fantasy" onerror="this.src='https://via.placeholder.com/300x220?text=Fantasy'" />
-            <h3><a href="/Home/Details?name=Fantasy">Fantasy</a></h3>
-            <span class="scent-tag">Floral • Fruity • Musky</span>
-            <div class="product-price">₹160.00</div>
-            <a href="/Home/Cart" class="btn-gold">ADD TO CART</a>
+        <!-- 6. MAVERICK -->
+        <div class="product-card" id="card-Maverick" data-name="Maverick" data-family="Citrus • Fruity • Fresh" data-category="fresh" data-price6="200" data-price12="350" data-bought="780" data-desc="A vibrant blend of zesty citrus and juicy fruity notes, creating a fragrance that's fresh, energetic, and modern." data-img="/images/products/Maverick.jpeg">
+            <img src="~/images/products/Maverick.jpeg" alt="Maverick" onerror="this.src='https://via.placeholder.com/300x220?text=Maverick'" />
+            <h3>Maverick</h3>
+            <span class="scent-tag">Citrus • Fruity • Fresh</span>
+            <div class="product-price">₹200.00 – ₹350.00</div>
+            <button class="btn-gold quick-view-btn" onclick="openProductDrawer(this)">VIEW DETAILS</button>
         </div>
 
-        <!-- 20. CAIRO EVENING -->
-        <div class="product-card">
-            <img src="~/images/products/Cairo Evening.jpeg" alt="Cairo Evening" onerror="this.src='https://via.placeholder.com/300x220?text=Cairo+Evening'" />
-            <h3><a href="/Home/Details?name=Cairo%20Evening">Cairo Evening</a></h3>
-            <span class="scent-tag">Oriental • Woody • Warm</span>
-            <div class="product-price">₹225.00</div>
-            <a href="/Home/Cart" class="btn-gold">ADD TO CART</a>
-        </div>
-
-        <!-- 21. S.P. SANDAL -->
-        <div class="product-card">
-            <img src="~/images/products/SP Sandal.jpeg" alt="S.P. Sandal" onerror="this.src='https://via.placeholder.com/300x220?text=S.P.+Sandal'" />
-            <h3><a href="/Home/Details?name=S.P.%20Sandal">S.P. Sandal</a></h3>
-            <span class="scent-tag">Sandalwood • Woody • Creamy</span>
-            <div class="product-price">₹250.00</div>
-            <a href="/Home/Cart" class="btn-gold">ADD TO CART</a>
-        </div>
-
-        <!-- 22. CHOCOLATE -->
-        <div class="product-card">
-            <img src="~/images/products/Chocolate.jpeg" alt="Chocolate" onerror="this.src='https://via.placeholder.com/300x220?text=Chocolate'" />
-            <h3><a href="/Home/Details?name=Chocolate">Chocolate</a></h3>
-            <span class="scent-tag">Gourmand • Chocolate • Sweet</span>
-            <div class="product-price">₹250.00</div>
-            <a href="/Home/Cart" class="btn-gold">ADD TO CART</a>
-        </div>
-
-        <!-- 23. WHITE ONYX -->
-        <div class="product-card">
-            <img src="~/images/products/White Onyx.jpeg" alt="White Onyx" onerror="this.src='https://via.placeholder.com/300x220?text=White+Onyx'" />
-            <h3><a href="/Home/Details?name=White%20Onyx">White Onyx</a></h3>
-            <span class="scent-tag">Fresh • Clean • Elegant</span>
-            <div class="product-price">₹350.00</div>
-            <a href="/Home/Cart" class="btn-gold">ADD TO CART</a>
-        </div>
-
-        <!-- 24. VELMONT -->
-        <div class="product-card">
-            <img src="~/images/products/Velmont.jpeg" alt="Velmont" onerror="this.src='https://via.placeholder.com/300x220?text=Velmont'" />
-            <h3><a href="/Home/Details?name=Velmont">Velmont</a></h3>
-            <span class="scent-tag">Fresh • Clean • Aromatic</span>
-            <div class="product-price">₹350.00</div>
-            <a href="/Home/Cart" class="btn-gold">ADD TO CART</a>
-        </div>
-
-        <!-- 25. OUD -->
-        <div class="product-card">
-            <img src="~/images/products/Oud.jpeg" alt="Oud" onerror="this.src='https://via.placeholder.com/300x220?text=Oud'" />
-            <h3><a href="/Home/Details?name=Oud">Oud</a></h3>
-            <span class="scent-tag">Oud • Woody • Smoky</span>
-            <div class="product-price">₹1,350.00</div>
-            <a href="/Home/Cart" class="btn-gold">ADD TO CART</a>
-        </div>
-
-        <!-- 26. WHITE OUD -->
-        <div class="product-card">
-            <img src="~/images/products/White Oud.jpeg" alt="White Oud" onerror="this.src='https://via.placeholder.com/300x220?text=White+Oud'" />
-            <h3><a href="/Home/Details?name=White%20Oud">White Oud</a></h3>
-            <span class="scent-tag">Oud • Woody</span>
-            <div class="product-price">₹350.00</div>
-            <a href="/Home/Cart" class="btn-gold">ADD TO CART</a>
-        </div>
-
-        <!-- 27. BLACK OUD -->
-        <div class="product-card">
-            <img src="~/images/products/Black Oud.jpeg" alt="Black Oud" onerror="this.src='https://via.placeholder.com/300x220?text=Black+Oud'" />
-            <h3><a href="/Home/Details?name=Black%20Oud">Black Oud</a></h3>
-            <span class="scent-tag">Oud • Woody</span>
-            <div class="product-price">₹1,100.00</div>
-            <a href="/Home/Cart" class="btn-gold">ADD TO CART</a>
-        </div>
-
-        <!-- 28. HAWAS -->
-        <div class="product-card">
-            <img src="~/images/products/Hawas.jpeg" alt="Hawas" onerror="this.src='https://via.placeholder.com/300x220?text=Hawas'" />
-            <h3><a href="/Home/Details?name=Hawas">Hawas</a></h3>
-            <span class="scent-tag">Fresh • Aquatic</span>
-            <div class="product-price">₹250.00</div>
-            <a href="/Home/Cart" class="btn-gold">ADD TO CART</a>
-        </div>
-
-        <!-- 29. SHAHI DARBAR -->
-        <div class="product-card">
-            <img src="~/images/products/Shahi Darbar.jpeg" alt="Shahi Darbar" onerror="this.src='https://via.placeholder.com/300x220?text=Shahi+Darbar'" />
-            <h3><a href="/Home/Details?name=Shahi%20Darbar">Shahi Darbar</a></h3>
-            <span class="scent-tag">Traditional • Oriental</span>
-            <div class="product-price">₹800.00</div>
-            <a href="/Home/Cart" class="btn-gold">ADD TO CART</a>
-        </div>
-
-        <!-- 30. ECHO -->
-        <div class="product-card">
-            <img src="~/images/products/Echo.jpeg" alt="Echo" onerror="this.src='https://via.placeholder.com/300x220?text=Echo'" />
-            <h3><a href="/Home/Details?name=Echo">Echo</a></h3>
-            <span class="scent-tag">Sweet • Floral</span>
-            <div class="product-price">₹260.00</div>
-            <a href="/Home/Cart" class="btn-gold">ADD TO CART</a>
-        </div>
-
-        <!-- 31. JACK HOBBS -->
-        <div class="product-card">
-            <img src="~/images/products/Jack Hobbs.jpeg" alt="Jack Hobbs" onerror="this.src='https://via.placeholder.com/300x220?text=Jack+Hobbs'" />
-            <h3><a href="/Home/Details?name=Jack%20Hobbs">Jack Hobbs</a></h3>
-            <span class="scent-tag">Sweet • Rich</span>
-            <div class="product-price">₹350.00</div>
-            <a href="/Home/Cart" class="btn-gold">ADD TO CART</a>
-        </div>
-
-        <!-- 32. COOL WATER -->
-        <div class="product-card">
-            <img src="~/images/products/Cool Water.jpeg" alt="Cool Water" onerror="this.src='https://via.placeholder.com/300x220?text=Cool+Water'" />
-            <h3><a href="/Home/Details?name=Cool%20Water">Cool Water</a></h3>
-            <span class="scent-tag">Fresh • Aquatic</span>
-            <div class="product-price">₹250.00</div>
-            <a href="/Home/Cart" class="btn-gold">ADD TO CART</a>
-        </div>
-
-        <!-- 33. BLACK ONYX -->
-        <div class="product-card">
-            <img src="~/images/products/Black Onyx.jpeg" alt="Black Onyx" onerror="this.src='https://via.placeholder.com/300x220?text=Black+Onyx'" />
-            <h3><a href="/Home/Details?name=Black%20Onyx">Black Onyx</a></h3>
-            <span class="scent-tag">Dark • Refined</span>
-            <div class="product-price">₹350.00</div>
-            <a href="/Home/Cart" class="btn-gold">ADD TO CART</a>
-        </div>
-
-        <!-- 34. LOVELY -->
-        <div class="product-card">
+        <!-- 7. LOVELY -->
+        <div class="product-card" id="card-Lovely" data-name="Lovely" data-family="Sweet • Floral" data-category="floral" data-price6="135" data-price12="225" data-bought="430" data-desc="Wraps you in a delicate, graceful character that feels warm, charming, and beautifully feminine without becoming overwhelming." data-img="/images/products/Lovely.jpeg">
             <img src="~/images/products/Lovely.jpeg" alt="Lovely" onerror="this.src='https://via.placeholder.com/300x220?text=Lovely'" />
-            <h3><a href="/Home/Details?name=Lovely">Lovely</a></h3>
+            <h3>Lovely</h3>
             <span class="scent-tag">Sweet • Floral</span>
-            <div class="product-price">₹225.00</div>
-            <a href="/Home/Cart" class="btn-gold">ADD TO CART</a>
+            <div class="product-price">₹135.00 – ₹225.00</div>
+            <button class="btn-gold quick-view-btn" onclick="openProductDrawer(this)">VIEW DETAILS</button>
         </div>
 
-        <!-- 35. ROYAL 96 -->
-        <div class="product-card">
+        <!-- 8. JACK HOBBS -->
+        <div class="product-card" id="card-JackHobbs" data-name="Jack Hobbs" data-family="Sweet • Rich" data-category="gourmand" data-price6="200" data-price12="350" data-bought="620" data-desc="Carries a rich, confident sweetness that feels polished rather than delicate, giving it a distinctive unisex personality." data-img="/images/products/Jack Hobbs.jpeg">
+            <img src="~/images/products/Jack Hobbs.jpeg" alt="Jack Hobbs" onerror="this.src='https://via.placeholder.com/300x220?text=Jack+Hobbs'" />
+            <h3>Jack Hobbs</h3>
+            <span class="scent-tag">Sweet • Rich</span>
+            <div class="product-price">₹200.00 – ₹350.00</div>
+            <button class="btn-gold quick-view-btn" onclick="openProductDrawer(this)">VIEW DETAILS</button>
+        </div>
+
+        <!-- 9. CAIRO EVENING -->
+        <div class="product-card" id="card-CairoEvening" data-name="Cairo Evening" data-family="Oriental • Woody • Warm" data-category="gourmand" data-price6="135" data-price12="225" data-bought="1250" data-desc="Blends rich oriental warmth with smooth woody accords and soft sweetness, evoking golden sunsets and ancient streets." data-img="/images/products/Cairo Evening.jpeg">
+            <img src="~/images/products/Cairo Evening.jpeg" alt="Cairo Evening" onerror="this.src='https://via.placeholder.com/300x220?text=Cairo+Evening'" />
+            <h3>Cairo Evening</h3>
+            <span class="scent-tag">Oriental • Woody • Warm</span>
+            <div class="product-price">₹135.00 – ₹225.00</div>
+            <button class="btn-gold quick-view-btn" onclick="openProductDrawer(this)">VIEW DETAILS</button>
+        </div>
+
+        <!-- 10. COOL WATER -->
+        <div class="product-card" id="card-CoolWater" data-name="Cool Water" data-family="Fresh • Aquatic" data-category="fresh" data-price6="150" data-price12="250" data-bought="1400" data-desc="Freshness that feels like stepping into a cool ocean breeze. Crisp aquatic character that feels clean and confident." data-img="/images/products/Cool Water.jpeg">
+            <img src="~/images/products/Cool Water.jpeg" alt="Cool Water" onerror="this.src='https://via.placeholder.com/300x220?text=Cool+Water'" />
+            <h3>Cool Water</h3>
+            <span class="scent-tag">Fresh • Aquatic</span>
+            <div class="product-price">₹150.00 – ₹250.00</div>
+            <button class="btn-gold quick-view-btn" onclick="openProductDrawer(this)">VIEW DETAILS</button>
+        </div>
+
+        <!-- 11. RED CRYSTAL -->
+        <div class="product-card" id="card-RedCrystal" data-name="Red Crystal" data-family="Fruity • Floral • Fresh" data-category="floral" data-price6="200" data-price12="350" data-bought="710" data-desc="Radiate confidence with Red Crystal, a fragrance blending vibrant freshness with refined elegance." data-img="/images/products/Red Crystal.jpeg">
+            <img src="~/images/products/Red Crystal.jpeg" alt="Red Crystal" onerror="this.src='https://via.placeholder.com/300x220?text=Red+Crystal'" />
+            <h3>Red Crystal</h3>
+            <span class="scent-tag">Fruity • Floral • Fresh</span>
+            <div class="product-price">₹200.00 – ₹350.00</div>
+            <button class="btn-gold quick-view-btn" onclick="openProductDrawer(this)">VIEW DETAILS</button>
+        </div>
+
+        <!-- 12. FANTASY -->
+        <div class="product-card" id="card-Fantasy" data-name="Fantasy" data-family="Floral • Fruity • Musky" data-category="floral" data-price6="100" data-price12="160" data-bought="390" data-desc="Opens with soft fruity sweetness melting into elegant floral notes on a smooth musky base for a dreamy fragrance." data-img="/images/products/Fantasy.jpeg">
+            <img src="~/images/products/Fantasy.jpeg" alt="Fantasy" onerror="this.src='https://via.placeholder.com/300x220?text=Fantasy'" />
+            <h3>Fantasy</h3>
+            <span class="scent-tag">Floral • Fruity • Musky</span>
+            <div class="product-price">₹100.00 – ₹160.00</div>
+            <button class="btn-gold quick-view-btn" onclick="openProductDrawer(this)">VIEW DETAILS</button>
+        </div>
+
+        <!-- 13. BLACK ONYX -->
+        <div class="product-card" id="card-BlackOnyx" data-name="Black Onyx" data-family="Dark • Refined" data-category="oud" data-price6="200" data-price12="350" data-bought="880" data-desc="Dark, composed, and quietly intriguing. Made for a presence that doesn't need to compete for attention." data-img="/images/products/Black Onyx.jpeg">
+            <img src="~/images/products/Black Onyx.jpeg" alt="Black Onyx" onerror="this.src='https://via.placeholder.com/300x220?text=Black+Onyx'" />
+            <h3>Black Onyx</h3>
+            <span class="scent-tag">Dark • Refined</span>
+            <div class="product-price">₹200.00 – ₹350.00</div>
+            <button class="btn-gold quick-view-btn" onclick="openProductDrawer(this)">VIEW DETAILS</button>
+        </div>
+
+        <!-- 14. HONEY TOBACCO -->
+        <div class="product-card" id="card-HoneyTobacco" data-name="Honey Tobacco" data-family="Honey • Tobacco • Warm" data-category="gourmand" data-price6="200" data-price12="350" data-bought="1050" data-desc="Indulge in the rich harmony of golden honey and smooth tobacco. Sweet yet bold with deep luxurious character." data-img="/images/products/Honey Tobacco.jpeg">
+            <img src="~/images/products/Honey Tobacco.jpeg" alt="Honey Tobacco" onerror="this.src='https://via.placeholder.com/300x220?text=Honey+Tobacco'" />
+            <h3>Honey Tobacco</h3>
+            <span class="scent-tag">Honey • Tobacco • Warm</span>
+            <div class="product-price">₹200.00 – ₹350.00</div>
+            <button class="btn-gold quick-view-btn" onclick="openProductDrawer(this)">VIEW DETAILS</button>
+        </div>
+
+        <!-- 15. KESAR CHANDAN -->
+        <div class="product-card" id="card-KesarChandan" data-name="Kesar Chandan" data-family="Saffron • Sandalwood • Warm" data-category="gourmand" data-price6="240" data-price12="450" data-bought="1650" data-desc="Luxurious warmth of saffron blends beautifully with creamy depth of sandalwood, reflecting purity and heritage." data-img="/images/products/Kesar Chandan.jpeg">
+            <img src="~/images/products/Kesar Chandan.jpeg" alt="Kesar Chandan" onerror="this.src='https://via.placeholder.com/300x220?text=Kesar+Chandan'" />
+            <h3>Kesar Chandan</h3>
+            <span class="scent-tag">Saffron • Sandalwood • Warm</span>
+            <div class="product-price">₹240.00 – ₹450.00</div>
+            <button class="btn-gold quick-view-btn" onclick="openProductDrawer(this)">VIEW DETAILS</button>
+        </div>
+
+        <!-- 16. VELMONT -->
+        <div class="product-card" id="card-Velmont" data-name="Velmont" data-family="Fresh • Clean • Aromatic" data-category="fresh" data-price6="200" data-price12="350" data-bought="540" data-desc="Opens with clean, uplifting freshness before settling into a smooth, elegant character that feels polished." data-img="/images/products/Velmont.jpeg">
+            <img src="~/images/products/Velmont.jpeg" alt="Velmont" onerror="this.src='https://via.placeholder.com/300x220?text=Velmont'" />
+            <h3>Velmont</h3>
+            <span class="scent-tag">Fresh • Clean • Aromatic</span>
+            <div class="product-price">₹200.00 – ₹350.00</div>
+            <button class="btn-gold quick-view-btn" onclick="openProductDrawer(this)">VIEW DETAILS</button>
+        </div>
+
+        <!-- 17. HAWAS -->
+        <div class="product-card" id="card-Hawas" data-name="Hawas" data-family="Fresh • Aquatic" data-category="fresh" data-price6="150" data-price12="250" data-bought="980" data-desc="Freshness with an unmistakable edge of confidence. Crisp, aquatic character that feels energetic and modern." data-img="/images/products/Hawas.jpeg">
+            <img src="~/images/products/Hawas.jpeg" alt="Hawas" onerror="this.src='https://via.placeholder.com/300x220?text=Hawas'" />
+            <h3>Hawas</h3>
+            <span class="scent-tag">Fresh • Aquatic</span>
+            <div class="product-price">₹150.00 – ₹250.00</div>
+            <button class="btn-gold quick-view-btn" onclick="openProductDrawer(this)">VIEW DETAILS</button>
+        </div>
+
+        <!-- 18. CHOCOLATE -->
+        <div class="product-card" id="card-Chocolate" data-name="Chocolate" data-family="Gourmand • Chocolate • Sweet" data-category="gourmand" data-price6="150" data-price12="250" data-bought="820" data-desc="Wraps you in the comforting aroma of smooth dark cocoa blended with soft gourmand sweetness." data-img="/images/products/Chocolate.jpeg">
+            <img src="~/images/products/Chocolate.jpeg" alt="Chocolate" onerror="this.src='https://via.placeholder.com/300x220?text=Chocolate'" />
+            <h3>Chocolate</h3>
+            <span class="scent-tag">Gourmand • Chocolate • Sweet</span>
+            <div class="product-price">₹150.00 – ₹250.00</div>
+            <button class="btn-gold quick-view-btn" onclick="openProductDrawer(this)">VIEW DETAILS</button>
+        </div>
+
+        <!-- 19. POLO SPORT -->
+        <div class="product-card" id="card-PoloSport" data-name="Polo Sport" data-family="Citrus • Aquatic • Aromatic" data-category="fresh" data-price6="135" data-price12="225" data-bought="760" data-desc="Combines crisp citrus, refreshing aquatic accords, and clean aromatic notes for a vibrant scent." data-img="/images/products/Polo Sport.jpeg">
+            <img src="~/images/products/Polo Sport.jpeg" alt="Polo Sport" onerror="this.src='https://via.placeholder.com/300x220?text=Polo+Sport'" />
+            <h3>Polo Sport</h3>
+            <span class="scent-tag">Citrus • Aquatic • Aromatic</span>
+            <div class="product-price">₹135.00 – ₹225.00</div>
+            <button class="btn-gold quick-view-btn" onclick="openProductDrawer(this)">VIEW DETAILS</button>
+        </div>
+
+        <!-- 20. TURKISH ROSE -->
+        <div class="product-card" id="card-TurkishRose" data-name="Turkish Rose" data-family="Rose • Floral • Fresh" data-category="floral" data-price6="390" data-price12="750" data-bought="1500" data-desc="Experience the timeless beauty of blooming Turkish roses. Rich floral elegance that feels romantic and graceful." data-img="/images/products/Turkish Rose.jpeg">
+            <img src="~/images/products/Turkish Rose.jpeg" alt="Turkish Rose" onerror="this.src='https://via.placeholder.com/300x220?text=Turkish+Rose'" />
+            <h3>Turkish Rose</h3>
+            <span class="scent-tag">Rose • Floral • Fresh</span>
+            <div class="product-price">₹390.00 – ₹750.00</div>
+            <button class="btn-gold quick-view-btn" onclick="openProductDrawer(this)">VIEW DETAILS</button>
+        </div>
+
+        <!-- 21. JASMINE -->
+        <div class="product-card" id="card-Jasmine" data-name="Jasmine" data-family="White Floral • Jasmine • Fresh" data-category="floral" data-price6="135" data-price12="225" data-bought="600" data-desc="Captures the essence of freshly blossomed white flowers, creating a fragrance that feels elegant and timeless." data-img="/images/products/Jasmine.jpeg">
+            <img src="~/images/products/Jasmine.jpeg" alt="Jasmine" onerror="this.src='https://via.placeholder.com/300x220?text=Jasmine'" />
+            <h3>Jasmine</h3>
+            <span class="scent-tag">White Floral • Jasmine • Fresh</span>
+            <div class="product-price">₹135.00 – ₹225.00</div>
+            <button class="btn-gold quick-view-btn" onclick="openProductDrawer(this)">VIEW DETAILS</button>
+        </div>
+
+        <!-- 22. GOLDEN ASH -->
+        <div class="product-card" id="card-GoldenAsh" data-name="Golden Ash" data-family="Warm • Woody • Amber" data-category="gourmand" data-price6="200" data-price12="350" data-bought="490" data-desc="Opens with refined freshness before unfolding into a warm, sophisticated character that feels rich and smooth." data-img="/images/products/Golden Ash.jpeg">
+            <img src="~/images/products/Golden Ash.jpeg" alt="Golden Ash" onerror="this.src='https://via.placeholder.com/300x220?text=Golden+Ash'" />
+            <h3>Golden Ash</h3>
+            <span class="scent-tag">Warm • Woody • Amber</span>
+            <div class="product-price">₹200.00 – ₹350.00</div>
+            <button class="btn-gold quick-view-btn" onclick="openProductDrawer(this)">VIEW DETAILS</button>
+        </div>
+
+        <!-- 23. MAYA -->
+        <div class="product-card" id="card-Maya" data-name="Maya" data-family="Citrus • Floral • Sweet" data-category="floral" data-price6="120" data-price12="200" data-bought="420" data-desc="Opens with refreshing citrus notes blending into a delicate floral heart with a soft touch of sweetness." data-img="/images/products/Maya.jpeg">
+            <img src="~/images/products/Maya.jpeg" alt="Maya" onerror="this.src='https://via.placeholder.com/300x220?text=Maya'" />
+            <h3>Maya</h3>
+            <span class="scent-tag">Citrus • Floral • Sweet</span>
+            <div class="product-price">₹120.00 – ₹200.00</div>
+            <button class="btn-gold quick-view-btn" onclick="openProductDrawer(this)">VIEW DETAILS</button>
+        </div>
+
+        <!-- 24. HONEY EMBER -->
+        <div class="product-card" id="card-HoneyEmber" data-name="Honey Ember" data-family="Sweet • Warm • Amber" data-category="gourmand" data-price6="150" data-price12="260" data-bought="890" data-desc="Blends smooth sweetness of honey with deep resinous elegance of amber, creating an inviting luxury scent." data-img="/images/products/Honey Ember.jpeg">
+            <img src="~/images/products/Honey Ember.jpeg" alt="Honey Ember" onerror="this.src='https://via.placeholder.com/300x220?text=Honey+Ember'" />
+            <h3>Honey Ember</h3>
+            <span class="scent-tag">Sweet • Warm • Amber</span>
+            <div class="product-price">₹150.00 – ₹260.00</div>
+            <button class="btn-gold quick-view-btn" onclick="openProductDrawer(this)">VIEW DETAILS</button>
+        </div>
+
+        <!-- 25. ECHO -->
+        <div class="product-card" id="card-Echo" data-name="Echo" data-family="Sweet • Floral" data-category="floral" data-price6="150" data-price12="260" data-bought="340" data-desc="Blends sweet character with floral elegance, creating a fragrance that feels graceful and polished." data-img="/images/products/Echo.jpeg">
+            <img src="~/images/products/Echo.jpeg" alt="Echo" onerror="this.src='https://via.placeholder.com/300x220?text=Echo'" />
+            <h3>Echo</h3>
+            <span class="scent-tag">Sweet • Floral</span>
+            <div class="product-price">₹150.00 – ₹260.00</div>
+            <button class="btn-gold quick-view-btn" onclick="openProductDrawer(this)">VIEW DETAILS</button>
+        </div>
+
+        <!-- 26. BERRY BLAST -->
+        <div class="product-card" id="card-BerryBlast" data-name="Berry Blast" data-family="Fruity • Sweet • Fresh" data-category="fresh" data-price6="150" data-price12="250" data-bought="670" data-desc="Bursting with irresistible sweetness of ripe berries. Playful, refreshing, and full of life." data-img="/images/products/Berry Blast.jpeg">
+            <img src="~/images/products/Berry Blast.jpeg" alt="Berry Blast" onerror="this.src='https://via.placeholder.com/300x220?text=Berry+Blast'" />
+            <h3>Berry Blast</h3>
+            <span class="scent-tag">Fruity • Sweet • Fresh</span>
+            <div class="product-price">₹150.00 – ₹250.00</div>
+            <button class="btn-gold quick-view-btn" onclick="openProductDrawer(this)">VIEW DETAILS</button>
+        </div>
+
+        <!-- 27. MARINE HAZE -->
+        <div class="product-card" id="card-MarineHaze" data-name="Marine Haze" data-family="Aquatic • Citrus • Fresh" data-category="fresh" data-price6="200" data-price12="250" data-bought="810" data-desc="Refreshing essence of the ocean combining crisp citrus, fresh aquatic accords, and clean aromatic notes." data-img="/images/products/Marine Haze.jpeg">
+            <img src="~/images/products/Marine Haze.jpeg" alt="Marine Haze" onerror="this.src='https://via.placeholder.com/300x220?text=Marine+Haze'" />
+            <h3>Marine Haze</h3>
+            <span class="scent-tag">Aquatic • Citrus • Fresh</span>
+            <div class="product-price">₹200.00 – ₹250.00</div>
+            <button class="btn-gold quick-view-btn" onclick="openProductDrawer(this)">VIEW DETAILS</button>
+        </div>
+
+        <!-- 28. WHITE ONYX -->
+        <div class="product-card" id="card-WhiteOnyx" data-name="White Onyx" data-family="Fresh • Clean • Elegant" data-category="fresh" data-price6="200" data-price12="350" data-bought="910" data-desc="Clean, elegant, and effortlessly luxurious. Understated richness making it an excellent signature scent." data-img="/images/products/White Onyx.jpeg">
+            <img src="~/images/products/White Onyx.jpeg" alt="White Onyx" onerror="this.src='https://via.placeholder.com/300x220?text=White+Onyx'" />
+            <h3>White Onyx</h3>
+            <span class="scent-tag">Fresh • Clean • Elegant</span>
+            <div class="product-price">₹200.00 – ₹350.00</div>
+            <button class="btn-gold quick-view-btn" onclick="openProductDrawer(this)">VIEW DETAILS</button>
+        </div>
+
+        <!-- 29. S.P. SANDAL -->
+        <div class="product-card" id="card-SPSandal" data-name="S.P. Sandal" data-family="Sandalwood • Woody • Creamy" data-category="gourmand" data-price6="150" data-price12="250" data-bought="1150" data-desc="Pure, creamy, and deeply calming. Celebrates the timeless beauty of authentic sandalwood with smooth warmth." data-img="/images/products/SP Sandal.jpeg">
+            <img src="~/images/products/SP Sandal.jpeg" alt="S.P. Sandal" onerror="this.src='https://via.placeholder.com/300x220?text=SP+Sandal'" />
+            <h3>S.P. Sandal</h3>
+            <span class="scent-tag">Sandalwood • Woody • Creamy</span>
+            <div class="product-price">₹150.00 – ₹250.00</div>
+            <button class="btn-gold quick-view-btn" onclick="openProductDrawer(this)">VIEW DETAILS</button>
+        </div>
+
+        <!-- 30. WHITE OUD -->
+        <div class="product-card" id="card-WhiteOud" data-name="White Oud" data-family="Oud • Woody" data-category="oud" data-price6="200" data-price12="350" data-bought="730" data-desc="Oud reimagined with a cleaner and more refined presence. Carries the distinctive woody character in an elegant profile." data-img="/images/products/White Oud.jpeg">
+            <img src="~/images/products/White Oud.jpeg" alt="White Oud" onerror="this.src='https://via.placeholder.com/300x220?text=White+Oud'" />
+            <h3>White Oud</h3>
+            <span class="scent-tag">Oud • Woody</span>
+            <div class="product-price">₹200.00 – ₹350.00</div>
+            <button class="btn-gold quick-view-btn" onclick="openProductDrawer(this)">VIEW DETAILS</button>
+        </div>
+
+        <!-- 31. MUSK -->
+        <div class="product-card" id="card-Musk" data-name="Musk" data-family="Musky • Warm • Animalic" data-category="oud" data-price6="200" data-price12="350" data-bought="870" data-desc="Bold, intense, and undeniably captivating. Crafted for those who appreciate the rich depth of traditional musk." data-img="/images/products/Musk.jpeg">
+            <img src="~/images/products/Musk.jpeg" alt="Musk" onerror="this.src='https://via.placeholder.com/300x220?text=Musk'" />
+            <h3>Musk</h3>
+            <span class="scent-tag">Musky • Warm • Animalic</span>
+            <div class="product-price">₹200.00 – ₹350.00</div>
+            <button class="btn-gold quick-view-btn" onclick="openProductDrawer(this)">VIEW DETAILS</button>
+        </div>
+
+        <!-- 32. ROYAL 96 -->
+        <div class="product-card" id="card-Royal96" data-name="Royal 96" data-family="Woody • Oriental • Spicy" data-category="gourmand" data-price6="160" data-price12="300" data-bought="560" data-desc="Carries a rich, distinguished character that reflects quiet confidence and timeless refinement." data-img="/images/products/Royal 96.jpeg">
             <img src="~/images/products/Royal 96.jpeg" alt="Royal 96" onerror="this.src='https://via.placeholder.com/300x220?text=Royal+96'" />
-            <h3><a href="/Home/Details?name=Royal%2096">Royal 96</a></h3>
+            <h3>Royal 96</h3>
             <span class="scent-tag">Woody • Oriental • Spicy</span>
-            <div class="product-price">₹300.00</div>
-            <a href="/Home/Cart" class="btn-gold">ADD TO CART</a>
+            <div class="product-price">₹160.00 – ₹300.00</div>
+            <button class="btn-gold quick-view-btn" onclick="openProductDrawer(this)">VIEW DETAILS</button>
+        </div>
+
+        <!-- 33. SHAHI DARBAR -->
+        <div class="product-card" id="card-ShahiDarbar" data-name="Shahi Darbar" data-family="Traditional • Oriental" data-category="oud" data-price6="420" data-price12="800" data-bought="1300" data-desc="Poise of a royal gathering — graceful, distinguished, and steeped in tradition with regal character." data-img="/images/products/Shahi Darbar.jpeg">
+            <img src="~/images/products/Shahi Darbar.jpeg" alt="Shahi Darbar" onerror="this.src='https://via.placeholder.com/300x220?text=Shahi+Darbar'" />
+            <h3>Shahi Darbar</h3>
+            <span class="scent-tag">Traditional • Oriental</span>
+            <div class="product-price">₹420.00 – ₹800.00</div>
+            <button class="btn-gold quick-view-btn" onclick="openProductDrawer(this)">VIEW DETAILS</button>
+        </div>
+
+        <!-- 34. BLACK OUD -->
+        <div class="product-card" id="card-BlackOud" data-name="Black Oud" data-family="Oud • Woody • Dark" data-category="oud" data-price6="600" data-price12="1100" data-bought="1800" data-desc="Darkness refined into a fragrance. Mysterious character — rich, woody, and composed for genuine presence." data-img="/images/products/Black Oud.jpeg">
+            <img src="~/images/products/Black Oud.jpeg" alt="Black Oud" onerror="this.src='https://via.placeholder.com/300x220?text=Black+Oud'" />
+            <h3>Black Oud</h3>
+            <span class="scent-tag">Oud • Woody • Dark</span>
+            <div class="product-price">₹600.00 – ₹1,100.00</div>
+            <button class="btn-gold quick-view-btn" onclick="openProductDrawer(this)">VIEW DETAILS</button>
         </div>
 
     </div>
+
+    <!-- NO FRAGRANCES FOUND EMPTY STATE CONTAINER -->
+    <div id="noResultsContainer" class="no-results-box" style="display: none;">
+        <div class="no-results-icon">✨</div>
+        <h3 class="no-results-title">No Fragrances Found</h3>
+        <p class="no-results-text">We couldn't find any fragrances matching your current search or category filter.</p>
+        <button class="btn-outline" onclick="resetCatalogFilters()">CLEAR ALL FILTERS</button>
+    </div>
 </section>
+
+<!-- 3. SLIDE-OVER QUICK VIEW DRAWER -->
+<div class="drawer-overlay" id="drawerOverlay" onclick="closeProductDrawer()"></div>
+
+<div class="product-drawer" id="productDrawer">
+    <button class="drawer-close-btn" onclick="closeProductDrawer()">&times;</button>
+
+    <div class="drawer-content">
+        <div class="drawer-img-container">
+            <img id="drawerImage" src="" alt="Product Image" />
+        </div>
+
+        <div class="drawer-details">
+            <span class="drawer-tagline">PURE CONCENTRATED ATTAR</span>
+            <h2 class="drawer-title" id="drawerTitle">Product Name</h2>
+            <div class="drawer-scent-tag" id="drawerScentTag">Scent Family</div>
+
+            <p class="drawer-desc" id="drawerDesc">
+                Fragrance description.
+            </p>
+
+            <!-- DUAL SIZE SELECTION WITH INDEPENDENT QUANTITIES -->
+            <div class="dual-size-section">
+                <label class="size-section-label">Select Quantities for Desired Bottle Sizes:</label>
+
+                <!-- 6ML ROW -->
+                <div class="size-qty-row">
+                    <div class="size-info">
+                        <span class="size-title">6ml Bottle</span>
+                        <span class="size-unit-price" id="labelPrice6">₹0.00</span>
+                    </div>
+                    <div class="qty-selector">
+                        <button type="button" class="qty-btn" onclick="updateSizeQty(6, -1)">&minus;</button>
+                        <input type="text" id="qty6ml" value="0" readonly class="qty-input" />
+                        <button type="button" class="qty-btn" onclick="updateSizeQty(6, 1)">&plus;</button>
+                    </div>
+                </div>
+
+                <!-- 12ML ROW -->
+                <div class="size-qty-row">
+                    <div class="size-info">
+                        <span class="size-title">12ml Bottle</span>
+                        <span class="size-unit-price" id="labelPrice12">₹0.00</span>
+                    </div>
+                    <div class="qty-selector">
+                        <button type="button" class="qty-btn" onclick="updateSizeQty(12, -1)">&minus;</button>
+                        <input type="text" id="qty12ml" value="1" readonly class="qty-input" />
+                        <button type="button" class="qty-btn" onclick="updateSizeQty(12, 1)">&plus;</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TOTAL PRICE DISPLAY -->
+            <div class="drawer-price-box">
+                <span class="price-label">Total Amount:</span>
+                <span class="price-value" id="drawerTotal">₹0.00</span>
+            </div>
+
+            <button type="button" class="btn-gold drawer-add-btn" onclick="handleAddToCart()">
+                ADD SELECTED TO CART
+            </button>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        let currentP6 = 0;
+        let currentP12 = 0;
+        let qty6 = 0;
+        let qty12 = 1;
+
+        // --- 1. DRAWER DUAL SIZE LOGIC ---
+        function openProductDrawer(btn) {
+            const card = btn.closest('.product-card');
+
+            const name = card.dataset.name;
+            const family = card.dataset.family;
+            const desc = card.dataset.desc;
+            const img = card.dataset.img;
+            currentP6 = parseInt(card.dataset.price6);
+            currentP12 = parseInt(card.dataset.price12);
+
+            document.getElementById('drawerTitle').innerText = name;
+            document.getElementById('drawerScentTag').innerText = family;
+            document.getElementById('drawerDesc').innerText = desc;
+            document.getElementById('drawerImage').src = img;
+
+            document.getElementById('labelPrice6').innerText = '₹' + currentP6 + '.00';
+            document.getElementById('labelPrice12').innerText = '₹' + currentP12 + '.00';
+
+            // Reset defaults: 0x 6ml, 1x 12ml
+            qty6 = 0;
+            qty12 = 1;
+            document.getElementById('qty6ml').value = qty6;
+            document.getElementById('qty12ml').value = qty12;
+
+            recalculateTotal();
+
+            document.getElementById('drawerOverlay').classList.add('open');
+            document.getElementById('productDrawer').classList.add('open');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeProductDrawer() {
+            document.getElementById('drawerOverlay').classList.remove('open');
+            document.getElementById('productDrawer').classList.remove('open');
+            document.body.style.overflow = 'auto';
+        }
+
+        function updateSizeQty(size, change) {
+            if (size === 6) {
+                qty6 += change;
+                if (qty6 < 0) qty6 = 0;
+                document.getElementById('qty6ml').value = qty6;
+            } else if (size === 12) {
+                qty12 += change;
+                if (qty12 < 0) qty12 = 0;
+                document.getElementById('qty12ml').value = qty12;
+            }
+            recalculateTotal();
+        }
+
+        function recalculateTotal() {
+            const total = (qty6 * currentP6) + (qty12 * currentP12);
+            document.getElementById('drawerTotal').innerText = '₹' + total.toLocaleString('en-IN') + '.00';
+        }
+
+        function handleAddToCart() {
+            if (qty6 === 0 && qty12 === 0) {
+                alert("Please select at least one bottle quantity before adding to cart.");
+                return;
+            }
+            const name = document.getElementById('drawerTitle').innerText;
+            const total = document.getElementById('drawerTotal').innerText;
+
+            let summary = `Added ${name} to cart:\n`;
+            if (qty6 > 0) summary += `• ${qty6}x 6ml Bottle\n`;
+            if (qty12 > 0) summary += `• ${qty12}x 12ml Bottle\n`;
+            summary += `Total: ${total}`;
+
+            alert(summary);
+            closeProductDrawer();
+        }
+
+        // --- 2. INTEGRATED SEARCH, FILTER, SORT & EMPTY STATE LOGIC ---
+        const searchInput = document.getElementById('searchInput');
+        const sortSelect = document.getElementById('sortSelect');
+        const filterPills = document.getElementById('filterPills');
+        const productGrid = document.getElementById('productGrid');
+        const productCountLabel = document.getElementById('productCountLabel');
+        const noResultsContainer = document.getElementById('noResultsContainer');
+
+        let activeFilter = 'all';
+
+        filterPills.addEventListener('click', (e) => {
+            if (e.target.classList.contains('filter-btn')) {
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                e.target.classList.add('active');
+                activeFilter = e.target.dataset.filter;
+                applyCatalogFilters();
+            }
+        });
+
+        searchInput.addEventListener('input', applyCatalogFilters);
+        sortSelect.addEventListener('change', applyCatalogFilters);
+
+        function applyCatalogFilters() {
+            const query = searchInput.value.toLowerCase().trim();
+            const sortVal = sortSelect.value;
+            const cards = Array.from(productGrid.children);
+
+            let visibleCount = 0;
+
+            cards.forEach(card => {
+                const name = card.dataset.name.toLowerCase();
+                const family = card.dataset.family.toLowerCase();
+                const category = card.dataset.category;
+
+                const matchesFilter = (activeFilter === 'all' || category === activeFilter);
+                const matchesSearch = (name.includes(query) || family.includes(query));
+
+                if (matchesFilter && matchesSearch) {
+                    card.style.display = 'flex';
+                    visibleCount++;
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+
+            productCountLabel.innerText = `Showing ${visibleCount} Fragrance${visibleCount === 1 ? '' : 's'}`;
+
+            // TOGGLE NO RESULTS VIEW
+            if (visibleCount === 0) {
+                noResultsContainer.style.display = 'block';
+                productGrid.style.display = 'none';
+            } else {
+                noResultsContainer.style.display = 'none';
+                productGrid.style.display = 'grid';
+            }
+
+            // SORTING LOGIC
+            const visibleCards = cards.filter(c => c.style.display !== 'none');
+
+            visibleCards.sort((a, b) => {
+                const priceA = parseInt(a.dataset.price12);
+                const priceB = parseInt(b.dataset.price12);
+                const boughtA = parseInt(a.dataset.bought);
+                const boughtB = parseInt(b.dataset.bought);
+
+                if (sortVal === 'popular') return boughtB - boughtA;
+                if (sortVal === 'low-high') return priceA - priceB;
+                if (sortVal === 'high-low') return priceB - priceA;
+                return 0;
+            });
+
+            visibleCards.forEach(card => productGrid.appendChild(card));
+        }
+
+        function resetCatalogFilters() {
+            searchInput.value = '';
+            activeFilter = 'all';
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            document.querySelector('.filter-btn[data-filter="all"]').classList.add('active');
+            sortSelect.value = 'popular';
+            applyCatalogFilters();
+        }
+
+        // --- 3. DEEP-LINK AUTO-SCROLL & HIGHLIGHT FROM HOME PAGE ---
+        window.addEventListener('DOMContentLoaded', () => {
+            applyCatalogFilters(); // Run initial sort & filter setup
+
+            const urlParams = new URLSearchParams(window.location.search);
+            const highlightParam = urlParams.get('highlight');
+
+            if (highlightParam) {
+                const targetCard = Array.from(document.querySelectorAll('.product-card')).find(c =>
+                    c.dataset.name.toLowerCase() === highlightParam.toLowerCase()
+                );
+
+                if (targetCard) {
+                    setTimeout(() => {
+                        targetCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        targetCard.style.outline = '2px solid var(--champagne-gold)';
+                        targetCard.style.boxShadow = '0 0 20px rgba(203, 164, 99, 0.4)';
+
+                        setTimeout(() => {
+                            const btn = targetCard.querySelector('.quick-view-btn');
+                            if (btn) openProductDrawer(btn);
+                        }, 700);
+                    }, 300);
+                }
+            }
+        });
+    </script>
+}
