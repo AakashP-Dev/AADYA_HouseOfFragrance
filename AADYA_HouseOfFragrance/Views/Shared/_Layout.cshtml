@@ -3,47 +3,74 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - AADYA_HouseOfFragrance</title>
-    <script type="importmap"></script>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <title>@ViewData["Title"] - AADYA: The House of Fragrance</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/AADYA_HouseOfFragrance.styles.css" asp-append-version="true" />
 </head>
 <body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">AADYA_HouseOfFragrance</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </nav>
-    </header>
-    <div class="container">
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
-    </div>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2026 - AADYA_HouseOfFragrance - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a asp-controller="Home" asp-action="Index">
+                <img src="~/images/AADYA-removedbg.png" alt="AADYA Logo" class="nav-logo-img" onerror="this.style.display='none'" />
+            </a>
+
+            <ul class="nav-links">
+                <li><a asp-controller="Home" asp-action="Index">HOME</a></li>
+                <li><a asp-controller="Home" asp-action="Catalog">OUR FRAGRANCES</a></li>
+                <li><a href="/Home/Index#essence">THE ART OF ATTAR</a></li>
+                <li><a href="/Home/Index#about">OUR CRAFTSMANSHIP</a></li>
+                <li><a asp-controller="Home" asp-action="Wizard">FRAGRANCE WIZARD</a></li>
+            </ul>
+
+            <div style="display: flex; gap: 0.8rem; align-items: center;">
+                <a asp-controller="Home" asp-action="Cart" class="btn-outline" style="padding: 0.45rem 1rem;">🛒 CART</a>
+                <a asp-controller="Account" asp-action="Login" style="color: var(--deep-burgundy); text-decoration: none; font-size: 0.8rem; font-weight: 600;">SIGN IN</a>
+                <a asp-controller="Account" asp-action="Register" class="btn-gold" style="padding: 0.45rem 1rem;">REGISTER</a>
+            </div>
+        </div>
+    </nav>
+
+    <main role="main">
+        @RenderBody()
+    </main>
+
+    <footer>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 2rem; max-width: 1200px; margin: 0 auto; margin-bottom: 2rem;">
+            <div>
+                <img src="~/images/AADYA-removedbg.png" alt="AADYA Logo" style="height: 38px; margin-bottom: 0.8rem;" onerror="this.style.display='none'" />
+                <p style="line-height: 1.6;">
+                    Pure • Luxury • Timeless. Handcrafted artisanal attars and modern EDP fragrances.
+                </p>
+            </div>
+
+            <div>
+                <h4>Collections</h4>
+                <p><a asp-controller="Home" asp-action="Catalog">Attars & Heritage Oud</a></p>
+                <p><a asp-controller="Home" asp-action="Catalog">Aquatic & Fresh</a></p>
+                <p><a asp-controller="Home" asp-action="Catalog">Gourmand & Amber</a></p>
+            </div>
+
+            <div>
+                <h4>Account</h4>
+                <p><a asp-controller="Account" asp-action="Login">Sign In</a></p>
+                <p><a asp-controller="Account" asp-action="Register">Create Account</a></p>
+            </div>
+
+            <div>
+                <h4>Contact Care</h4>
+                <p>📞 WhatsApp: +91 98242 92270</p>
+                <p>✉️ houseofaadya.in@gmail.com</p>
+            </div>
+        </div>
+
+        <div style="text-align: center; border-top: 1px solid var(--border-color); padding-top: 1.2rem; font-size: 0.78rem;">
+            &copy; 2026 AADYA: The House of Fragrance. All Rights Reserved.
         </div>
     </footer>
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
