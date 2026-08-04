@@ -2,37 +2,29 @@
     ViewData["Title"] = "Home - Pure Luxury Timeless";
 }
 
-<!-- 1. HERO BANNER WITH IVORY TEXTURE BACKGROUND -->
-<section style="position: relative; width: 100%; height: 55vh; min-height: 380px; background: url('/images/flat-ivory-texture.png') center/cover no-repeat; overflow: hidden; display: flex; align-items: center; justify-content: center; text-align: center; border-bottom: 1px solid var(--border-color);">
-
-    <div style="position: relative; z-index: 2; max-width: 800px; padding: 0 1.5rem;">
-        <h1 style="font-family: var(--font-heading); font-size: 2.6rem; color: var(--deep-burgundy); letter-spacing: 3px; margin-bottom: 0.6rem; text-transform: uppercase; display: flex; align-items: center; justify-content: center; gap: 0.8rem;">
+<!-- 1. HERO BANNER -->
+<section class="hero-banner">
+    <div class="hero-content">
+        <h1 class="hero-title">
             <span>PURE</span>
-            <span style="font-size: 0.9rem; opacity: 0.7; vertical-align: middle;">•</span>
+            <span class="hero-dot">•</span>
             <span>LUXURY</span>
-            <span style="font-size: 0.9rem; opacity: 0.7; vertical-align: middle;">•</span>
+            <span class="hero-dot">•</span>
             <span>TIMELESS</span>
         </h1>
-        <p style="font-size: 0.9rem; color: var(--deep-burgundy); letter-spacing: 2.5px; text-transform: uppercase; margin-bottom: 1.8rem; font-weight: 600; opacity: 0.85;">
-            Crafted with Intention
-        </p>
-        <a asp-controller="Home" asp-action="Catalog" class="btn-gold" style="padding: 0.75rem 2rem; font-size: 0.78rem;">
-            EXPLORE COLLECTION
-        </a>
+        <p class="hero-subtitle">Crafted with Intention</p>
+        <a asp-controller="Home" asp-action="Catalog" class="btn-gold hero-btn">EXPLORE COLLECTION</a>
     </div>
 </section>
 
-<!-- 2. FEATURED COLLECTION (Matching Wireframe Section #3) -->
+<!-- 2. FEATURED COLLECTION -->
 <section class="section-padding">
-    <div style="text-align: center; margin-bottom: 2.5rem;">
-        <h2 style="font-size: 2rem; letter-spacing: 2px; color: var(--deep-burgundy); font-family: var(--font-heading); text-transform: uppercase; margin-bottom: 0.4rem;">
-            FEATURED COLLECTION
-        </h2>
-        <p style="color: var(--text-muted); font-size: 0.9rem;">Showcase best-selling or signature attars</p>
+    <div class="section-header">
+        <h2 class="section-title">FEATURED COLLECTION</h2>
+        <p class="section-subtitle">Showcase best-selling or signature attars</p>
     </div>
 
     <div class="product-grid">
-        <!-- CARD 1 -->
         <div class="product-card">
             <img src="~/images/products/Kesar Chandan.jpeg" alt="Kesar Chandan" onerror="this.src='https://via.placeholder.com/300x220?text=Kesar+Chandan'" />
             <h3><a href="/Home/Details?name=Kesar%20Chandan">Kesar Chandan</a></h3>
@@ -41,7 +33,6 @@
             <a href="/Home/Details?name=Kesar%20Chandan" class="btn-gold">VIEW DETAILS</a>
         </div>
 
-        <!-- CARD 2 -->
         <div class="product-card">
             <img src="~/images/products/Black OUD.jpeg" alt="Black OUD" onerror="this.src='https://via.placeholder.com/300x220?text=Black+Oud'" />
             <h3><a href="/Home/Details?name=Black%20OUD">Black OUD</a></h3>
@@ -50,7 +41,6 @@
             <a href="/Home/Details?name=Black%20OUD" class="btn-gold">VIEW DETAILS</a>
         </div>
 
-        <!-- CARD 3 -->
         <div class="product-card">
             <img src="~/images/products/Cairo Evening.jpeg" alt="Cairo Evening" onerror="this.src='https://via.placeholder.com/300x220?text=Cairo+Evening'" />
             <h3><a href="/Home/Details?name=Cairo%20Evening">Cairo Evening</a></h3>
@@ -59,7 +49,6 @@
             <a href="/Home/Details?name=Cairo%20Evening" class="btn-gold">VIEW DETAILS</a>
         </div>
 
-        <!-- CARD 4 -->
         <div class="product-card">
             <img src="~/images/products/Turkish Rose.jpeg" alt="Turkish Rose" onerror="this.src='https://via.placeholder.com/300x220?text=Turkish+Rose'" />
             <h3><a href="/Home/Details?name=Turkish%20Rose">Turkish Rose</a></h3>
@@ -70,85 +59,59 @@
     </div>
 </section>
 
-<!-- 3. OUR ESSENCE (LUXURY MINIMAL VECTOR ICONS) -->
-<section style="background-color: var(--warm-beige); border-top: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color); padding: 3rem 5%;">
-    <div style="max-width: 1200px; margin: 0 auto; text-align: center;">
-        <h2 style="font-size: 1.6rem; letter-spacing: 2px; color: var(--deep-burgundy); font-family: var(--font-heading); text-transform: uppercase; margin-bottom: 2rem;">
-            OUR ESSENCE
-        </h2>
+<!-- 3. OUR ESSENCE -->
+<section class="essence-section">
+    <div class="essence-container">
+        <h2 class="section-title">OUR ESSENCE</h2>
 
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.5rem;">
-
-            <!-- PILLAR 1: HERITAGE -->
-            <div style="padding: 1.8rem 1.2rem; background-color: var(--warm-ivory); border: 1px solid var(--border-color); border-radius: 4px; transition: var(--transition);">
-                <div style="margin-bottom: 1rem; color: var(--deep-burgundy);">
+        <div class="essence-grid">
+            <div class="essence-card">
+                <div class="essence-icon">
                     <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M3 21h18M3 10h18M5 10v11M9 10v11M15 10v11M19 10v11M12 3L2 10h20L12 3z" />
                     </svg>
                 </div>
-                <h3 style="font-family: var(--font-heading); color: var(--deep-burgundy); font-size: 1.15rem; margin-bottom: 0.6rem; letter-spacing: 1.5px;">HERITAGE</h3>
-                <p style="font-size: 0.85rem; color: #555555; line-height: 1.6; margin: 0;">
-                    Rooted in ancient Indian scent traditions, celebrating time-honored distillation and authentic oriental botanicals.
-                </p>
+                <h3>HERITAGE</h3>
+                <p>Rooted in ancient Indian scent traditions, celebrating time-honored distillation and authentic oriental botanicals.</p>
             </div>
 
-            <!-- PILLAR 2: CRAFTSMANSHIP -->
-            <div style="padding: 1.8rem 1.2rem; background-color: var(--warm-ivory); border: 1px solid var(--border-color); border-radius: 4px; transition: var(--transition);">
-                <div style="margin-bottom: 1rem; color: var(--deep-burgundy);">
+            <div class="essence-card">
+                <div class="essence-icon">
                     <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M10 2v5.586a1 1 0 0 1-.293.707l-6.414 6.414A3 3 0 0 0 5.414 20h13.172a3 3 0 0 0 2.121-5.121l-6.414-6.414A1 1 0 0 1 14 7.586V2" />
                         <path d="M8.5 2h7M14 14.5a2 2 0 1 1-4 0" />
                     </svg>
                 </div>
-                <h3 style="font-family: var(--font-heading); color: var(--deep-burgundy); font-size: 1.15rem; margin-bottom: 0.6rem; letter-spacing: 1.5px;">CRAFTSMANSHIP</h3>
-                <p style="font-size: 0.85rem; color: #555555; line-height: 1.6; margin: 0;">
-                    Every creation is a labor of love, blending pure botanical oils and rare woods with precision and care.
-                </p>
+                <h3>CRAFTSMANSHIP</h3>
+                <p>Every creation is a labor of love, blending pure botanical oils and rare woods with precision and care.</p>
             </div>
 
-            <!-- PILLAR 3: PURITY -->
-            <div style="padding: 1.8rem 1.2rem; background-color: var(--warm-ivory); border: 1px solid var(--border-color); border-radius: 4px; transition: var(--transition);">
-                <div style="margin-bottom: 1rem; color: var(--deep-burgundy);">
+            <div class="essence-card">
+                <div class="essence-icon">
                     <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z" />
                     </svg>
                 </div>
-                <h3 style="font-family: var(--font-heading); color: var(--deep-burgundy); font-size: 1.15rem; margin-bottom: 0.6rem; letter-spacing: 1.5px;">PURITY</h3>
-                <p style="font-size: 0.85rem; color: #555555; line-height: 1.6; margin: 0;">
-                    100% alcohol-free concentrated attars and pure formulations designed to feel gentle, deep, and long-lasting.
-                </p>
+                <h3>PURITY</h3>
+                <p>100% alcohol-free concentrated attars and pure formulations designed to feel gentle, deep, and long-lasting.</p>
             </div>
-
         </div>
     </div>
 </section>
 
 <!-- 4. ABOUT AADYA -->
-<section class="section-padding" style="padding-top: 2rem; padding-bottom: 2rem;" id="about">
-    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2.5rem; align-items: center; max-width: 1100px; margin: 0 auto;">
-
-        <!-- FULL-BLEED IMAGE BOX -->
-        <div style="border: 1px solid var(--border-color); border-radius: 4px; overflow: hidden; height: 320px; box-shadow: 0 4px 15px rgba(59, 14, 20, 0.05);">
-            <img src="~/images/template.png" alt="AADYA Artisanal Craft" style="width: 100%; height: 100%; object-fit: cover; display: block;" onerror="this.src='/images/Shelf-View-Banner.jpeg'" />
+<section class="section-padding" id="about">
+    <div class="about-grid">
+        <div class="about-image-box">
+            <img src="~/images/template.png" alt="AADYA Artisanal Craft" onerror="this.src='/images/Shelf-View-Banner.jpeg'" />
         </div>
 
-        <!-- TYPOGRAPHY CONTENT -->
-        <div>
-            <span style="font-size: 0.78rem; letter-spacing: 2.5px; color: var(--deep-burgundy); font-weight: 600; display: block; margin-bottom: 0.4rem; text-transform: uppercase;">
-                OUR STORY
-            </span>
-            <h2 style="font-family: var(--font-heading); font-size: 1.8rem; color: var(--deep-burgundy); margin: 0 0 0.8rem 0; letter-spacing: 0.5px;">
-                The House of Fragrance
-            </h2>
-            <p style="font-size: 0.88rem; color: #555555; line-height: 1.6; margin-bottom: 0.8rem;">
-                Born from a passion for purity and timeless luxury, AADYA began as a vision to craft fragrances that speak the language of human emotions.
-            </p>
-            <p style="font-size: 0.88rem; color: #555555; line-height: 1.6; margin-bottom: 1.5rem;">
-                More than just a scent, AADYA is a personal experience that stays with you — elegant, subtle, and deeply memorable in every drop.
-            </p>
-            <a asp-controller="Home" asp-action="Wizard" class="btn-outline" style="padding: 0.55rem 1.3rem; font-size: 0.75rem;">
-                DISCOVER YOUR SCENT &rarr;
-            </a>
+        <div class="about-text-box">
+            <span class="about-tagline">OUR STORY</span>
+            <h2 class="about-title">The House of Fragrance</h2>
+            <p>Born from a passion for purity and timeless luxury, AADYA began as a vision to craft fragrances that speak the language of human emotions.</p>
+            <p>More than just a scent, AADYA is a personal experience that stays with you — elegant, subtle, and deeply memorable in every drop.</p>
+            <a asp-controller="Home" asp-action="Wizard" class="btn-outline about-btn">DISCOVER YOUR SCENT &rarr;</a>
         </div>
     </div>
 </section>
