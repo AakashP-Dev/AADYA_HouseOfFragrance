@@ -1,0 +1,266 @@
+﻿@{
+    ViewData["Title"] = "Admin Operations Dashboard - House of AADYA";
+}
+
+<section class="section-padding" style="padding-top: 2rem;">
+    <!-- ADMIN HEADER -->
+    <div class="admin-header">
+        <div>
+            <span class="admin-tagline">OBJECTIVE (D): ADMIN BUSINESS ANALYTICS & OPERATIONS</span>
+            <h1 class="admin-title">Real-Time Management Dashboard</h1>
+        </div>
+        <button class="btn-gold" onclick="openAddProductDrawer()">+ ADD NEW FRAGRANCE</button>
+    </div>
+
+    <!-- OBJECTIVE D: BUSINESS ANALYTICS METRICS -->
+    <div class="admin-stats-grid">
+        <div class="stat-card">
+            <span class="stat-label">Total Sales Revenue</span>
+            <div class="stat-value">₹1,48,250</div>
+            <span class="stat-sub text-green">↑ 14% vs last month</span>
+        </div>
+        <div class="stat-card">
+            <span class="stat-label">Catalog Products</span>
+            <div class="stat-value">34</div>
+            <span class="stat-sub">100% Alcohol-Free Attars</span>
+        </div>
+        <div class="stat-card">
+            <span class="stat-label">Total Orders</span>
+            <div class="stat-value" id="adminTotalOrderCount">3</div>
+            <span class="stat-sub">Live Transaction Logs</span>
+        </div>
+        <div class="stat-card">
+            <span class="stat-label">Registered Clients</span>
+            <div class="stat-value">184</div>
+            <span class="stat-sub">Secure User Database</span>
+        </div>
+    </div>
+
+    <!-- ORDER MANAGEMENT SECTION -->
+    <div class="admin-table-card">
+        <div class="admin-table-header-row">
+            <h3 class="table-card-title">Order Management & Fulfillment Logs</h3>
+
+            <!-- ORDER STATUS FILTER PILLS -->
+            <div class="admin-filter-pills" id="orderFilterPills">
+                <button class="filter-btn active" data-status="all">All Orders</button>
+                <button class="filter-btn" data-status="processing">Processing</button>
+                <button class="filter-btn" data-status="dispatched">Dispatched</button>
+                <button class="filter-btn" data-status="delivered">Delivered</button>
+                <button class="filter-btn" data-status="cancelled">Cancelled</button>
+            </div>
+        </div>
+
+        <div class="table-responsive">
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>Order ID</th>
+                        <th>Customer Contact</th>
+                        <th>Ordered Items</th>
+                        <th>Total</th>
+                        <th>Status</th>
+                        <th style="text-align: right;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="adminOrdersTbody">
+                    <!-- ORDER 1 -->
+                    <tr data-status="processing">
+                        <td><strong>#AAD-1048</strong></td>
+                        <td>
+                            <div class="client-contact-info">
+                                <strong>Ananya Sharma</strong>
+                                <div class="contact-links">
+                                    <a href="https://wa.me/919824292270?text=Hello%20Ananya,%20regarding%20your%20AADYA%20order%20%23AAD-1048" target="_blank" class="contact-btn whatsapp" title="Chat on WhatsApp">💬 WhatsApp</a>
+                                    <a href="mailto:customer@example.com?subject=AADYA%20Order%20%23AAD-1048%20Update" class="contact-btn email" title="Send Email">✉️ Email</a>
+                                </div>
+                            </div>
+                        </td>
+                        <td>Kesar Chandan (12ml), Oud Al Noor (6ml)</td>
+                        <td>₹1,097.40</td>
+                        <td><span class="status-pill status-processing">Processing</span></td>
+                        <td style="text-align: right;">
+                            <button class="btn-outline admin-sm-btn" onclick="updateOrderStatus(this, 'dispatched')">Mark Dispatched</button>
+                            <button class="btn-outline admin-sm-btn btn-danger" onclick="rejectOrder(this, '#AAD-1048')">Reject Order</button>
+                        </td>
+                    </tr>
+
+                    <!-- ORDER 2 -->
+                    <tr data-status="dispatched">
+                        <td><strong>#AAD-1047</strong></td>
+                        <td>
+                            <div class="client-contact-info">
+                                <strong>Priya S.</strong>
+                                <div class="contact-links">
+                                    <a href="https://wa.me/919824292270?text=Hello%20Priya,%20regarding%20your%20AADYA%20order%20%23AAD-1047" target="_blank" class="contact-btn whatsapp">💬 WhatsApp</a>
+                                    <a href="mailto:priya@example.com?subject=AADYA%20Order%20%23AAD-1047" class="contact-btn email">✉️ Email</a>
+                                </div>
+                            </div>
+                        </td>
+                        <td>Turkish Rose (12ml)</td>
+                        <td>₹885.00</td>
+                        <td><span class="status-pill status-dispatched">Dispatched</span></td>
+                        <td style="text-align: right;">
+                            <button class="btn-outline admin-sm-btn" onclick="updateOrderStatus(this, 'delivered')">Mark Delivered</button>
+                            <button class="btn-outline admin-sm-btn btn-danger" onclick="rejectOrder(this, '#AAD-1047')">Reject Order</button>
+                        </td>
+                    </tr>
+
+                    <!-- ORDER 3 -->
+                    <tr data-status="delivered">
+                        <td><strong>#AAD-1046</strong></td>
+                        <td>
+                            <div class="client-contact-info">
+                                <strong>Rahul M.</strong>
+                                <div class="contact-links">
+                                    <a href="https://wa.me/919824292270?text=Hello%20Rahul,%20regarding%20your%20AADYA%20order%20%23AAD-1046" target="_blank" class="contact-btn whatsapp">💬 WhatsApp</a>
+                                    <a href="mailto:rahul@example.com?subject=AADYA%20Order%20%23AAD-1046" class="contact-btn email">✉️ Email</a>
+                                </div>
+                            </div>
+                        </td>
+                        <td>Black Oud (12ml)</td>
+                        <td>₹1,298.00</td>
+                        <td><span class="status-pill status-delivered">Delivered</span></td>
+                        <td style="text-align: right;">
+                            <span class="status-text-completed">Completed</span>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+
+<!-- ADD PRODUCT SLIDING DRAWER -->
+<div class="drawer-overlay" id="addProductOverlay" onclick="closeAddProductDrawer()"></div>
+
+<div class="product-drawer" id="addProductDrawer">
+    <button class="drawer-close-btn" onclick="closeAddProductDrawer()">&times;</button>
+
+    <div class="drawer-content">
+        <span class="drawer-tagline">OBJECTIVE (C): CATALOGING</span>
+        <h2 class="drawer-title">Add New Fragrance</h2>
+        <p class="drawer-desc">Add a new 100% alcohol-free attar or EDP blend to the store database.</p>
+
+        <form id="addProductForm" onsubmit="handleCreateProduct(event)" class="auth-form">
+            <div class="form-group">
+                <label for="prodName">Fragrance Title</label>
+                <input type="text" id="prodName" class="custom-input" placeholder="e.g. Royal Sandalwood" required />
+            </div>
+
+            <div class="form-group">
+                <label for="prodCategory">Fragrance Family Category</label>
+                <select id="prodCategory" class="custom-select" required>
+                    <option value="oud">Oud & Heritage</option>
+                    <option value="fresh">Aquatic & Fresh</option>
+                    <option value="floral">Floral & Rose</option>
+                    <option value="gourmand">Gourmand & Amber</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="prodFamily">Notes Summary</label>
+                <input type="text" id="prodFamily" class="custom-input" placeholder="Top • Heart • Base (e.g. Saffron • Amber)" required />
+            </div>
+
+            <div class="size-qty-row">
+                <div class="form-group" style="flex: 1; margin-right: 0.5rem;">
+                    <label for="prodPrice6">6ml Price (₹)</label>
+                    <input type="number" id="prodPrice6" class="custom-input" placeholder="200" required />
+                </div>
+                <div class="form-group" style="flex: 1;">
+                    <label for="prodPrice12">12ml Price (₹)</label>
+                    <input type="number" id="prodPrice12" class="custom-input" placeholder="350" required />
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="prodDesc">Detailed Scent Profile & Ingredients</label>
+                <textarea id="prodDesc" class="custom-input custom-textarea" rows="3" placeholder="Describe botanical ingredients, oil density, and scent experience..." required></textarea>
+            </div>
+
+            <button type="submit" class="btn-gold checkout-btn" style="margin-top: 1rem;">SAVE TO CATALOG</button>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // --- 1. SLIDING DRAWER CONTROL ---
+        function openAddProductDrawer() {
+            document.getElementById('addProductOverlay').classList.add('open');
+            document.getElementById('addProductDrawer').classList.add('open');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeAddProductDrawer() {
+            document.getElementById('addProductOverlay').classList.remove('open');
+            document.getElementById('addProductDrawer').classList.remove('open');
+            document.body.style.overflow = 'auto';
+        }
+
+        function handleCreateProduct(e) {
+            e.preventDefault();
+            const name = document.getElementById('prodName').value;
+            alert(`Fragrance "${name}" successfully saved to catalog database!`);
+            closeAddProductDrawer();
+            document.getElementById('addProductForm').reset();
+        }
+
+        // --- 2. REJECT ORDER WITH VALID REASON ---
+        function rejectOrder(btn, orderId) {
+            const reason = prompt(`Please provide a valid reason for rejecting Order ${orderId}:`);
+            if (reason !== null && reason.trim() !== "") {
+                const tr = btn.closest('tr');
+                tr.dataset.status = "cancelled";
+
+                const statusTd = tr.children[4];
+                statusTd.innerHTML = `<span class="status-pill status-cancelled">Cancelled</span><br><small style="color:#d32f2f; font-size:0.7rem;">Reason: ${reason}</small>`;
+
+                const actionTd = tr.children[5];
+                actionTd.innerHTML = `<span style="font-size:0.75rem; color:#888;">Order Rejected</span>`;
+
+                alert(`Order ${orderId} cancelled. Reason logged: "${reason}"`);
+            } else if (reason !== null) {
+                alert("A valid rejection reason is required.");
+            }
+        }
+
+        // --- 3. STATUS UPDATE ---
+        function updateOrderStatus(btn, newStatus) {
+            const tr = btn.closest('tr');
+            tr.dataset.status = newStatus;
+
+            const statusTd = tr.children[4];
+            statusTd.innerHTML = `<span class="status-pill status-${newStatus}">${newStatus.charAt(0).toUpperCase() + newStatus.slice(1)}</span>`;
+
+            const actionTd = tr.children[5];
+            if (newStatus === 'dispatched') {
+                actionTd.innerHTML = `<button class="btn-outline admin-sm-btn" onclick="updateOrderStatus(this, 'delivered')">Mark Delivered</button>
+                                              <button class="btn-outline admin-sm-btn btn-danger" onclick="rejectOrder(this, '#AAD-1047')">Reject Order</button>`;
+            } else if (newStatus === 'delivered') {
+                actionTd.innerHTML = `<span class="status-text-completed">Completed</span>`;
+            }
+        }
+
+        // --- 4. ORDER FILTERING ---
+        const orderFilterPills = document.getElementById('orderFilterPills');
+        orderFilterPills.addEventListener('click', (e) => {
+            if (e.target.classList.contains('filter-btn')) {
+                document.querySelectorAll('#orderFilterPills .filter-btn').forEach(b => b.classList.remove('active'));
+                e.target.classList.add('active');
+
+                const selectedStatus = e.target.dataset.status;
+                const rows = document.querySelectorAll('#adminOrdersTbody tr');
+
+                rows.forEach(row => {
+                    if (selectedStatus === 'all' || row.dataset.status === selectedStatus) {
+                        row.style.display = '';
+                    } else {
+                        row.style.display = 'none';
+                    }
+                });
+            }
+        });
+    </script>
+}
