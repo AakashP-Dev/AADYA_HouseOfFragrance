@@ -602,3 +602,157 @@ footer a, footer p {
         width: 100%;
     }
 }
+
+/* ==========================================================================
+   AUTHENTICATION UI (LOGIN & REGISTER)
+   ========================================================================== */
+.auth-wrapper {
+    min-height: 75vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem 1.5rem;
+    background: url('/images/flat-ivory-texture.png') center/cover no-repeat;
+}
+
+.auth-card {
+    background-color: #FAF6EF;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    padding: 2.5rem 2rem;
+    width: 100%;
+    max-width: 480px;
+    box-shadow: 0 8px 24px rgba(59, 14, 20, 0.06);
+    box-sizing: border-box;
+}
+
+.auth-tagline {
+    font-size: 0.75rem;
+    letter-spacing: 2px;
+    color: var(--deep-burgundy);
+    font-weight: 600;
+    display: block;
+    text-align: center;
+    margin-bottom: 0.4rem;
+    text-transform: uppercase;
+}
+
+.auth-title {
+    font-family: var(--font-heading);
+    font-size: 1.8rem;
+    color: var(--deep-burgundy);
+    text-align: center;
+    margin: 0 0 0.5rem 0;
+}
+
+.auth-subtitle {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    text-align: center;
+    line-height: 1.5;
+    margin-bottom: 2rem;
+}
+
+.auth-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+    .form-group label {
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: var(--deep-burgundy);
+        letter-spacing: 0.5px;
+    }
+
+.custom-textarea {
+    resize: vertical;
+    font-family: var(--font-body);
+}
+
+.form-options {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.8rem;
+}
+
+.checkbox-container {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    color: var(--text-dark);
+    cursor: pointer;
+}
+
+.forgot-link {
+    font-size: 0.8rem;
+    color: var(--deep-burgundy) !important;
+}
+
+.auth-btn-submit {
+    width: 100%;
+    padding: 0.8rem !important;
+    font-size: 0.8rem !important;
+    margin-top: 0.5rem;
+}
+
+.auth-footer-text {
+    text-align: center;
+    margin-top: 1.8rem;
+    padding-top: 1.2rem;
+    border-top: 1px solid var(--border-color);
+    font-size: 0.82rem;
+    color: var(--text-muted);
+}
+
+    .auth-footer-text a {
+        font-weight: 600;
+    }
+
+@media screen and (max-width: 575px) {
+    .auth-card {
+        padding: 1.8rem 1.2rem;
+    }
+}
+
+/* Password Toggle Field Styling */
+.password-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+    .password-wrapper .custom-input {
+        padding-right: 2.8rem;
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+.toggle-password-btn {
+    position: absolute;
+    right: 0.6rem;
+    background: transparent;
+    border: none;
+    color: var(--deep-burgundy);
+    cursor: pointer;
+    padding: 0.4rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0.7;
+    transition: var(--transition);
+}
+
+    .toggle-password-btn:hover {
+        opacity: 1;
+        color: var(--champagne-gold);
+    }

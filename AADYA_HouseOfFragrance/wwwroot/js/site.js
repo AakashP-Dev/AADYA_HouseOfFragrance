@@ -1,4 +1,15 @@
-﻿// Please see documentation at https://learn.microsoft.com/aspnet/core/client-side/bundling-and-minification
-// for details on configuring this project to bundle and minify static web assets.
+﻿function togglePasswordVisibility(inputId, btn) {
+    const input = document.getElementById(inputId);
+    const eyeOff = btn.querySelector('.eye-off');
+    const eyeOn = btn.querySelector('.eye-on');
 
-// Write your JavaScript code.
+    if (input.type === 'password') {
+        input.type = 'text';
+        eyeOff.style.display = 'none';
+        eyeOn.style.display = 'block';
+    } else {
+        input.type = 'password';
+        eyeOff.style.display = 'block';
+        eyeOn.style.display = 'none';
+    }
+}
