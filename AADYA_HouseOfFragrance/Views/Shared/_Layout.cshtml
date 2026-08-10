@@ -66,8 +66,8 @@
 
         <div class="footer-bottom">
             &copy; 2026 AADYA: The House of Fragrance. All Rights Reserved.
-            <!-- Hidden Admin Portal Trigger -->
-            <a asp-controller="Admin" asp-action="Dashboard" style="color: transparent !important; text-decoration: none !important; font-size: 0.7rem; cursor: default;" title="Admin Access">.</a>
+            <!-- Admin Portal Access - Hidden from regular users -->
+            <a asp-controller="Admin" asp-action="Dashboard" class="admin-hidden-link" title="Admin Access">⚙️</a>
         </div>
     </footer>
 

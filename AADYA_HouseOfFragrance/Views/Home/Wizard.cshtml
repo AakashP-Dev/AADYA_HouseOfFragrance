@@ -7,7 +7,7 @@
         <span class="wizard-tagline">OBJECTIVE (A): INTERACTIVE CUSTOMIZATION</span>
         <h1 class="wizard-title">The Personal Olfactory Wizard</h1>
         <p class="wizard-subtitle">
-            Answer 3 quick questions about your personality and preferences, and our algorithm will recommend your ideal signature attar.
+            Answer 3 quick questions and let our AI recommend your ideal signature attar.
         </p>
     </div>
 </section>
@@ -15,7 +15,7 @@
 <section class="section-padding" style="padding-top: 2.5rem; min-height: 65vh;">
     <div class="wizard-card">
 
-        <!-- STEP INDICATOR BAR -->
+        <!-- STEP INDICATOR -->
         <div class="wizard-steps-indicator">
             <div class="step-dot active" id="stepDot1">1</div>
             <div class="step-line" id="stepLine1"></div>
@@ -24,136 +24,48 @@
             <div class="step-dot" id="stepDot3">3</div>
         </div>
 
-        <!-- QUESTION STEP 1: PREFERRED SCENT VIBE -->
+        <!-- STEP 1: SCENT FAMILY -->
         <div class="wizard-step-content" id="quizStep1">
-            <h2 class="quiz-question-title">1. Which scent atmosphere do you naturally gravitiate towards?</h2>
+            <h2 class="quiz-question-title">1. Which scent atmosphere do you gravitate towards?</h2>
             <p class="quiz-question-sub">Select the primary profile that matches your taste:</p>
-
             <div class="quiz-options-grid">
-                <label class="quiz-option-card">
-                    <input type="radio" name="vibe" value="oud" checked />
-                    <div class="option-inner">
-                        <span class="option-icon">👑</span>
-                        <h3>Rich & Regal Oud</h3>
-                        <p>Smoky woods, deep resinous amber, authentic oriental heritage.</p>
-                    </div>
-                </label>
-
-                <label class="quiz-option-card">
-                    <input type="radio" name="vibe" value="fresh" />
-                    <div class="option-inner">
-                        <span class="option-icon">🌊</span>
-                        <h3>Crisp & Aquatic Fresh</h3>
-                        <p>Cool ocean breeze, energetic citrus, clean linen feels.</p>
-                    </div>
-                </label>
-
-                <label class="quiz-option-card">
-                    <input type="radio" name="vibe" value="floral" />
-                    <div class="option-inner">
-                        <span class="option-icon">🌹</span>
-                        <h3>Graceful & Romantic Floral</h3>
-                        <p>Blooming Turkish rose, white jasmine petals, delicate sweetness.</p>
-                    </div>
-                </label>
-
-                <label class="quiz-option-card">
-                    <input type="radio" name="vibe" value="gourmand" />
-                    <div class="option-inner">
-                        <span class="option-icon">✨</span>
-                        <h3>Warm & Sweet Gourmand</h3>
-                        <p>Golden honey, creamy sandalwood, dark cocoa sweetness.</p>
-                    </div>
-                </label>
+                <label class="quiz-option-card"><input type="radio" name="vibe" value="Woody" checked /><div class="option-inner"><span class="option-icon">👑</span><h3>Rich & Regal Oud</h3><p>Smoky woods, deep amber, oriental heritage.</p></div></label>
+                <label class="quiz-option-card"><input type="radio" name="vibe" value="Citrus" /><div class="option-inner"><span class="option-icon">🌊</span><h3>Crisp & Aquatic Fresh</h3><p>Cool ocean breeze, energetic citrus.</p></div></label>
+                <label class="quiz-option-card"><input type="radio" name="vibe" value="Floral" /><div class="option-inner"><span class="option-icon">🌹</span><h3>Graceful & Romantic Floral</h3><p>Blooming rose, white jasmine.</p></div></label>
+                <label class="quiz-option-card"><input type="radio" name="vibe" value="Spicy" /><div class="option-inner"><span class="option-icon">✨</span><h3>Warm & Spicy Gourmand</h3><p>Golden honey, creamy sandalwood.</p></div></label>
             </div>
-
-            <div class="quiz-actions">
-                <div></div>
-                <button type="button" class="btn-gold" onclick="nextQuizStep(2)">NEXT STEP &rarr;</button>
-            </div>
+            <div class="quiz-actions"><div></div><button type="button" class="btn-gold" onclick="nextQuizStep(2)">NEXT STEP &rarr;</button></div>
         </div>
 
-        <!-- QUESTION STEP 2: PRIMARY OCCASION -->
+        <!-- STEP 2: OCCASION -->
         <div class="wizard-step-content" id="quizStep2" style="display: none;">
-            <h2 class="quiz-question-title">2. When do you plan on wearing this fragrance most?</h2>
-            <p class="quiz-question-sub">We tailor scent longevity and projection based on your routine:</p>
-
+            <h2 class="quiz-question-title">2. When do you plan on wearing this fragrance?</h2>
+            <p class="quiz-question-sub">We tailor longevity and projection based on your routine:</p>
             <div class="quiz-options-grid">
-                <label class="quiz-option-card">
-                    <input type="radio" name="occasion" value="daily" checked />
-                    <div class="option-inner">
-                        <span class="option-icon">☀️</span>
-                        <h3>Daily Wear & Office</h3>
-                        <p>Subtle, clean, and refreshing scent profile for everyday confidence.</p>
-                    </div>
-                </label>
-
-                <label class="quiz-option-card">
-                    <input type="radio" name="occasion" value="evening" />
-                    <div class="option-inner">
-                        <span class="option-icon">🌙</span>
-                        <h3>Evening & Special Events</h3>
-                        <p>Deep, alluring projection meant to captivate special gatherings.</p>
-                    </div>
-                </label>
-
-                <label class="quiz-option-card">
-                    <input type="radio" name="occasion" value="spiritual" />
-                    <div class="option-inner">
-                        <span class="option-icon">🛕</span>
-                        <h3>Spiritual & Peaceful Rituals</h3>
-                        <p>Calming sandalwood, meditative saffron, and pure traditional notes.</p>
-                    </div>
-                </label>
+                <label class="quiz-option-card"><input type="radio" name="occasion" value="Daily" checked /><div class="option-inner"><span class="option-icon">☀️</span><h3>Daily Wear & Office</h3><p>Subtle, clean, and refreshing.</p></div></label>
+                <label class="quiz-option-card"><input type="radio" name="occasion" value="Evening" /><div class="option-inner"><span class="option-icon">🌙</span><h3>Evening & Special Events</h3><p>Deep, alluring projection.</p></div></label>
+                <label class="quiz-option-card"><input type="radio" name="occasion" value="Spiritual" /><div class="option-inner"><span class="option-icon">🛕</span><h3>Spiritual & Peaceful Rituals</h3><p>Calming sandalwood, meditative saffron.</p></div></label>
             </div>
-
-            <div class="quiz-actions">
-                <button type="button" class="btn-outline" onclick="prevQuizStep(1)">&larr; BACK</button>
-                <button type="button" class="btn-gold" onclick="nextQuizStep(3)">NEXT STEP &rarr;</button>
-            </div>
+            <div class="quiz-actions"><button type="button" class="btn-outline" onclick="prevQuizStep(1)">&larr; BACK</button><button type="button" class="btn-gold" onclick="nextQuizStep(3)">NEXT STEP &rarr;</button></div>
         </div>
 
-        <!-- QUESTION STEP 3: INTENSITY PREFERENCE -->
+        <!-- STEP 3: INTENSITY -->
         <div class="wizard-step-content" id="quizStep3" style="display: none;">
             <h2 class="quiz-question-title">3. What is your desired scent intensity & projection?</h2>
-            <p class="quiz-question-sub">Choose how close or bold you want your presence to feel:</p>
-
+            <p class="quiz-question-sub">Choose how bold you want your presence to feel:</p>
             <div class="quiz-options-grid">
-                <label class="quiz-option-card">
-                    <input type="radio" name="intensity" value="moderate" checked />
-                    <div class="option-inner">
-                        <span class="option-icon">🌿</span>
-                        <h3>Subtle & Intimate</h3>
-                        <p>Sits close to the skin. Personal aura that is noticed when near.</p>
-                    </div>
-                </label>
-
-                <label class="quiz-option-card">
-                    <input type="radio" name="intensity" value="strong" />
-                    <div class="option-inner">
-                        <span class="option-icon">🔥</span>
-                        <h3>Bold & Long-Lasting</h3>
-                        <p>Rich concentrated oil projection that leaves a memorable trail.</p>
-                    </div>
-                </label>
+                <label class="quiz-option-card"><input type="radio" name="intensity" value="Subtle" checked /><div class="option-inner"><span class="option-icon">🌿</span><h3>Subtle & Intimate</h3><p>Sits close to the skin.</p></div></label>
+                <label class="quiz-option-card"><input type="radio" name="intensity" value="Bold" /><div class="option-inner"><span class="option-icon">🔥</span><h3>Bold & Long-Lasting</h3><p>Rich concentration, leaves a memorable trail.</p></div></label>
             </div>
-
-            <div class="quiz-actions">
-                <button type="button" class="btn-outline" onclick="prevQuizStep(2)">&larr; BACK</button>
-                <button type="button" class="btn-gold" onclick="generateWizardResults()">DISCOVER MY SCENT ✨</button>
-            </div>
+            <div class="quiz-actions"><button type="button" class="btn-outline" onclick="prevQuizStep(2)">&larr; BACK</button><button type="button" class="btn-gold" onclick="generateWizardResults()">DISCOVER MY SCENT ✨</button></div>
         </div>
 
-        <!-- RESULTS DISPLAY CONTAINER -->
+        <!-- RESULTS CONTAINER -->
         <div id="wizardResultsContainer" style="display: none;" class="wizard-results-box">
             <span class="results-tagline">YOUR MATCHED OLFACTORY RECOMMENDATIONS</span>
             <h2 class="results-title">Tailored Just For You</h2>
             <p class="results-subtitle">Based on your selections, here are the top artisanal attars from our collection:</p>
-
-            <div class="product-grid" id="recommendedProductGrid" style="margin-top: 2rem;">
-                <!-- DYNAMICALLY POPULATED VIA JS -->
-            </div>
-
+            <div class="product-grid" id="recommendedProductGrid" style="margin-top: 2rem;"></div>
             <div style="text-align: center; margin-top: 2rem;">
                 <button type="button" class="btn-outline" onclick="restartWizard()">↺ RETAKE FRAGRANCE QUIZ</button>
             </div>
@@ -169,87 +81,114 @@
         function nextQuizStep(step) {
             document.getElementById('quizStep' + currentStep).style.display = 'none';
             document.getElementById('quizStep' + step).style.display = 'block';
-
             document.getElementById('stepDot' + step).classList.add('active');
             if (step === 2) document.getElementById('stepLine1').classList.add('active');
             if (step === 3) document.getElementById('stepLine2').classList.add('active');
-
             currentStep = step;
         }
 
         function prevQuizStep(step) {
             document.getElementById('quizStep' + currentStep).style.display = 'none';
             document.getElementById('quizStep' + step).style.display = 'block';
-
-            if (currentStep === 3) {
-                document.getElementById('stepDot3').classList.remove('active');
-                document.getElementById('stepLine2').classList.remove('active');
-            } else if (currentStep === 2) {
-                document.getElementById('stepDot2').classList.remove('active');
-                document.getElementById('stepLine1').classList.remove('active');
-            }
-
+            if (currentStep === 3) { document.getElementById('stepDot3').classList.remove('active'); document.getElementById('stepLine2').classList.remove('active'); }
+            if (currentStep === 2) { document.getElementById('stepDot2').classList.remove('active'); document.getElementById('stepLine1').classList.remove('active'); }
             currentStep = step;
         }
 
-        function generateWizardResults() {
-            const selectedVibe = document.querySelector('input[name="vibe"]:checked').value;
+        async function generateWizardResults() {
+            const vibe = document.querySelector('input[name="vibe"]:checked').value;
+            const occasion = document.querySelector('input[name="occasion"]:checked').value;
+            const intensity = document.querySelector('input[name="intensity"]:checked').value;
 
-            // Hide step 3 content and step indicators
+            // Hide step 3 and indicators
             document.getElementById('quizStep3').style.display = 'none';
             document.querySelector('.wizard-steps-indicator').style.display = 'none';
 
-            // Recommendation mapping based on selected vibe
-            const recommendations = {
-                oud: [
-                    { name: 'Kesar Chandan', family: 'Saffron • Sandalwood • Warm', price: '₹240.00 – ₹450.00', img: '/images/products/Kesar Chandan.jpeg' },
-                    { name: 'Black Oud', family: 'Oud • Woody • Dark', price: '₹600.00 – ₹1,100.00', img: '/images/products/Black Oud.jpeg' }
-                ],
-                fresh: [
-                    { name: 'Cool Water', family: 'Fresh • Aquatic', price: '₹150.00 – ₹250.00', img: '/images/products/Cool Water.jpeg' },
-                    { name: 'Midnight Ice', family: 'Cool • Aromatic • Fresh', price: '₹150.00 – ₹260.00', img: '/images/products/Midnight Ice.jpeg' }
-                ],
-                floral: [
-                    { name: 'Turkish Rose', family: 'Rose • Floral • Fresh', price: '₹390.00 – ₹750.00', img: '/images/products/Turkish Rose.jpeg' },
-                    { name: 'Jasmine', family: 'White Floral • Jasmine • Fresh', price: '₹135.00 – ₹225.00', img: '/images/products/Jasmine.jpeg' }
-                ],
-                gourmand: [
-                    { name: 'Honey Ember', family: 'Sweet • Warm • Amber', price: '₹150.00 – ₹260.00', img: '/images/products/Honey Ember.jpeg' },
-                    { name: 'Cairo Evening', family: 'Oriental • Woody • Warm', price: '₹135.00 – ₹225.00', img: '/images/products/Cairo Evening.jpeg' }
-                ]
-            };
+            // Construct payload for backend
+            const payload = { scentFamily: vibe, occasion: occasion, intensity: intensity };
 
-            const items = recommendations[selectedVibe] || recommendations['oud'];
+            try {
+                // TODO: Replace with actual API endpoint
+                const response = await fetch('/api/products/recommend', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                let recommendations;
+                if (!response.ok) throw new Error('Network response was not ok');
+                recommendations = await response.json();
+
+                // If API returns empty, use fallback (delete fallback in production)
+                if (!recommendations || recommendations.length === 0) {
+                    recommendations = getFallbackRecommendations(vibe);
+                }
+
+                renderRecommendations(recommendations);
+                document.getElementById('wizardResultsContainer').style.display = 'block';
+
+            } catch (error) {
+                console.error('Error fetching recommendations:', error);
+                // Fallback to hardcoded mapping for demo
+                const fallback = getFallbackRecommendations(vibe);
+                renderRecommendations(fallback);
+                document.getElementById('wizardResultsContainer').style.display = 'block';
+            }
+        }
+
+        function renderRecommendations(products) {
             const grid = document.getElementById('recommendedProductGrid');
             grid.innerHTML = '';
 
-            items.forEach(prod => {
+            if (!products || products.length === 0) {
+                grid.innerHTML = '<p style="color: var(--text-muted);">No exact matches found. Try adjusting your preferences!</p>';
+                return;
+            }
+
+            products.forEach(prod => {
+                // Determine price range for display
+                let priceDisplay = '₹0.00';
+                if (prod.variants && prod.variants.length > 0) {
+                    const prices = prod.variants.map(v => v.price);
+                    const min = Math.min(...prices);
+                    const max = Math.max(...prices);
+                    priceDisplay = min === max ? `₹${min}.00` : `₹${min}.00 – ₹${max}.00`;
+                }
+
+                const imgSrc = prod.imageUrl || 'https://via.placeholder.com/300x220?text=' + encodeURIComponent(prod.name);
+
                 grid.innerHTML += `
                             <div class="product-card">
-                                <img src="${prod.img}" alt="${prod.name}" onerror="this.src='https://via.placeholder.com/300x220?text=${encodeURIComponent(prod.name)}'" />
+                                <img src="${imgSrc}" alt="${prod.name}" onerror="this.src='https://via.placeholder.com/300x220?text=${encodeURIComponent(prod.name)}'" />
                                 <h3>${prod.name}</h3>
-                                <span class="scent-tag">${prod.family}</span>
-                                <div class="product-price">${prod.price}</div>
+                                <span class="scent-tag">${prod.scentFamily || 'Fragrance'}</span>
+                                <div class="product-price">${priceDisplay}</div>
                                 <a href="/Home/Catalog?highlight=${encodeURIComponent(prod.name)}" class="btn-gold">VIEW IN CATALOG</a>
                             </div>
                         `;
             });
-
-            document.getElementById('wizardResultsContainer').style.display = 'block';
         }
 
         function restartWizard() {
             document.getElementById('wizardResultsContainer').style.display = 'none';
             document.querySelector('.wizard-steps-indicator').style.display = 'flex';
-
-            // Reset indicators
             document.getElementById('stepDot2').classList.remove('active');
             document.getElementById('stepDot3').classList.remove('active');
             document.getElementById('stepLine1').classList.remove('active');
             document.getElementById('stepLine2').classList.remove('active');
-
             currentStep = 1;
             document.getElementById('quizStep1').style.display = 'block';
+        }
+
+        // --- FALLBACK RECOMMENDATIONS (DELETE IN PRODUCTION) ---
+        function getFallbackRecommendations(vibe) {
+            const map = {
+                'Woody': [{ productId: 2, name: "Black OUD", scentFamily: "Oud • Woody", variants: [{ price: 600 }, { price: 1100 }], imageUrl: "/images/products/Black OUD.jpeg" }],
+                'Citrus': [{ productId: 5, name: "Midnight Ice", scentFamily: "Cool • Aromatic", variants: [{ price: 150 }, { price: 260 }], imageUrl: "/images/products/Midnight Ice.jpeg" }],
+                'Floral': [{ productId: 4, name: "Turkish Rose", scentFamily: "Rose • Floral", variants: [{ price: 390 }, { price: 750 }], imageUrl: "/images/products/Turkish Rose.jpeg" }],
+                'Spicy': [{ productId: 1, name: "Kesar Chandan", scentFamily: "Saffron • Sandalwood", variants: [{ price: 240 }, { price: 450 }], imageUrl: "/images/products/Kesar Chandan.jpeg" }]
+            };
+            return map[vibe] || map['Woody'];
         }
     </script>
 }

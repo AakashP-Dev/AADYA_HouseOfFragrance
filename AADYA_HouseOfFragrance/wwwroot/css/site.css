@@ -1675,3 +1675,13 @@ footer a, footer p {
         grid-template-columns: 1fr;
     }
 }
+
+.cart-badge {
+    background-color: var(--champagne-gold);
+    color: var(--matte-black);
+    font-size: 0.65rem;
+    padding: 0.1rem 0.45rem;
+    border-radius: 50%;
+    margin-left: 0.2rem;
+    font-weight: 700;
+}
