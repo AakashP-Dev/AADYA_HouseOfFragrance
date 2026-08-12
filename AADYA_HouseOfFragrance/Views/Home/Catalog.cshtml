@@ -137,11 +137,16 @@
                 // Construct Image URL (use placeholder if missing)
                 const imgSrc = product.imageUrl || 'https://via.placeholder.com/300x220?text=' + encodeURIComponent(product.name);
 
+                // Calculate average price for sorting
+                const avgPrice = prices.reduce((a, b) => a + b, 0) / prices.length;
+
                 const card = document.createElement('div');
                 card.className = 'product-card';
                 card.dataset.name = product.name;
                 card.dataset.category = product.categoryName?.toLowerCase() || 'general';
                 card.dataset.productId = product.productId;
+                card.dataset.price = Math.round(avgPrice); // <-- ADD THIS for sorting
+                card.dataset.bought = product.totalSold || 0; // <-- ADD THIS for popularity sorting
 
                 card.innerHTML = `
                             <img src="${imgSrc}" alt="${product.name}" onerror="this.src='https://via.placeholder.com/300x220?text=${encodeURIComponent(product.name)}'" />
@@ -185,10 +190,12 @@
             // SORT VISIBLE CARDS (Re-order DOM)
             const visibleCards = cards.filter(c => c.style.display !== 'none');
             visibleCards.sort((a, b) => {
-                const priceA = parseInt(a.dataset.price) || 0; // We need to store price in dataset. We'll add this in render.
+                const priceA = parseInt(a.dataset.price) || 0;
                 const priceB = parseInt(b.dataset.price) || 0;
-                // For popularity, we need to fetch from API. For now, fallback to name.
-                if (sortVal === 'popular') return 0; // Placeholder
+                const boughtA = parseInt(a.dataset.bought) || 0;
+                const boughtB = parseInt(b.dataset.bought) || 0;
+
+                if (sortVal === 'popular') return boughtB - boughtA;
                 if (sortVal === 'low-high') return priceA - priceB;
                 if (sortVal === 'high-low') return priceB - priceA;
                 return 0;
@@ -344,6 +351,51 @@
                     }
                 }, 500);
             }
+        });
+
+        // --- Handle Category Filter from URL ---
+        function applyCategoryFromUrl() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const categoryParam = urlParams.get('category');
+
+            if (categoryParam) {
+                // Find the filter button with matching data-filter
+                const filterBtn = document.querySelector(`.filter-btn[data-filter="${categoryParam}"]`);
+                if (filterBtn) {
+                    // Remove active class from all filter buttons
+                    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                    // Add active class to matching button
+                    filterBtn.classList.add('active');
+                    // Update activeFilter variable
+                    activeFilter = categoryParam;
+                    // Re-apply filters (after products are loaded)
+                    setTimeout(applyFiltersAndSort, 100);
+                }
+            }
+        }
+
+        // Modify the DOMContentLoaded event listener to call applyCategoryFromUrl
+        window.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const highlightParam = urlParams.get('highlight');
+            if (highlightParam) {
+                setTimeout(() => {
+                    const targetCard = Array.from(document.querySelectorAll('.product-card')).find(c =>
+                        c.dataset.name.toLowerCase() === highlightParam.toLowerCase()
+                    );
+                    if (targetCard) {
+                        targetCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        targetCard.style.outline = '2px solid var(--champagne-gold)';
+                        setTimeout(() => {
+                            const btn = targetCard.querySelector('.quick-view-btn');
+                            if (btn) btn.click();
+                        }, 600);
+                    }
+                }, 500);
+            }
+
+            // ADD THIS LINE to apply category filter from URL
+            applyCategoryFromUrl();
         });
     </script>
 }

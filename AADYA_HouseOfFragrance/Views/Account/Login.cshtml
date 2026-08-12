@@ -47,3 +47,41 @@
         </div>
     </div>
 </section>
+
+@section Scripts {
+    <script>
+        // Remove the default form submission
+        document.querySelector('.auth-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const email = document.getElementById('Email').value;
+            const password = document.getElementById('Password').value;
+
+            try {
+                const response = await fetch('/api/account/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    // Save token and user info to localStorage
+                    localStorage.setItem('token', data.token);
+                    localStorage.setItem('userName', data.fullName);
+                    localStorage.setItem('userId', data.userId);
+
+                    alert('Login Successful! Welcome back, ' + data.fullName);
+                    // Redirect to Home Page
+                    window.location.href = '/';
+                } else {
+                    alert(data.message || 'Login failed. Please check your credentials.');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Network error. Please try again.');
+            }
+        });
+    </script>
+}

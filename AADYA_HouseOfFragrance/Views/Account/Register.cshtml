@@ -66,3 +66,42 @@
         </div>
     </div>
 </section>
+
+@section Scripts {
+    <script>
+        document.querySelector('.auth-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const fullName = document.getElementById('FullName').value;
+            const email = document.getElementById('Email').value;
+            const address = document.getElementById('Address').value;
+            const password = document.getElementById('Password').value;
+            const confirmPassword = document.getElementById('ConfirmPassword').value;
+
+            if (password !== confirmPassword) {
+                alert('Passwords do not match!');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/account/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ fullName, email, password, address })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    alert('Registration Successful! Please login.');
+                    window.location.href = '/Account/Login';
+                } else {
+                    alert(data.message || 'Registration failed. Please try again.');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Network error. Please try again.');
+            }
+        });
+    </script>
+}

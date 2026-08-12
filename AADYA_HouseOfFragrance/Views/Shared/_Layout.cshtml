@@ -26,9 +26,9 @@
             </ul>
 
             <div class="nav-actions">
-                <a asp-controller="Home" asp-action="Cart" class="btn-outline nav-btn">🛒 CART</a>
-                <a asp-controller="Account" asp-action="Login" class="nav-link-sign">SIGN IN</a>
-                <a asp-controller="Account" asp-action="Register" class="btn-gold nav-btn">REGISTER</a>
+                <a href="/Home/Cart" class="btn-outline nav-btn">🛒 CART</a>
+                <a href="/Account/Login" class="nav-link-sign">SIGN IN</a>
+                <a href="/Account/Register" class="btn-gold nav-btn">REGISTER</a>
             </div>
         </div>
     </nav>
@@ -46,15 +46,17 @@
 
             <div>
                 <h4>Collections</h4>
-                <p><a asp-controller="Home" asp-action="Catalog">Attars & Heritage Oud</a></p>
-                <p><a asp-controller="Home" asp-action="Catalog">Aquatic & Fresh</a></p>
-                <p><a asp-controller="Home" asp-action="Catalog">Gourmand & Amber</a></p>
+                <p><a href="/Home/Catalog?category=oud">Attars & Heritage Oud</a></p>
+                <p><a href="/Home/Catalog?category=fresh">Aquatic & Fresh</a></p>
+                <p><a href="/Home/Catalog?category=floral">Floral & Rose</a></p>
+                <p><a href="/Home/Catalog?category=gourmand">Gourmand & Amber</a></p>
+                <p><a href="/Home/Catalog">All Fragrances</a></p>
             </div>
 
             <div>
                 <h4>Account</h4>
-                <p><a asp-controller="Account" asp-action="Login">Sign In</a></p>
-                <p><a asp-controller="Account" asp-action="Register">Create Account</a></p>
+                <p><a href="/Account/Login">Sign In</a></p>
+                <p><a href="/Account/Register">Create Account</a></p>
             </div>
 
             <div>
