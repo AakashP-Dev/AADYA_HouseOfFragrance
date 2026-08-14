@@ -1685,3 +1685,10 @@ footer a, footer p {
     margin-left: 0.2rem;
     font-weight: 700;
 }
+
+.validation-error {
+    color: #d32f2f;
+    font-size: 0.8rem;
+    margin-top: 0.25rem;
+    display: none;
+}

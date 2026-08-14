@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AADYA_HouseOfFragrance.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260810050834_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20260812132947_SeedProductsData")]
+    partial class SeedProductsData
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

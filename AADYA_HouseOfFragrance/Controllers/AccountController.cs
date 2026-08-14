@@ -45,6 +45,15 @@ namespace AADYA_HouseOfFragrance.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterDto request)
         {
+            if (!ModelState.IsValid)
+            {
+                var errors = ModelState.Values
+                    .SelectMany(v => v.Errors)
+                    .Select(e => e.ErrorMessage)
+                    .ToList();
+                return BadRequest(new AuthResponseDto { Message = string.Join(" | ", errors) });
+            }
+
             var existingUser = await _context.Users.FirstOrDefaultAsync(u => u.Email == request.Email);
             if (existingUser != null)
             {
@@ -57,6 +66,7 @@ namespace AADYA_HouseOfFragrance.Controllers
             {
                 FullName = request.FullName,
                 Email = request.Email,
+                PhoneNumber = request.PhoneNumber,   // ← NEW
                 PasswordHash = passwordHash,
                 Address = request.Address,
                 CreatedAt = DateTime.Now

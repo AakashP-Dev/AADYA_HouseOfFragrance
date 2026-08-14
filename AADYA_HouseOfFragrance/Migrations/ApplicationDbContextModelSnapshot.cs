@@ -32,23 +32,6 @@ namespace AADYA_HouseOfFragrance.Migrations
                     b.HasKey("CategoryId");
 
                     b.ToTable("Categories");
-
-                    b.HasData(
-                        new
-                        {
-                            CategoryId = 1,
-                            CategoryName = "Signature Blends"
-                        },
-                        new
-                        {
-                            CategoryId = 2,
-                            CategoryName = "Attars & Oud"
-                        },
-                        new
-                        {
-                            CategoryId = 3,
-                            CategoryName = "Contemporary Fragrances"
-                        });
                 });
 
             modelBuilder.Entity("AADYA_HouseOfFragrance.Models.Entities.Order", b =>

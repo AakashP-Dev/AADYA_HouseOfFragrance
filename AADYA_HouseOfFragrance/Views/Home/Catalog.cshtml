@@ -90,26 +90,37 @@
         // --- GLOBAL STATE ---
         let allProducts = [];
         let activeFilter = 'all';
-        let currentDrawerVariants = []; // To hold variants of the product in drawer
+        let currentDrawerVariants = [];
 
         // --- 1. FETCH PRODUCTS FROM API ---
         async function loadProducts() {
             try {
-                // TODO: Replace with actual API endpoint when backend is ready
-                // For now, we simulate a fetch. In Week 7, this will hit /api/products
                 const response = await fetch('/api/products');
                 if (!response.ok) throw new Error('Network response was not ok');
                 allProducts = await response.json();
                 renderCatalog(allProducts);
             } catch (error) {
                 console.error('Failed to load products:', error);
-                // Fallback to hardcoded data if API is not ready (REMOVE THIS IN PRODUCTION)
                 allProducts = getFallbackProducts();
                 renderCatalog(allProducts);
             }
         }
 
-        // --- 2. RENDER PRODUCT GRID ---
+        // --- 2. MAP SCENT FAMILY TO FILTER GROUP ---
+        function getFilterGroup(product) {
+            const scent = (product.scentFamily || '').toLowerCase();
+
+            switch (scent) {
+                case 'woody': return 'oud';
+                case 'fresh':
+                case 'citrus': return 'fresh';
+                case 'floral': return 'floral';
+                case 'spicy': return 'gourmand';
+                default: return 'all';
+            }
+        }
+
+        // --- 3. RENDER PRODUCT GRID ---
         function renderCatalog(products) {
             const grid = document.getElementById('productGrid');
             const countLabel = document.getElementById('productCountLabel');
@@ -125,28 +136,22 @@
             document.getElementById('noResultsContainer').style.display = 'none';
             countLabel.innerText = `Showing ${products.length} Fragrance${products.length === 1 ? '' : 's'}`;
 
-            // Clear and rebuild grid
             grid.innerHTML = '';
             products.forEach(product => {
-                // Find the cheapest variant to display price range
                 const prices = product.variants.map(v => v.price);
                 const minPrice = Math.min(...prices);
                 const maxPrice = Math.max(...prices);
                 const priceDisplay = minPrice === maxPrice ? `₹${minPrice}.00` : `₹${minPrice}.00 – ₹${maxPrice}.00`;
-
-                // Construct Image URL (use placeholder if missing)
                 const imgSrc = product.imageUrl || 'https://via.placeholder.com/300x220?text=' + encodeURIComponent(product.name);
-
-                // Calculate average price for sorting
                 const avgPrice = prices.reduce((a, b) => a + b, 0) / prices.length;
 
                 const card = document.createElement('div');
                 card.className = 'product-card';
                 card.dataset.name = product.name;
-                card.dataset.category = product.categoryName?.toLowerCase() || 'general';
+                card.dataset.category = getFilterGroup(product);  // ← only one assignment
                 card.dataset.productId = product.productId;
-                card.dataset.price = Math.round(avgPrice); // <-- ADD THIS for sorting
-                card.dataset.bought = product.totalSold || 0; // <-- ADD THIS for popularity sorting
+                card.dataset.price = Math.round(avgPrice);
+                card.dataset.bought = product.totalSold || 0;
 
                 card.innerHTML = `
                             <img src="${imgSrc}" alt="${product.name}" onerror="this.src='https://via.placeholder.com/300x220?text=${encodeURIComponent(product.name)}'" />
@@ -158,11 +163,10 @@
                 grid.appendChild(card);
             });
 
-            // Re-apply filter/sort state after rendering
             applyFiltersAndSort();
         }
 
-        // --- 3. FILTER, SORT, SEARCH LOGIC ---
+        // --- 4. FILTER, SORT, SEARCH ---
         function applyFiltersAndSort() {
             const query = document.getElementById('searchInput').value.toLowerCase().trim();
             const sortVal = document.getElementById('sortSelect').value;
@@ -171,7 +175,8 @@
             let visibleCount = 0;
             cards.forEach(card => {
                 const name = card.dataset.name.toLowerCase();
-                const category = card.dataset.category;
+                const category = card.dataset.category;  // 'oud', 'fresh', 'floral', 'gourmand', or 'all'
+
                 const matchesFilter = (activeFilter === 'all' || category === activeFilter);
                 const matchesSearch = name.includes(query);
 
@@ -187,7 +192,6 @@
             document.getElementById('noResultsContainer').style.display = visibleCount === 0 ? 'block' : 'none';
             document.getElementById('productGrid').style.display = visibleCount === 0 ? 'none' : 'grid';
 
-            // SORT VISIBLE CARDS (Re-order DOM)
             const visibleCards = cards.filter(c => c.style.display !== 'none');
             visibleCards.sort((a, b) => {
                 const priceA = parseInt(a.dataset.price) || 0;
@@ -200,13 +204,11 @@
                 if (sortVal === 'high-low') return priceB - priceA;
                 return 0;
             });
-            // Append sorted cards back to grid
             visibleCards.forEach(card => document.getElementById('productGrid').appendChild(card));
         }
 
-        // --- 4. DRAWER: OPEN WITH PRODUCT ID ---
+        // --- 5. DRAWER FUNCTIONS ---
         async function openProductDrawer(productId) {
-            // Find product from allProducts array
             const product = allProducts.find(p => p.productId === productId);
             if (!product) return;
 
@@ -217,7 +219,6 @@
             document.getElementById('drawerDesc').innerText = product.description || 'A beautifully crafted artisanal attar.';
             document.getElementById('drawerImage').src = product.imageUrl || 'https://via.placeholder.com/300x220?text=' + encodeURIComponent(product.name);
 
-            // Render Variant Rows
             const container = document.getElementById('variantSelectorContainer');
             container.innerHTML = '';
             currentDrawerVariants.forEach((variant, index) => {
@@ -264,8 +265,7 @@
             const rows = document.querySelectorAll('#variantSelectorContainer .size-qty-row');
             rows.forEach(row => {
                 const price = parseFloat(row.dataset.price);
-                const qtyInput = row.querySelector('.qty-input');
-                const qty = parseInt(qtyInput.value);
+                const qty = parseInt(row.querySelector('.qty-input').value);
                 total += price * qty;
             });
             document.getElementById('drawerTotal').innerText = '₹' + total.toLocaleString('en-IN') + '.00';
@@ -289,13 +289,12 @@
                 return;
             }
 
-            // TODO: Send this to backend /api/cart
             console.log('Adding to cart:', items);
             alert('Items added to cart! (Backend integration coming in Week 9)');
             closeProductDrawer();
         }
 
-        // --- 5. EVENT LISTENERS ---
+        // --- 6. EVENT LISTENERS ---
         document.getElementById('searchInput').addEventListener('input', applyFiltersAndSort);
         document.getElementById('sortSelect').addEventListener('change', applyFiltersAndSort);
 
@@ -317,64 +316,34 @@
             applyFiltersAndSort();
         };
 
-        // --- 6. FALLBACK DATA (REMOVE IN PRODUCTION) ---
+        // --- 7. FALLBACK DATA (for testing only) ---
         function getFallbackProducts() {
-            // This is a condensed fallback just to show the UI works.
-            // You should delete this entire function once you connect to the real API.
             return [
-                { productId: 1, name: "Kesar Chandan", scentFamily: "Saffron • Sandalwood", categoryName: "Gourmand", description: "Luxurious warmth of saffron...", imageUrl: "/images/products/Kesar Chandan.jpeg", variants: [{ variantId: 101, size: "6ml", price: 240 }, { variantId: 102, size: "12ml", price: 450 }] },
-                { productId: 2, name: "Black OUD", scentFamily: "Oud • Woody", categoryName: "Oud", description: "Darkness refined into a fragrance.", imageUrl: "/images/products/Black OUD.jpeg", variants: [{ variantId: 201, size: "6ml", price: 600 }, { variantId: 202, size: "12ml", price: 1100 }] },
-                { productId: 3, name: "Cairo Evening", scentFamily: "Oriental • Woody", categoryName: "Gourmand", description: "Golden sunsets and ancient streets.", imageUrl: "/images/products/Cairo Evening.jpeg", variants: [{ variantId: 301, size: "6ml", price: 135 }, { variantId: 302, size: "12ml", price: 225 }] },
-                { productId: 4, name: "Turkish Rose", scentFamily: "Rose • Floral", categoryName: "Floral", description: "Timeless beauty of blooming roses.", imageUrl: "/images/products/Turkish Rose.jpeg", variants: [{ variantId: 401, size: "6ml", price: 390 }, { variantId: 402, size: "12ml", price: 750 }] }
+                { productId: 1, name: "Kesar Chandan", scentFamily: "Spicy", categoryName: "Signature Blends", description: "Luxurious warmth of saffron...", imageUrl: "/images/products/Kesar Chandan.jpeg", variants: [{ variantId: 101, size: "6ml", price: 240 }, { variantId: 102, size: "12ml", price: 450 }] },
+                { productId: 2, name: "Black OUD", scentFamily: "Woody", categoryName: "Attars & Oud", description: "Darkness refined into a fragrance.", imageUrl: "/images/products/Black OUD.jpeg", variants: [{ variantId: 201, size: "6ml", price: 600 }, { variantId: 202, size: "12ml", price: 1100 }] },
+                { productId: 3, name: "Cairo Evening", scentFamily: "Spicy", categoryName: "Signature Blends", description: "Golden sunsets and ancient streets.", imageUrl: "/images/products/Cairo Evening.jpeg", variants: [{ variantId: 301, size: "6ml", price: 135 }, { variantId: 302, size: "12ml", price: 225 }] },
+                { productId: 4, name: "Turkish Rose", scentFamily: "Floral", categoryName: "Signature Blends", description: "Timeless beauty of blooming roses.", imageUrl: "/images/products/Turkish Rose.jpeg", variants: [{ variantId: 401, size: "6ml", price: 390 }, { variantId: 402, size: "12ml", price: 750 }] }
             ];
         }
 
-        // --- INITIALIZE ---
-        loadProducts();
-
-        // Handle Deep Link Highlight
-        window.addEventListener('DOMContentLoaded', () => {
-            const urlParams = new URLSearchParams(window.location.search);
-            const highlightParam = urlParams.get('highlight');
-            if (highlightParam) {
-                setTimeout(() => {
-                    const targetCard = Array.from(document.querySelectorAll('.product-card')).find(c =>
-                        c.dataset.name.toLowerCase() === highlightParam.toLowerCase()
-                    );
-                    if (targetCard) {
-                        targetCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                        targetCard.style.outline = '2px solid var(--champagne-gold)';
-                        setTimeout(() => {
-                            const btn = targetCard.querySelector('.quick-view-btn');
-                            if (btn) btn.click();
-                        }, 600);
-                    }
-                }, 500);
-            }
-        });
-
-        // --- Handle Category Filter from URL ---
+        // --- 8. URL CATEGORY FILTER (from footer) ---
         function applyCategoryFromUrl() {
             const urlParams = new URLSearchParams(window.location.search);
             const categoryParam = urlParams.get('category');
-
             if (categoryParam) {
-                // Find the filter button with matching data-filter
                 const filterBtn = document.querySelector(`.filter-btn[data-filter="${categoryParam}"]`);
                 if (filterBtn) {
-                    // Remove active class from all filter buttons
                     document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-                    // Add active class to matching button
                     filterBtn.classList.add('active');
-                    // Update activeFilter variable
                     activeFilter = categoryParam;
-                    // Re-apply filters (after products are loaded)
                     setTimeout(applyFiltersAndSort, 100);
                 }
             }
         }
 
-        // Modify the DOMContentLoaded event listener to call applyCategoryFromUrl
+        // --- 9. INIT ---
+        loadProducts();
+
         window.addEventListener('DOMContentLoaded', () => {
             const urlParams = new URLSearchParams(window.location.search);
             const highlightParam = urlParams.get('highlight');
@@ -393,8 +362,6 @@
                     }
                 }, 500);
             }
-
-            // ADD THIS LINE to apply category filter from URL
             applyCategoryFromUrl();
         });
     </script>
