@@ -1,0 +1,76 @@
+﻿@{
+    ViewData["Title"] = "My Orders - AADYA";
+}
+
+<section class="section-padding" style="min-height: 70vh;">
+    <h1 style="font-family:var(--font-heading); color:var(--deep-burgundy);">My Orders</h1>
+    <div id="ordersContainer" style="margin-top: 2rem;">
+        <!-- Orders will be loaded here via JS -->
+    </div>
+</section>
+
+@section Scripts {
+    <script>
+        async function loadOrders() {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                document.getElementById('ordersContainer').innerHTML = `
+                            <p>Please <a href="/Account/Login">login</a> to view your orders.</p>
+                        `;
+                return;
+            }
+            try {
+                const res = await fetch('/api/orders', {
+                    headers: { 'Authorization': 'Bearer ' + token }
+                });
+                if (!res.ok) throw new Error('Failed to fetch orders');
+                const orders = await res.json();
+                renderOrders(orders);
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('ordersContainer').innerHTML = '<p style="color:red;">Failed to load orders.</p>';
+            }
+        }
+
+        function renderOrders(orders) {
+            const container = document.getElementById('ordersContainer');
+            if (!orders || orders.length === 0) {
+                container.innerHTML = `
+                            <div style="text-align:center; padding:3rem;">
+                                <p>You have no orders yet.</p>
+                                <a href="/Home/Catalog" class="btn-gold">Start Shopping</a>
+                            </div>
+                        `;
+                return;
+            }
+
+            let html = '';
+            orders.forEach(order => {
+                html += `
+                            <div style="background: #FAF6EF; border:1px solid var(--border-color); border-radius:4px; padding:1.5rem; margin-bottom:1.5rem;">
+                                <div style="display:flex; justify-content:space-between; flex-wrap:wrap;">
+                                    <div>
+                                        <strong>Order #${order.orderId}</strong>
+                                        <span style="margin-left:1rem; color:var(--text-muted);">${new Date(order.createdAt).toLocaleDateString()}</span>
+                                    </div>
+                                    <span class="status-pill status-${order.orderStatus.toLowerCase()}">${order.orderStatus}</span>
+                                </div>
+                                <div style="margin-top:0.5rem;">
+                                    <p><strong>Total:</strong> ₹${order.totalAmount.toFixed(2)}</p>
+                                    <p><strong>Shipping:</strong> ${order.shippingAddress}</p>
+                                </div>
+                                <div style="margin-top:0.5rem;">
+                                    <h5>Items:</h5>
+                                    <ul style="list-style:none; padding:0;">
+                                        ${order.items.map(item => `<li>${item.productName} (${item.size}) × ${item.quantity} = ₹${item.total.toFixed(2)}</li>`).join('')}
+                                    </ul>
+                                </div>
+                            </div>
+                        `;
+            });
+            container.innerHTML = html;
+        }
+
+        document.addEventListener('DOMContentLoaded', loadOrders);
+    </script>
+}
