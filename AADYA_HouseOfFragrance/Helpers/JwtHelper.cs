@@ -15,9 +15,8 @@ namespace AADYA_HouseOfFragrance.Helpers
             _configuration = configuration;
         }
 
-        public string GenerateToken(User user)
+        public string GenerateToken(User user, bool rememberMe = false)
         {
-            // Check if JWT Key exists in appsettings.json
             var jwtKey = _configuration["Jwt:Key"];
             if (string.IsNullOrEmpty(jwtKey))
             {
@@ -34,11 +33,14 @@ namespace AADYA_HouseOfFragrance.Helpers
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
+            // Set expiration based on RememberMe flag
+            var expires = rememberMe ? DateTime.Now.AddDays(30) : DateTime.Now.AddHours(24); // 30 days or 1 day
+
             var token = new JwtSecurityToken(
                 issuer: _configuration["Jwt:Issuer"],
                 audience: _configuration["Jwt:Audience"],
                 claims: claims,
-                expires: DateTime.Now.AddDays(7),
+                expires: expires,
                 signingCredentials: creds
             );
 

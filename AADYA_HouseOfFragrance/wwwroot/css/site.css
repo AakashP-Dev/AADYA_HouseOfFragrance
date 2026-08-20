@@ -1692,3 +1692,15 @@ footer a, footer p {
     margin-top: 0.25rem;
     display: none;
 }
+
+@keyframes slideInTop {
+    from {
+        transform: translateY(-20px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}

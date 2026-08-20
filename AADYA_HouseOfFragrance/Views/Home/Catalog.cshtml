@@ -148,18 +148,18 @@
                 const card = document.createElement('div');
                 card.className = 'product-card';
                 card.dataset.name = product.name;
-                card.dataset.category = getFilterGroup(product);  // ← only one assignment
+                card.dataset.category = getFilterGroup(product);
                 card.dataset.productId = product.productId;
                 card.dataset.price = Math.round(avgPrice);
                 card.dataset.bought = product.totalSold || 0;
 
                 card.innerHTML = `
-                            <img src="${imgSrc}" alt="${product.name}" onerror="this.src='https://via.placeholder.com/300x220?text=${encodeURIComponent(product.name)}'" />
-                            <h3>${product.name}</h3>
-                            <span class="scent-tag">${product.scentFamily || 'Fragrance'}</span>
-                            <div class="product-price">${priceDisplay}</div>
-                            <button class="btn-gold quick-view-btn" onclick="openProductDrawer(${product.productId})">VIEW DETAILS</button>
-                        `;
+                                    <img src="${imgSrc}" alt="${product.name}" onerror="this.src='https://via.placeholder.com/300x220?text=${encodeURIComponent(product.name)}'" />
+                                    <h3>${product.name}</h3>
+                                    <span class="scent-tag">${product.scentFamily || 'Fragrance'}</span>
+                                    <div class="product-price">${priceDisplay}</div>
+                                    <button class="btn-gold quick-view-btn" onclick="openProductDrawer(${product.productId})">VIEW DETAILS</button>
+                                `;
                 grid.appendChild(card);
             });
 
@@ -175,7 +175,7 @@
             let visibleCount = 0;
             cards.forEach(card => {
                 const name = card.dataset.name.toLowerCase();
-                const category = card.dataset.category;  // 'oud', 'fresh', 'floral', 'gourmand', or 'all'
+                const category = card.dataset.category;
 
                 const matchesFilter = (activeFilter === 'all' || category === activeFilter);
                 const matchesSearch = name.includes(query);
@@ -227,16 +227,16 @@
                 row.dataset.variantId = variant.variantId;
                 row.dataset.price = variant.price;
                 row.innerHTML = `
-                            <div class="size-info">
-                                <span class="size-title">${variant.size} Bottle</span>
-                                <span class="size-unit-price">₹${variant.price}.00</span>
-                            </div>
-                            <div class="qty-selector">
-                                <button type="button" class="qty-btn" onclick="updateDrawerQty(${index}, -1)">&minus;</button>
-                                <input type="text" id="drawerQty_${index}" value="${index === 0 ? 0 : 1}" readonly class="qty-input" />
-                                <button type="button" class="qty-btn" onclick="updateDrawerQty(${index}, 1)">&plus;</button>
-                            </div>
-                        `;
+                                    <div class="size-info">
+                                        <span class="size-title">${variant.size} Bottle</span>
+                                        <span class="size-unit-price">₹${variant.price}.00</span>
+                                    </div>
+                                    <div class="qty-selector">
+                                        <button type="button" class="qty-btn" onclick="updateDrawerQty(${index}, -1)">&minus;</button>
+                                        <input type="text" id="drawerQty_${index}" value="${index === 0 ? 0 : 1}" readonly class="qty-input" />
+                                        <button type="button" class="qty-btn" onclick="updateDrawerQty(${index}, 1)">&plus;</button>
+                                    </div>
+                                `;
                 container.appendChild(row);
             });
 
@@ -271,7 +271,8 @@
             document.getElementById('drawerTotal').innerText = '₹' + total.toLocaleString('en-IN') + '.00';
         }
 
-        function handleAddToCart() {
+        // --- 6. ADD TO CART (REAL API) WITH TOAST ---
+        async function handleAddToCart() {
             let items = [];
             const rows = document.querySelectorAll('#variantSelectorContainer .size-qty-row');
             rows.forEach(row => {
@@ -285,16 +286,78 @@
             });
 
             if (items.length === 0) {
-                alert("Please select at least one bottle quantity.");
+                showToast('Please select at least one bottle quantity.', 'error');
                 return;
             }
 
-            console.log('Adding to cart:', items);
-            alert('Items added to cart! (Backend integration coming in Week 9)');
-            closeProductDrawer();
+            const token = localStorage.getItem('token');
+            if (!token) {
+                showToast('Please login to add items to cart.', 'error');
+                return;
+            }
+
+            let addedCount = 0;
+            let failedItems = [];
+
+            const addPromises = items.map(item =>
+                fetch('/api/cart/add', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + token
+                    },
+                    body: JSON.stringify(item)
+                })
+                    .then(res => {
+                        if (res.ok) {
+                            addedCount++;
+                            return res.json();
+                        } else {
+                            return res.json().then(err => {
+                                failedItems.push({ variantId: item.variantId, error: err.message || 'Unknown error' });
+                            });
+                        }
+                    })
+                    .catch(err => {
+                        failedItems.push({ variantId: item.variantId, error: 'Network error' });
+                    })
+            );
+
+            await Promise.all(addPromises);
+
+            if (failedItems.length === 0) {
+                showToast(`Successfully added ${addedCount} item(s) to cart!`, 'success');
+                closeProductDrawer();
+                updateCartBadge();
+                // Update sticky tracker if implemented
+            } else {
+                showToast(`Added ${addedCount} item(s). Failed to add ${failedItems.length} item(s). Check console.`, 'error');
+                console.error(failedItems);
+            }
         }
 
-        // --- 6. EVENT LISTENERS ---
+        // --- 7. UPDATE CART BADGE (add this if missing) ---
+        async function updateCartBadge() {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                const badge = document.getElementById('cartCountBadge');
+                if (badge) badge.innerText = '0';
+                return;
+            }
+            try {
+                const res = await fetch('/api/cart', {
+                    headers: { 'Authorization': 'Bearer ' + token }
+                });
+                const data = await res.json();
+                const total = (data.items || []).reduce((s, i) => s + i.quantity, 0);
+                const badge = document.getElementById('cartCountBadge');
+                if (badge) badge.innerText = total;
+            } catch (e) {
+                console.error('Badge update error:', e);
+            }
+        }
+
+        // --- 8. EVENT LISTENERS ---
         document.getElementById('searchInput').addEventListener('input', applyFiltersAndSort);
         document.getElementById('sortSelect').addEventListener('change', applyFiltersAndSort);
 
@@ -307,7 +370,7 @@
             }
         });
 
-        window.resetCatalogFilters = function() {
+        window.resetCatalogFilters = function () {
             document.getElementById('searchInput').value = '';
             document.getElementById('sortSelect').value = 'popular';
             document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
@@ -316,7 +379,7 @@
             applyFiltersAndSort();
         };
 
-        // --- 7. FALLBACK DATA (for testing only) ---
+        // --- 9. FALLBACK DATA (for testing only) ---
         function getFallbackProducts() {
             return [
                 { productId: 1, name: "Kesar Chandan", scentFamily: "Spicy", categoryName: "Signature Blends", description: "Luxurious warmth of saffron...", imageUrl: "/images/products/Kesar Chandan.jpeg", variants: [{ variantId: 101, size: "6ml", price: 240 }, { variantId: 102, size: "12ml", price: 450 }] },
@@ -326,7 +389,7 @@
             ];
         }
 
-        // --- 8. URL CATEGORY FILTER (from footer) ---
+        // --- 10. URL CATEGORY FILTER (from footer) ---
         function applyCategoryFromUrl() {
             const urlParams = new URLSearchParams(window.location.search);
             const categoryParam = urlParams.get('category');
@@ -341,7 +404,7 @@
             }
         }
 
-        // --- 9. INIT ---
+        // --- 11. INIT ---
         loadProducts();
 
         window.addEventListener('DOMContentLoaded', () => {
@@ -363,6 +426,7 @@
                 }, 500);
             }
             applyCategoryFromUrl();
+            updateCartBadge();
         });
     </script>
 }

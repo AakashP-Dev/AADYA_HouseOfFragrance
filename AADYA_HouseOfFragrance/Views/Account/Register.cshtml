@@ -21,7 +21,6 @@
                 <span id="emailError" class="validation-error"></span>
             </div>
 
-            <!-- NEW PHONE NUMBER FIELD -->
             <div class="form-group">
                 <label for="PhoneNumber">Phone Number</label>
                 <input type="tel" id="PhoneNumber" name="PhoneNumber" class="custom-input" placeholder="9876543210" />
@@ -39,7 +38,14 @@
                 <div class="password-wrapper">
                     <input type="password" id="Password" name="Password" class="custom-input" placeholder="••••••••" />
                     <button type="button" class="toggle-password-btn" onclick="togglePasswordVisibility('Password', this)" aria-label="Toggle password visibility">
-                        <!-- SVG icons here (same as before) -->
+                        <svg class="eye-icon eye-off" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                            <line x1="1" y1="1" x2="23" y2="23"></line>
+                        </svg>
+                        <svg class="eye-icon eye-on" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="display: none;">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                            <circle cx="12" cy="12" r="3"></circle>
+                        </svg>
                     </button>
                 </div>
                 <span id="passwordError" class="validation-error"></span>
@@ -50,7 +56,14 @@
                 <div class="password-wrapper">
                     <input type="password" id="ConfirmPassword" name="ConfirmPassword" class="custom-input" placeholder="••••••••" />
                     <button type="button" class="toggle-password-btn" onclick="togglePasswordVisibility('ConfirmPassword', this)" aria-label="Toggle password visibility">
-                        <!-- SVG icons here (same as before) -->
+                        <svg class="eye-icon eye-off" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                            <line x1="1" y1="1" x2="23" y2="23"></line>
+                        </svg>
+                        <svg class="eye-icon eye-on" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="display: none;">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                            <circle cx="12" cy="12" r="3"></circle>
+                        </svg>
                     </button>
                 </div>
                 <span id="confirmError" class="validation-error"></span>
@@ -83,9 +96,8 @@
             }
         }
 
-        // Clear error messages on input
         document.querySelectorAll('#registerForm input, #registerForm textarea').forEach(el => {
-            el.addEventListener('input', function() {
+            el.addEventListener('input', function () {
                 const errorId = this.id + 'Error';
                 const errorSpan = document.getElementById(errorId);
                 if (errorSpan) {
@@ -95,16 +107,14 @@
             });
         });
 
-        document.getElementById('registerForm').addEventListener('submit', async function(e) {
+        document.getElementById('registerForm').addEventListener('submit', async function (e) {
             e.preventDefault();
 
-            // Reset all errors
             document.querySelectorAll('.validation-error').forEach(el => {
                 el.textContent = '';
                 el.style.display = 'none';
             });
 
-            // Get values
             const fullName = document.getElementById('FullName').value.trim();
             const email = document.getElementById('Email').value.trim();
             const phone = document.getElementById('PhoneNumber').value.trim();
@@ -114,7 +124,6 @@
 
             let isValid = true;
 
-            // Validate Full Name
             const nameRegex = /^[a-zA-Z\s]+$/;
             if (!nameRegex.test(fullName)) {
                 document.getElementById('nameError').textContent = 'Full name can only contain letters and spaces.';
@@ -122,7 +131,6 @@
                 isValid = false;
             }
 
-            // Validate Email
             const emailRegex = /^[^\s@@]+@@[^\s@@]+\.[^\s@@]+$/;
             if (!emailRegex.test(email)) {
                 document.getElementById('emailError').textContent = 'Please enter a valid email address.';
@@ -130,7 +138,6 @@
                 isValid = false;
             }
 
-            // Validate Phone Number (Indian 10-digit starting with 6,7,8,9)
             const phoneRegex = /^[6-9]\d{9}$/;
             if (!phoneRegex.test(phone)) {
                 document.getElementById('phoneError').textContent = 'Enter a valid 10-digit Indian mobile number starting with 6, 7, 8, or 9.';
@@ -138,7 +145,6 @@
                 isValid = false;
             }
 
-            // Validate Password
             const passRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\da-zA-Z]).{8,}$/;
             if (!passRegex.test(password)) {
                 document.getElementById('passwordError').textContent = 'Password must be at least 8 characters, include one uppercase, one lowercase, one number, and one special character.';
@@ -146,14 +152,12 @@
                 isValid = false;
             }
 
-            // Confirm Password
             if (password !== confirmPassword) {
                 document.getElementById('confirmError').textContent = 'Passwords do not match.';
                 document.getElementById('confirmError').style.display = 'block';
                 isValid = false;
             }
 
-            // Address
             if (address.length === 0) {
                 document.getElementById('addressError').textContent = 'Address is required.';
                 document.getElementById('addressError').style.display = 'block';
@@ -168,9 +172,8 @@
                 return;
             }
 
-            // Proceed with registration
             try {
-                const response = await fetch('/api/account/register', {
+                const response = await fetch('/Account/Register', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ fullName, email, phoneNumber: phone, password, address })
@@ -179,7 +182,7 @@
                 const data = await response.json();
 
                 if (response.ok) {
-                    alert('Registration Successful! Please login.');
+                    showToast('Registration Successful! Please login.', 'success');
                     window.location.href = '/Account/Login';
                 } else {
                     document.getElementById('emailError').textContent = data.message || 'Registration failed. Please try again.';

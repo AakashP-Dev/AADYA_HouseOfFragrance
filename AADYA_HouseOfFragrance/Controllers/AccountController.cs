@@ -8,9 +8,7 @@ using AADYA_HouseOfFragrance.Helpers;
 
 namespace AADYA_HouseOfFragrance.Controllers
 {
-    // REMOVED: [Route("api/[controller]")]
-    // REMOVED: [ApiController]
-    public class AccountController : Controller  // <--- CHANGED from ControllerBase to Controller
+    public class AccountController : Controller
     {
         private readonly ApplicationDbContext _context;
         private readonly JwtHelper _jwtHelper;
@@ -20,10 +18,6 @@ namespace AADYA_HouseOfFragrance.Controllers
             _context = context;
             _jwtHelper = jwtHelper;
         }
-
-        // ============================================================
-        // VIEW ACTIONS (Renders the HTML pages)
-        // ============================================================
 
         // GET: /Account/Login
         public IActionResult Login()
@@ -37,12 +31,8 @@ namespace AADYA_HouseOfFragrance.Controllers
             return View();
         }
 
-        // ============================================================
-        // API ENDPOINTS (For AJAX calls from the frontend)
-        // ============================================================
-
         // POST: /Account/Register
-        [HttpPost("register")]
+        [HttpPost]
         public async Task<IActionResult> Register([FromBody] RegisterDto request)
         {
             if (!ModelState.IsValid)
@@ -66,7 +56,7 @@ namespace AADYA_HouseOfFragrance.Controllers
             {
                 FullName = request.FullName,
                 Email = request.Email,
-                PhoneNumber = request.PhoneNumber,   // ← NEW
+                PhoneNumber = request.PhoneNumber,
                 PasswordHash = passwordHash,
                 Address = request.Address,
                 CreatedAt = DateTime.Now
@@ -85,7 +75,7 @@ namespace AADYA_HouseOfFragrance.Controllers
         }
 
         // POST: /Account/Login
-        [HttpPost("login")]
+        [HttpPost]
         public async Task<IActionResult> Login([FromBody] LoginDto request)
         {
             var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == request.Email);
@@ -100,7 +90,8 @@ namespace AADYA_HouseOfFragrance.Controllers
                 return Unauthorized(new AuthResponseDto { Message = "Invalid email or password." });
             }
 
-            var token = _jwtHelper.GenerateToken(user);
+            // Pass the RememberMe flag to token generation
+            var token = _jwtHelper.GenerateToken(user, request.RememberMe);
 
             return Ok(new AuthResponseDto
             {

@@ -97,6 +97,7 @@
 
             } catch (error) {
                 console.error('Failed to load dashboard:', error);
+                showToast('Failed to load dashboard data.', 'error');
             }
         }
 
@@ -113,32 +114,32 @@
                 let actionsHtml = '';
                 if (order.status === 'Processing') {
                     actionsHtml = `<button class="btn-outline admin-sm-btn" onclick="updateOrderStatus('${order.id}', 'Dispatched')">Mark Dispatched</button>
-                                           <button class="btn-outline admin-sm-btn btn-danger" onclick="rejectOrder('${order.id}')">Reject</button>`;
+                                                   <button class="btn-outline admin-sm-btn btn-danger" onclick="rejectOrder('${order.id}')">Reject</button>`;
                 } else if (order.status === 'Dispatched') {
                     actionsHtml = `<button class="btn-outline admin-sm-btn" onclick="updateOrderStatus('${order.id}', 'Delivered')">Mark Delivered</button>
-                                           <button class="btn-outline admin-sm-btn btn-danger" onclick="rejectOrder('${order.id}')">Reject</button>`;
+                                                   <button class="btn-outline admin-sm-btn btn-danger" onclick="rejectOrder('${order.id}')">Reject</button>`;
                 } else {
                     actionsHtml = `<span class="status-text-completed">Completed</span>`;
                 }
 
                 tr.innerHTML = `
-                            <td><strong>${order.id}</strong></td>
-                            <td><div class="client-contact-info"><strong>${order.customer}</strong><div class="contact-links"><a href="https://wa.me/919824292270?text=Hello%20${encodeURIComponent(order.customer)}" target="_blank" class="contact-btn whatsapp">💬 WhatsApp</a><a href="mailto:customer@example.com" class="contact-btn email">✉️ Email</a></div></div></td>
-                            <td>${order.items}</td>
-                            <td>₹${order.total.toFixed(2)}</td>
-                            <td><span class="status-pill status-${statusClass}">${order.status}</span></td>
-                            <td style="text-align: right;">${actionsHtml}</td>
-                        `;
+                                    <td><strong>${order.id}</strong></td>
+                                    <td><div class="client-contact-info"><strong>${order.customer}</strong><div class="contact-links"><a href="https://wa.me/919824292270?text=Hello%20${encodeURIComponent(order.customer)}" target="_blank" class="contact-btn whatsapp">💬 WhatsApp</a><a href="mailto:customer@example.com" class="contact-btn email">✉️ Email</a></div></div></td>
+                                    <td>${order.items}</td>
+                                    <td>₹${order.total.toFixed(2)}</td>
+                                    <td><span class="status-pill status-${statusClass}">${order.status}</span></td>
+                                    <td style="text-align: right;">${actionsHtml}</td>
+                                `;
                 tbody.appendChild(tr);
             });
         }
 
-        // --- 3. ORDER OPERATIONS (API CALLS) ---
+        // --- 3. ORDER OPERATIONS (API CALLS) with TOAST ---
         async function updateOrderStatus(orderId, newStatus) {
             if (!confirm(`Update ${orderId} to ${newStatus}?`)) return;
             try {
                 // TODO: await fetch(`/api/admin/orders/${orderId}/status`, { method: 'PUT', body: JSON.stringify({ status: newStatus }) });
-                alert(`[SIMULATED] ${orderId} updated to ${newStatus}.`);
+                showToast(`${orderId} updated to ${newStatus}.`, 'success');
                 // Refresh UI or update row manually
                 const rows = document.querySelectorAll('#adminOrdersTbody tr');
                 rows.forEach(row => {
@@ -150,13 +151,15 @@
                         const actionTd = row.children[5];
                         if (newStatus === 'Dispatched') {
                             actionTd.innerHTML = `<button class="btn-outline admin-sm-btn" onclick="updateOrderStatus('${orderId}', 'Delivered')">Mark Delivered</button>
-                                                           <button class="btn-outline admin-sm-btn btn-danger" onclick="rejectOrder('${orderId}')">Reject</button>`;
+                                                                   <button class="btn-outline admin-sm-btn btn-danger" onclick="rejectOrder('${orderId}')">Reject</button>`;
                         } else if (newStatus === 'Delivered') {
                             actionTd.innerHTML = `<span class="status-text-completed">Completed</span>`;
                         }
                     }
                 });
-            } catch (error) { alert('Failed to update status.'); }
+            } catch (error) {
+                showToast('Failed to update status.', 'error');
+            }
         }
 
         async function rejectOrder(orderId) {
@@ -164,7 +167,7 @@
             if (!reason || reason.trim() === "") return;
             try {
                 // TODO: await fetch(`/api/admin/orders/${orderId}/reject`, { method: 'PUT', body: JSON.stringify({ reason: reason }) });
-                alert(`[SIMULATED] ${orderId} rejected. Reason: ${reason}`);
+                showToast(`${orderId} rejected. Reason: ${reason}`, 'error');
                 // Remove or mark row
                 const rows = document.querySelectorAll('#adminOrdersTbody tr');
                 rows.forEach(row => {
@@ -175,10 +178,12 @@
                         row.children[5].innerHTML = `<span style="font-size:0.75rem;color:#888;">Rejected</span>`;
                     }
                 });
-            } catch (error) { alert('Failed to reject order.'); }
+            } catch (error) {
+                showToast('Failed to reject order.', 'error');
+            }
         }
 
-        // --- 4. ADD PRODUCT (API CALL) ---
+        // --- 4. ADD PRODUCT (API CALL) with TOAST ---
         async function handleCreateProduct(e) {
             e.preventDefault();
             const payload = {
@@ -192,12 +197,12 @@
 
             try {
                 // TODO: await fetch('/api/admin/products', { method: 'POST', body: JSON.stringify(payload) });
-                alert(`[SIMULATED] Fragrance "${payload.name}" saved to catalog!`);
+                showToast(`Fragrance "${payload.name}" saved to catalog!`, 'success');
                 closeAddProductDrawer();
                 document.getElementById('addProductForm').reset();
                 loadDashboardData(); // Refresh stats
             } catch (error) {
-                alert('Failed to add product.');
+                showToast('Failed to add product.', 'error');
             }
         }
 

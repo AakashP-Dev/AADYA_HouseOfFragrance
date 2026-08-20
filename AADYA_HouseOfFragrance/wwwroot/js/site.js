@@ -42,6 +42,35 @@ function logoutUser() {
         localStorage.removeItem('token');
         localStorage.removeItem('userName');
         localStorage.removeItem('userId');
+        showToast('You have been signed out.', 'success');
         window.location.href = '/';
     }
+}
+
+// Toast notification
+function showToast(message, type = 'success') {
+    const toast = document.createElement('div');
+    toast.className = 'toast-notification';
+    toast.textContent = message;
+    toast.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: ${type === 'success' ? '#2e7d32' : type === 'error' ? '#d32f2f' : '#856404'};
+        color: white;
+        padding: 12px 24px;
+        border-radius: 4px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        z-index: 9999;
+        font-family: var(--font-body);
+        font-size: 0.9rem;
+        max-width: 400px;
+        animation: slideInTop 0.5s ease;
+        transition: opacity 0.5s ease;
+    `;
+    document.body.appendChild(toast);
+    setTimeout(() => {
+        toast.style.opacity = '0';
+        setTimeout(() => toast.remove(), 500);
+    }, 3000);
 }
