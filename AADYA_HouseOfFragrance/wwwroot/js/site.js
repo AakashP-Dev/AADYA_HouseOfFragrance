@@ -5,38 +5,67 @@
 
     if (input.type === 'password') {
         input.type = 'text';
-        eyeOff.style.display = 'none';
-        eyeOn.style.display = 'block';
+        if (eyeOff) eyeOff.style.display = 'none';
+        if (eyeOn) eyeOn.style.display = 'block';
     } else {
         input.type = 'password';
-        eyeOff.style.display = 'block';
-        eyeOn.style.display = 'none';
+        if (eyeOff) eyeOff.style.display = 'block';
+        if (eyeOn) eyeOn.style.display = 'none';
     }
 }
 
-// Script to handle dynamic navbar state
+// --- NAVBAR STATE & DROPDOWN ---
 document.addEventListener('DOMContentLoaded', function () {
     const token = localStorage.getItem('token');
     const userName = localStorage.getItem('userName');
 
-    const navActions = document.querySelector('.nav-actions');
+    const loggedOut = document.getElementById('navLoggedOut');
+    const loggedIn = document.getElementById('navLoggedIn');
+    const userNameSpan = document.getElementById('navUserName');
 
     if (token && userName) {
-        navActions.innerHTML = `
-            <span style="color: var(--deep-burgundy); font-weight: 600; margin-right: 0.5rem;">👋 ${userName}</span>
-            <a href="/Home/Cart" class="btn-outline nav-btn">🛒 CART</a>
-            <a href="#" class="btn-gold nav-btn" onclick="logoutUser()">SIGN OUT</a>
-        `;
+        loggedOut.style.display = 'none';
+        loggedIn.style.display = 'block';
+        userNameSpan.textContent = userName;
+        updateCartBadge();
     } else {
-        navActions.innerHTML = `
-            <a href="/Home/Cart" class="btn-outline nav-btn">🛒 CART</a>
-            <a href="/Account/Login" class="nav-link-sign">SIGN IN</a>
-            <a href="/Account/Register" class="btn-gold nav-btn">REGISTER</a>
-        `;
+        loggedOut.style.display = 'flex';
+        loggedIn.style.display = 'none';
+    }
+
+    // --- DROPDOWN TOGGLE ---
+    const btn = document.getElementById('userMenuBtn');
+    const dropdown = document.getElementById('userDropdown');
+
+    if (btn && dropdown) {
+        btn.addEventListener('click', function (e) {
+            e.stopPropagation();
+            const isOpen = dropdown.style.display === 'block';
+            dropdown.style.display = isOpen ? 'none' : 'block';
+            // Rotate arrow
+            const arrow = btn.querySelector('.dropdown-arrow');
+            if (arrow) {
+                arrow.style.transform = isOpen ? 'rotate(0deg)' : 'rotate(180deg)';
+            }
+        });
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function () {
+            dropdown.style.display = 'none';
+            const arrow = btn.querySelector('.dropdown-arrow');
+            if (arrow) {
+                arrow.style.transform = 'rotate(0deg)';
+            }
+        });
+
+        // Prevent closing when clicking inside dropdown
+        dropdown.addEventListener('click', function (e) {
+            e.stopPropagation();
+        });
     }
 });
 
-// Global logout function
+// --- LOGOUT ---
 function logoutUser() {
     if (confirm('Are you sure you want to sign out?')) {
         localStorage.removeItem('token');
@@ -47,7 +76,28 @@ function logoutUser() {
     }
 }
 
-// Toast notification
+// --- CART BADGE ---
+async function updateCartBadge() {
+    const token = localStorage.getItem('token');
+    if (!token) {
+        const badge = document.getElementById('cartCountBadge');
+        if (badge) badge.innerText = '0';
+        return;
+    }
+    try {
+        const res = await fetch('/api/cart', {
+            headers: { 'Authorization': 'Bearer ' + token }
+        });
+        const data = await res.json();
+        const total = (data.items || []).reduce((s, i) => s + i.quantity, 0);
+        const badge = document.getElementById('cartCountBadge');
+        if (badge) badge.innerText = total;
+    } catch (e) {
+        console.error('Badge update error:', e);
+    }
+}
+
+// --- TOAST NOTIFICATION ---
 function showToast(message, type = 'success') {
     const toast = document.createElement('div');
     toast.className = 'toast-notification';

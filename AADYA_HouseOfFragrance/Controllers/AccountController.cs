@@ -102,5 +102,11 @@ namespace AADYA_HouseOfFragrance.Controllers
                 Message = "Login Successful!"
             });
         }
+
+        // GET: /Account/Profile
+        public IActionResult Profile()
+        {
+            return View();
+        }
     }
 }

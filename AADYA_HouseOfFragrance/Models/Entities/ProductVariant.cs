@@ -15,7 +15,7 @@ namespace AADYA_HouseOfFragrance.Models.Entities
         public int StockQuantity { get; set; }
 
         // Navigation Properties
-        public Product Product { get; set; } = new Product();
+        public Product? Product { get; set; }
         public ICollection<OrderItem> OrderItems { get; set; } = new List<OrderItem>();
         public ICollection<ShoppingCart> ShoppingCartItems { get; set; } = new List<ShoppingCart>();
     }

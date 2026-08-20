@@ -1,0 +1,73 @@
+﻿@{
+    ViewData["Title"] = "My Profile - AADYA";
+}
+
+<section class="section-padding" style="min-height: 70vh;">
+    <h1 style="font-family:var(--font-heading); color:var(--deep-burgundy);">My Profile</h1>
+    <p style="color:var(--text-muted); margin-bottom:2rem;">View and manage your personal information.</p>
+
+    <div id="profileContainer" style="max-width: 600px;">
+        <!-- Profile will be loaded here via JS -->
+    </div>
+</section>
+
+@section Scripts {
+    <script>
+        async function loadProfile() {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                document.getElementById('profileContainer').innerHTML = `
+                            <p>Please <a href="/Account/Login">login</a> to view your profile.</p>
+                        `;
+                return;
+            }
+
+            try {
+                // Decode JWT to get user info
+                const tokenParts = token.split('.');
+                if (tokenParts.length === 3) {
+                    const payload = JSON.parse(atob(tokenParts[1]));
+                    const userId = payload['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier'];
+                    const email = payload['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress'];
+                    const name = payload['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name'];
+
+                    renderProfile({ userId, email, fullName: name });
+                } else {
+                    renderProfile({ fullName: localStorage.getItem('userName') || 'User', email: 'N/A' });
+                }
+            } catch (error) {
+                console.error('Error loading profile:', error);
+                document.getElementById('profileContainer').innerHTML = `
+                            <div style="background: #FAF6EF; border:1px solid var(--border-color); border-radius:4px; padding:1.5rem;">
+                                <p><strong>Name:</strong> ${localStorage.getItem('userName') || 'User'}</p>
+                                <p><strong>Email:</strong> N/A</p>
+                                <p style="color:var(--text-muted); font-size:0.9rem;">Profile details will be available in the next update.</p>
+                            </div>
+                        `;
+            }
+        }
+
+        function renderProfile(user) {
+            const container = document.getElementById('profileContainer');
+            container.innerHTML = `
+                        <div style="background: #FAF6EF; border:1px solid var(--border-color); border-radius:4px; padding:1.5rem;">
+                            <div style="display:flex; align-items:center; gap:1rem; margin-bottom:1.5rem;">
+                                <div style="width:64px; height:64px; border-radius:50%; background:var(--champagne-gold); display:flex; align-items:center; justify-content:center; font-size:1.8rem; color:white;">
+                                    ${(user.fullName || 'U').charAt(0).toUpperCase()}
+                                </div>
+                                <div>
+                                    <h2 style="margin:0; font-family:var(--font-heading);">${user.fullName || 'User'}</h2>
+                                    <p style="color:var(--text-muted); margin:0;">${user.email || 'No email'}</p>
+                                </div>
+                            </div>
+                            <hr style="border-color:var(--border-color);">
+                            <p style="color:var(--text-muted); font-size:0.9rem; margin-top:1rem;">
+                                📋 Account created with AADYA: The House of Fragrance.
+                            </p>
+                        </div>
+                    `;
+        }
+
+        document.addEventListener('DOMContentLoaded', loadProfile);
+    </script>
+}

@@ -15,9 +15,7 @@ namespace AADYA_HouseOfFragrance.Models.Entities
         public int VariantId { get; set; }
         public int Quantity { get; set; } = 1;
         public DateTime AddedAt { get; set; } = DateTime.Now;
-
-        // Navigation Properties
-        public User User { get; set; } = new User();
-        public ProductVariant ProductVariant { get; set; } = new ProductVariant();
+        public User? User { get; set; }
+        public ProductVariant? ProductVariant { get; set; }
     }
 }

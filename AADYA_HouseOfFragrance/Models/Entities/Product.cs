@@ -19,7 +19,7 @@ namespace AADYA_HouseOfFragrance.Models.Entities
         public DateTime CreatedAt { get; set; } = DateTime.Now;
 
         // Navigation Properties
-        public Category Category { get; set; } = new Category();
+        public Category? Category { get; set; }
         public ICollection<ProductVariant> Variants { get; set; } = new List<ProductVariant>();
     }
 }

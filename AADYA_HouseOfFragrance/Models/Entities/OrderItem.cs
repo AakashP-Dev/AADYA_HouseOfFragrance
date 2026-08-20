@@ -17,7 +17,7 @@ namespace AADYA_HouseOfFragrance.Models.Entities
         public decimal UnitPriceAtSale { get; set; }
 
         // Navigation Properties
-        public Order Order { get; set; } = new Order();
-        public ProductVariant ProductVariant { get; set; } = new ProductVariant();
+        public Order? Order { get; set; }
+        public ProductVariant? ProductVariant { get; set; }
     }
 }

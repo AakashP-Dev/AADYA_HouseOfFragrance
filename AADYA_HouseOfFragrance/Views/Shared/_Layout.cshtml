@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - AADYA: The House of Fragrance</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
 </head>
@@ -26,9 +26,42 @@
             </ul>
 
             <div class="nav-actions">
-                <a href="/Home/Cart" class="btn-outline nav-btn">🛒 CART</a>
-                <a href="/Account/Login" class="nav-link-sign">SIGN IN</a>
-                <a href="/Account/Register" class="btn-gold nav-btn">REGISTER</a>
+                <a href="/Home/Cart" class="btn-outline nav-btn">
+                    🛒 CART <span id="cartCountBadge" class="cart-badge">0</span>
+                </a>
+
+                <!-- LOGGED OUT STATE -->
+                <div id="navLoggedOut" style="display:flex; gap:0.8rem; align-items:center;">
+                    <a href="/Account/Login" class="nav-link-sign">SIGN IN</a>
+                    <a href="/Account/Register" class="btn-gold nav-btn">REGISTER</a>
+                </div>
+
+                <!-- LOGGED IN STATE -->
+                <div id="navLoggedIn" style="display:none; position:relative;">
+                    <button id="userMenuBtn" class="user-menu-btn">
+                        <span id="navUserAvatar">👤</span>
+                        <span id="navUserName">User</span>
+                        <svg class="dropdown-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                    </button>
+                    <!-- DROPDOWN -->
+                    <div id="userDropdown" class="user-dropdown" style="display:none;">
+                        <a href="/Account/Profile" class="dropdown-item">
+                            <span class="dropdown-icon">👤</span>
+                            <span>My Profile</span>
+                        </a>
+                        <a href="/Account/Orders" class="dropdown-item">
+                            <span class="dropdown-icon">📋</span>
+                            <span>My Orders</span>
+                        </a>
+                        <hr class="dropdown-divider">
+                        <a href="#" class="dropdown-item dropdown-signout" onclick="logoutUser()">
+                            <span class="dropdown-icon">🚪</span>
+                            <span>Sign Out</span>
+                        </a>
+                    </div>
+                </div>
             </div>
         </div>
     </nav>
@@ -68,7 +101,6 @@
 
         <div class="footer-bottom">
             &copy; 2026 AADYA: The House of Fragrance. All Rights Reserved.
-            <!-- Admin Portal Access - Hidden from regular users -->
             <a asp-controller="Admin" asp-action="Dashboard" class="admin-hidden-link" title="Admin Access">⚙️</a>
         </div>
     </footer>
