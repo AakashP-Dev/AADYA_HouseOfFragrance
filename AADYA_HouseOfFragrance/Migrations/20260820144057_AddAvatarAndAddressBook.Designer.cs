@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AADYA_HouseOfFragrance.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260812132947_SeedProductsData")]
-    partial class SeedProductsData
+    [Migration("20260820144057_AddAvatarAndAddressBook")]
+    partial class AddAvatarAndAddressBook
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -21,6 +21,52 @@ namespace AADYA_HouseOfFragrance.Migrations
             modelBuilder
                 .HasAnnotation("ProductVersion", "8.0.0")
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
+
+            modelBuilder.Entity("AADYA_HouseOfFragrance.Models.Entities.Address", b =>
+                {
+                    b.Property<int>("AddressId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<string>("AddressLine1")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("AddressLine2")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("City")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<bool>("IsDefault")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<string>("Label")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("PhoneNumber")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("Pincode")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("State")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("AddressId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Addresses");
+                });
 
             modelBuilder.Entity("AADYA_HouseOfFragrance.Models.Entities.Category", b =>
                 {
@@ -35,23 +81,6 @@ namespace AADYA_HouseOfFragrance.Migrations
                     b.HasKey("CategoryId");
 
                     b.ToTable("Categories");
-
-                    b.HasData(
-                        new
-                        {
-                            CategoryId = 1,
-                            CategoryName = "Signature Blends"
-                        },
-                        new
-                        {
-                            CategoryId = 2,
-                            CategoryName = "Attars & Oud"
-                        },
-                        new
-                        {
-                            CategoryId = 3,
-                            CategoryName = "Contemporary Fragrances"
-                        });
                 });
 
             modelBuilder.Entity("AADYA_HouseOfFragrance.Models.Entities.Order", b =>
@@ -217,6 +246,9 @@ namespace AADYA_HouseOfFragrance.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
+                    b.Property<string>("AvatarUrl")
+                        .HasColumnType("longtext");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime(6)");
 
@@ -232,12 +264,27 @@ namespace AADYA_HouseOfFragrance.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
+                    b.Property<string>("PhoneNumber")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
                     b.HasKey("UserId");
 
                     b.HasIndex("Email")
                         .IsUnique();
 
                     b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("AADYA_HouseOfFragrance.Models.Entities.Address", b =>
+                {
+                    b.HasOne("AADYA_HouseOfFragrance.Models.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("AADYA_HouseOfFragrance.Models.Entities.Order", b =>

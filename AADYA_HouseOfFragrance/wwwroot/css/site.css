@@ -1843,3 +1843,137 @@ footer a, footer p {
 .nav-link-sign:hover {
     color: var(--champagne-gold) !important;
 }
+
+/* ==========================================================================
+   DELETE ACCOUNT BUTTON
+   ========================================================================== */
+.btn-danger {
+    background: transparent !important;
+    color: #d32f2f !important;
+    border: 1px solid #d32f2f !important;
+    padding: 0.7rem 1.6rem;
+    font-size: 0.78rem;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    font-weight: 600;
+    border-radius: 2px;
+    display: inline-block;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: center;
+}
+
+    .btn-danger:hover {
+        background-color: #d32f2f !important;
+        color: #FFFFFF !important;
+        border-color: #d32f2f !important;
+    }
+
+/* ==========================================================================
+   PROFILE FORM STYLES
+   ========================================================================== */
+#profileForm .form-group {
+    margin-bottom: 1.2rem;
+}
+
+    #profileForm .form-group label {
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: var(--deep-burgundy);
+        letter-spacing: 0.5px;
+        display: block;
+        margin-bottom: 0.3rem;
+    }
+
+#profileForm .custom-input {
+    background-color: #FFFFFF;
+    border: 1px solid var(--border-color);
+    color: var(--text-dark);
+    padding: 0.55rem 0.9rem;
+    font-size: 0.85rem;
+    border-radius: 2px;
+    outline: none;
+    font-family: var(--font-body);
+    transition: border-color 0.3s ease;
+}
+
+    #profileForm .custom-input:focus {
+        border-color: var(--champagne-gold);
+    }
+
+    #profileForm .custom-input[readonly] {
+        background-color: #f5f0e6;
+        cursor: default;
+    }
+
+    #profileForm .custom-input:not([readonly]) {
+        background-color: #ffffff;
+    }
+
+/* Address Book improvements */
+#addressBookModal .form-group {
+    margin-bottom: 1.2rem;
+}
+
+    #addressBookModal .form-group label {
+        display: block;
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: var(--deep-burgundy);
+        margin-bottom: 0.3rem;
+    }
+
+#addressBookModal .custom-input,
+#addressBookModal .custom-select {
+    background-color: #FFFFFF;
+    border: 1px solid var(--border-color);
+    border-radius: 2px;
+    padding: 0.6rem 0.9rem;
+    font-size: 0.85rem;
+    font-family: var(--font-body);
+    width: 100%;
+    box-sizing: border-box;
+    transition: border-color 0.3s;
+}
+
+    #addressBookModal .custom-input:focus,
+    #addressBookModal .custom-select:focus {
+        border-color: var(--champagne-gold);
+        outline: none;
+    }
+
+/* Address cards in the list */
+.address-card {
+    background: var(--warm-ivory);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    padding: 0.8rem 1rem;
+    margin-bottom: 0.8rem;
+    position: relative;
+    transition: box-shadow 0.2s;
+}
+
+    .address-card:hover {
+        box-shadow: 0 2px 8px rgba(59, 14, 20, 0.06);
+    }
+
+    .address-card .default-badge {
+        position: absolute;
+        top: 0.3rem;
+        right: 0.8rem;
+        font-size: 0.7rem;
+        color: var(--champagne-gold);
+        font-weight: 600;
+    }
+
+    .address-card .address-label {
+        font-weight: 600;
+        font-size: 0.95rem;
+        margin-bottom: 0.2rem;
+    }
+
+    .address-card .address-detail {
+        font-size: 0.85rem;
+        color: var(--text-dark);
+        margin: 0.1rem 0;
+    }

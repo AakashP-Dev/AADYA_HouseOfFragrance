@@ -17,6 +17,7 @@ namespace AADYA_HouseOfFragrance.Data
         public DbSet<ShoppingCart> ShoppingCarts { get; set; }
         public DbSet<Order> Orders { get; set; }
         public DbSet<OrderItem> OrderItems { get; set; }
+        public DbSet<Address> Addresses { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -25,7 +26,7 @@ namespace AADYA_HouseOfFragrance.Data
                 .HasIndex(u => u.Email)
                 .IsUnique();
 
-            /* ============================================
+            // ============================================
             // SEED CATEGORIES
             // ============================================
             modelBuilder.Entity<Category>().HasData(
@@ -189,7 +190,7 @@ namespace AADYA_HouseOfFragrance.Data
                 // Oud (35)
                 new ProductVariant { VariantId = 3501, ProductId = 35, Size = "6ml", Price = 725, StockQuantity = 15 },
                 new ProductVariant { VariantId = 3502, ProductId = 35, Size = "12ml", Price = 1350, StockQuantity = 8 }
-            );*/
+            );
         }
     }
 }
