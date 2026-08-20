@@ -80,7 +80,31 @@
                 <span class="price-label">Total Amount:</span>
                 <span class="price-value" id="drawerTotal">₹0.00</span>
             </div>
-            <button type="button" class="btn-gold drawer-add-btn" onclick="handleAddToCart()">ADD SELECTED TO CART</button>
+        </div>
+    </div>
+    <button type="button" class="btn-gold drawer-add-btn" onclick="handleAddToCart()">ADD SELECTED TO CART</button>
+</div>
+
+<!-- 4. STICKY 6ML TRACKER -->
+<div id="sticky6mlTracker" style="display:none; position:fixed; bottom:0; left:0; right:0; background:var(--warm-ivory); border-top:2px solid var(--champagne-gold); padding:0.8rem 2rem; box-shadow:0 -4px 20px rgba(0,0,0,0.1); z-index:999; transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1); transform: translateY(100%);">
+    <div style="max-width:1200px; margin:0 auto; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.8rem;">
+        <div style="display:flex; align-items:center; gap:1rem; flex-wrap:wrap;">
+            <span style="font-weight:600; font-family:var(--font-heading); font-size:0.9rem;">Your 6ml Bottles:</span>
+            <span id="trackerMessage" style="font-size:0.85rem; color:var(--text-muted);"></span>
+        </div>
+        <div id="trackerItemList" style="display:flex; flex-wrap:wrap; gap:0.6rem; align-items:center; flex:1; justify-content:flex-start;"></div>
+        <a href="/Home/Cart" class="btn-gold" style="font-size:0.75rem; padding:0.4rem 1.2rem; white-space:nowrap;">VIEW CART</a>
+    </div>
+</div>
+
+<!-- REMOVE CONFIRMATION MODAL -->
+<div id="removeModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:9998; align-items:center; justify-content:center;">
+    <div style="background:white; padding:2rem; border-radius:8px; max-width:400px; text-align:center; box-shadow:0 4px 20px rgba(0,0,0,0.3);">
+        <h3 style="font-family:var(--font-heading); color:var(--deep-burgundy);">Remove Item</h3>
+        <p id="removeModalMessage" style="color:var(--text-muted); margin:1rem 0;">Are you sure you want to remove this item from your cart?</p>
+        <div style="display:flex; gap:1rem; justify-content:center; margin-top:1.5rem;">
+            <button id="removeConfirmYes" class="btn-gold">Yes, Remove</button>
+            <button id="removeConfirmNo" class="btn-outline">Cancel</button>
         </div>
     </div>
 </div>
@@ -91,14 +115,17 @@
         let allProducts = [];
         let activeFilter = 'all';
         let currentDrawerVariants = [];
+        let removeItemCallback = null;
 
-        // --- 1. FETCH PRODUCTS FROM API ---
+        // --- 1. FETCH PRODUCTS ---
         async function loadProducts() {
             try {
                 const response = await fetch('/api/products');
                 if (!response.ok) throw new Error('Network response was not ok');
                 allProducts = await response.json();
                 renderCatalog(allProducts);
+                updateStickyTracker();
+                updateCartBadge();
             } catch (error) {
                 console.error('Failed to load products:', error);
                 allProducts = getFallbackProducts();
@@ -106,10 +133,9 @@
             }
         }
 
-        // --- 2. MAP SCENT FAMILY TO FILTER GROUP ---
+        // --- 2. FILTER GROUP MAPPING ---
         function getFilterGroup(product) {
             const scent = (product.scentFamily || '').toLowerCase();
-
             switch (scent) {
                 case 'woody': return 'oud';
                 case 'fresh':
@@ -154,12 +180,12 @@
                 card.dataset.bought = product.totalSold || 0;
 
                 card.innerHTML = `
-                                    <img src="${imgSrc}" alt="${product.name}" onerror="this.src='https://via.placeholder.com/300x220?text=${encodeURIComponent(product.name)}'" />
-                                    <h3>${product.name}</h3>
-                                    <span class="scent-tag">${product.scentFamily || 'Fragrance'}</span>
-                                    <div class="product-price">${priceDisplay}</div>
-                                    <button class="btn-gold quick-view-btn" onclick="openProductDrawer(${product.productId})">VIEW DETAILS</button>
-                                `;
+                            <img src="${imgSrc}" alt="${product.name}" onerror="this.src='https://via.placeholder.com/300x220?text=${encodeURIComponent(product.name)}'" />
+                            <h3>${product.name}</h3>
+                            <span class="scent-tag">${product.scentFamily || 'Fragrance'}</span>
+                            <div class="product-price">${priceDisplay}</div>
+                            <button class="btn-gold quick-view-btn" onclick="openProductDrawer(${product.productId})">VIEW DETAILS</button>
+                        `;
                 grid.appendChild(card);
             });
 
@@ -176,7 +202,6 @@
             cards.forEach(card => {
                 const name = card.dataset.name.toLowerCase();
                 const category = card.dataset.category;
-
                 const matchesFilter = (activeFilter === 'all' || category === activeFilter);
                 const matchesSearch = name.includes(query);
 
@@ -227,16 +252,16 @@
                 row.dataset.variantId = variant.variantId;
                 row.dataset.price = variant.price;
                 row.innerHTML = `
-                                    <div class="size-info">
-                                        <span class="size-title">${variant.size} Bottle</span>
-                                        <span class="size-unit-price">₹${variant.price}.00</span>
-                                    </div>
-                                    <div class="qty-selector">
-                                        <button type="button" class="qty-btn" onclick="updateDrawerQty(${index}, -1)">&minus;</button>
-                                        <input type="text" id="drawerQty_${index}" value="${index === 0 ? 0 : 1}" readonly class="qty-input" />
-                                        <button type="button" class="qty-btn" onclick="updateDrawerQty(${index}, 1)">&plus;</button>
-                                    </div>
-                                `;
+                            <div class="size-info">
+                                <span class="size-title">${variant.size} Bottle</span>
+                                <span class="size-unit-price">₹${variant.price}.00</span>
+                            </div>
+                            <div class="qty-selector">
+                                <button type="button" class="qty-btn" onclick="updateDrawerQty(${index}, -1)">&minus;</button>
+                                <input type="text" id="drawerQty_${index}" value="${index === 0 ? 0 : 1}" readonly class="qty-input" />
+                                <button type="button" class="qty-btn" onclick="updateDrawerQty(${index}, 1)">&plus;</button>
+                            </div>
+                        `;
                 container.appendChild(row);
             });
 
@@ -271,7 +296,7 @@
             document.getElementById('drawerTotal').innerText = '₹' + total.toLocaleString('en-IN') + '.00';
         }
 
-        // --- 6. ADD TO CART (REAL API) WITH TOAST ---
+        // --- 6. ADD TO CART (REAL API) ---
         async function handleAddToCart() {
             let items = [];
             const rows = document.querySelectorAll('#variantSelectorContainer .size-qty-row');
@@ -329,14 +354,147 @@
                 showToast(`Successfully added ${addedCount} item(s) to cart!`, 'success');
                 closeProductDrawer();
                 updateCartBadge();
-                // Update sticky tracker if implemented
+                updateStickyTracker();
             } else {
-                showToast(`Added ${addedCount} item(s). Failed to add ${failedItems.length} item(s). Check console.`, 'error');
+                showToast(`Added ${addedCount} item(s). Failed to add ${failedItems.length} item(s).`, 'error');
                 console.error(failedItems);
             }
         }
 
-        // --- 7. UPDATE CART BADGE (add this if missing) ---
+        // --- 7. REMOVE MODAL ---
+        function showRemoveModal(itemName, callback) {
+            document.getElementById('removeModalMessage').innerHTML =
+                `Are you sure you want to remove <strong>${itemName}</strong> from your cart?`;
+            removeItemCallback = callback;
+            document.getElementById('removeModal').style.display = 'flex';
+        }
+
+        document.getElementById('removeConfirmYes').addEventListener('click', function () {
+            document.getElementById('removeModal').style.display = 'none';
+            if (removeItemCallback) {
+                removeItemCallback();
+                removeItemCallback = null;
+            }
+        });
+
+        document.getElementById('removeConfirmNo').addEventListener('click', function () {
+            document.getElementById('removeModal').style.display = 'none';
+            removeItemCallback = null;
+        });
+
+        // Close modal on outside click
+        document.getElementById('removeModal').addEventListener('click', function (e) {
+            if (e.target === this) {
+                this.style.display = 'none';
+                removeItemCallback = null;
+            }
+        });
+
+        // --- 8. STICKY 6ML TRACKER ---
+        async function updateStickyTracker() {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                document.getElementById('sticky6mlTracker').style.display = 'none';
+                return;
+            }
+
+            try {
+                const res = await fetch('/api/cart', {
+                    headers: { 'Authorization': 'Bearer ' + token }
+                });
+                if (!res.ok) throw new Error('Failed to fetch cart');
+                const data = await res.json();
+                const items = data.items || [];
+
+                const sixMlItems = items.filter(item => item.size === '6ml');
+                const total6ml = sixMlItems.reduce((sum, item) => sum + item.quantity, 0);
+
+                const tracker = document.getElementById('sticky6mlTracker');
+                const listContainer = document.getElementById('trackerItemList');
+                const message = document.getElementById('trackerMessage');
+
+                if (total6ml === 0 || sixMlItems.length === 0) {
+                    tracker.style.display = 'none';
+                    tracker.style.transform = 'translateY(100%)';
+                    return;
+                }
+
+                tracker.style.display = 'block';
+                setTimeout(() => {
+                    tracker.style.transform = 'translateY(0)';
+                }, 50);
+
+                listContainer.innerHTML = '';
+                sixMlItems.forEach(item => {
+                    const imgSrc = item.productImage || 'https://via.placeholder.com/32?text=' + (item.productName?.charAt(0) || '?');
+                    const div = document.createElement('div');
+                    div.style.cssText = `
+                                background: var(--warm-beige);
+                                border: 1px solid var(--border-color);
+                                border-radius: 20px;
+                                padding: 0.2rem 0.6rem 0.2rem 0.4rem;
+                                display: inline-flex;
+                                align-items: center;
+                                gap: 0.4rem;
+                                font-size: 0.8rem;
+                                transition: all 0.2s ease;
+                                white-space: nowrap;
+                            `;
+                    div.innerHTML = `
+                                <img src="${imgSrc}" alt="${item.productName}" style="width:28px; height:28px; border-radius:50%; object-fit:cover; border:1px solid var(--border-color); background:white;" onerror="this.src='https://via.placeholder.com/28?text=${(item.productName?.charAt(0) || '?')}'" />
+                                <span style="font-weight:500; font-size:0.8rem;">${item.productName}</span>
+                                <span style="color:var(--text-muted); font-size:0.7rem;">×${item.quantity}</span>
+                                <button onclick="confirmRemoveSixMlItem('${item.productName}', ${item.cartItemId})" style="background:none; border:none; color:#d32f2f; cursor:pointer; font-size:1rem; line-height:1; padding:0 2px; transition:transform 0.2s;" onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform='scale(1)'" title="Remove from cart">✕</button>
+                            `;
+                    listContainer.appendChild(div);
+                });
+
+                if (total6ml < 3) {
+                    message.innerText = `Add ${3 - total6ml} more 6ml bottle(s) to place order.`;
+                } else {
+                    message.innerText = '✅ You have enough 6ml bottles!';
+                }
+
+            } catch (error) {
+                console.error('Failed to load cart for tracker:', error);
+            }
+        }
+
+        // --- 9. CONFIRM REMOVE FROM STICKY TRACKER ---
+        function confirmRemoveSixMlItem(itemName, cartItemId) {
+            showRemoveModal(itemName, function () {
+                removeSixMlItem(cartItemId);
+            });
+        }
+
+        // --- 10. REMOVE 6ML ITEM ---
+        async function removeSixMlItem(cartItemId) {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                showToast('Please login to manage your cart.', 'error');
+                return;
+            }
+
+            try {
+                const res = await fetch(`/api/cart/remove/${cartItemId}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': 'Bearer ' + token }
+                });
+                if (!res.ok) {
+                    const err = await res.json();
+                    showToast(err.message || 'Failed to remove item', 'error');
+                    return;
+                }
+                updateStickyTracker();
+                updateCartBadge();
+                showToast('Item removed from cart.', 'success');
+            } catch (error) {
+                console.error('Error removing item:', error);
+                showToast('Network error. Please try again.', 'error');
+            }
+        }
+
+        // --- 11. CART BADGE ---
         async function updateCartBadge() {
             const token = localStorage.getItem('token');
             if (!token) {
@@ -348,6 +506,7 @@
                 const res = await fetch('/api/cart', {
                     headers: { 'Authorization': 'Bearer ' + token }
                 });
+                if (!res.ok) throw new Error('Failed to fetch cart');
                 const data = await res.json();
                 const total = (data.items || []).reduce((s, i) => s + i.quantity, 0);
                 const badge = document.getElementById('cartCountBadge');
@@ -357,7 +516,7 @@
             }
         }
 
-        // --- 8. EVENT LISTENERS ---
+        // --- 12. EVENT LISTENERS ---
         document.getElementById('searchInput').addEventListener('input', applyFiltersAndSort);
         document.getElementById('sortSelect').addEventListener('change', applyFiltersAndSort);
 
@@ -379,17 +538,7 @@
             applyFiltersAndSort();
         };
 
-        // --- 9. FALLBACK DATA (for testing only) ---
-        function getFallbackProducts() {
-            return [
-                { productId: 1, name: "Kesar Chandan", scentFamily: "Spicy", categoryName: "Signature Blends", description: "Luxurious warmth of saffron...", imageUrl: "/images/products/Kesar Chandan.jpeg", variants: [{ variantId: 101, size: "6ml", price: 240 }, { variantId: 102, size: "12ml", price: 450 }] },
-                { productId: 2, name: "Black OUD", scentFamily: "Woody", categoryName: "Attars & Oud", description: "Darkness refined into a fragrance.", imageUrl: "/images/products/Black OUD.jpeg", variants: [{ variantId: 201, size: "6ml", price: 600 }, { variantId: 202, size: "12ml", price: 1100 }] },
-                { productId: 3, name: "Cairo Evening", scentFamily: "Spicy", categoryName: "Signature Blends", description: "Golden sunsets and ancient streets.", imageUrl: "/images/products/Cairo Evening.jpeg", variants: [{ variantId: 301, size: "6ml", price: 135 }, { variantId: 302, size: "12ml", price: 225 }] },
-                { productId: 4, name: "Turkish Rose", scentFamily: "Floral", categoryName: "Signature Blends", description: "Timeless beauty of blooming roses.", imageUrl: "/images/products/Turkish Rose.jpeg", variants: [{ variantId: 401, size: "6ml", price: 390 }, { variantId: 402, size: "12ml", price: 750 }] }
-            ];
-        }
-
-        // --- 10. URL CATEGORY FILTER (from footer) ---
+        // --- 13. URL CATEGORY FILTER ---
         function applyCategoryFromUrl() {
             const urlParams = new URLSearchParams(window.location.search);
             const categoryParam = urlParams.get('category');
@@ -404,10 +553,24 @@
             }
         }
 
-        // --- 11. INIT ---
+        // --- 14. FALLBACK DATA ---
+        function getFallbackProducts() {
+            return [
+                { productId: 1, name: "Kesar Chandan", scentFamily: "Spicy", categoryName: "Signature Blends", description: "Luxurious warmth of saffron...", imageUrl: "/images/products/Kesar Chandan.jpeg", variants: [{ variantId: 101, size: "6ml", price: 240 }, { variantId: 102, size: "12ml", price: 450 }] },
+                { productId: 2, name: "Black OUD", scentFamily: "Woody", categoryName: "Attars & Oud", description: "Darkness refined into a fragrance.", imageUrl: "/images/products/Black OUD.jpeg", variants: [{ variantId: 201, size: "6ml", price: 600 }, { variantId: 202, size: "12ml", price: 1100 }] },
+                { productId: 3, name: "Cairo Evening", scentFamily: "Spicy", categoryName: "Signature Blends", description: "Golden sunsets and ancient streets.", imageUrl: "/images/products/Cairo Evening.jpeg", variants: [{ variantId: 301, size: "6ml", price: 135 }, { variantId: 302, size: "12ml", price: 225 }] },
+                { productId: 4, name: "Turkish Rose", scentFamily: "Floral", categoryName: "Signature Blends", description: "Timeless beauty of blooming roses.", imageUrl: "/images/products/Turkish Rose.jpeg", variants: [{ variantId: 401, size: "6ml", price: 390 }, { variantId: 402, size: "12ml", price: 750 }] }
+            ];
+        }
+
+        // --- 15. INIT ---
         loadProducts();
 
         window.addEventListener('DOMContentLoaded', () => {
+            applyCategoryFromUrl();
+            updateCartBadge();
+            updateStickyTracker();
+
             const urlParams = new URLSearchParams(window.location.search);
             const highlightParam = urlParams.get('highlight');
             if (highlightParam) {
@@ -425,8 +588,6 @@
                     }
                 }, 500);
             }
-            applyCategoryFromUrl();
-            updateCartBadge();
         });
     </script>
 }

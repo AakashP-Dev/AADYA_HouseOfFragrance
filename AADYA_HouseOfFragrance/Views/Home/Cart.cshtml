@@ -20,48 +20,12 @@
                 <span>Action</span>
             </div>
 
-            <!-- SAMPLE ITEM 1 -->
-            <div class="cart-item-row">
-                <div class="cart-product-info">
-                    <img src="~/images/products/Kesar Chandan.jpeg" alt="Kesar Chandan" onerror="this.src='https://via.placeholder.com/80'" />
-                    <div>
-                        <h3>Kesar Chandan</h3>
-                        <span class="scent-tag">Saffron • Sandalwood</span>
-                    </div>
-                </div>
-                <div class="cart-size-badge">12ml</div>
-                <div class="cart-unit-price">₹450.00</div>
-                <div class="qty-selector">
-                    <button type="button" class="qty-btn" onclick="updateCartQty('kesar12', -1)">&minus;</button>
-                    <input type="text" id="qty-kesar12" value="1" readonly class="qty-input" />
-                    <button type="button" class="qty-btn" onclick="updateCartQty('kesar12', 1)">&plus;</button>
-                </div>
-                <div class="cart-item-total" id="total-kesar12">₹450.00</div>
-                <button type="button" class="cart-remove-btn" title="Remove item" onclick="removeCartItem(this)">&times;</button>
-            </div>
+            <!-- Items will be injected here by JavaScript -->
+            <div id="cartItemsContainer"></div>
 
-            <!-- SAMPLE ITEM 2 -->
-            <div class="cart-item-row">
-                <div class="cart-product-info">
-                    <img src="~/images/products/Oud Al Noor.jpeg" alt="Oud Al Noor" onerror="this.src='https://via.placeholder.com/80'" />
-                    <div>
-                        <h3>Oud Al Noor</h3>
-                        <span class="scent-tag">Oud • Woody</span>
-                    </div>
-                </div>
-                <div class="cart-size-badge">6ml</div>
-                <div class="cart-unit-price">₹240.00</div>
-                <div class="qty-selector">
-                    <button type="button" class="qty-btn" onclick="updateCartQty('oud6', -1)">&minus;</button>
-                    <input type="text" id="qty-oud6" value="2" readonly class="qty-input" />
-                    <button type="button" class="qty-btn" onclick="updateCartQty('oud6', 1)">&plus;</button>
-                </div>
-                <div class="cart-item-total" id="total-oud6">₹480.00</div>
-                <button type="button" class="cart-remove-btn" title="Remove item" onclick="removeCartItem(this)">&times;</button>
-            </div>
-
-            <div class="cart-actions-bar">
-                <a asp-controller="Home" asp-action="Catalog" class="btn-outline">&larr; CONTINUE SHOPPING</a>
+            <!-- CART ACTIONS BAR - Hidden when empty -->
+            <div id="cartActionsBar" class="cart-actions-bar">
+                <a href="/Home/Catalog" class="btn-outline">&larr; CONTINUE SHOPPING</a>
             </div>
         </div>
 
@@ -71,11 +35,7 @@
 
             <div class="summary-row">
                 <span>Subtotal</span>
-                <span id="summarySubtotal">₹930.00</span>
-            </div>
-            <div class="summary-row">
-                <span>Estimated GST (18%)</span>
-                <span id="summaryGst">₹167.40</span>
+                <span id="summarySubtotal">₹0.00</span>
             </div>
             <div class="summary-row">
                 <span>Shipping</span>
@@ -86,50 +46,274 @@
 
             <div class="summary-row summary-total-row">
                 <span>Grand Total</span>
-                <span id="summaryGrandTotal">₹1,097.40</span>
+                <span id="summaryGrandTotal">₹0.00</span>
             </div>
+
+            <div id="min6mlWarningContainer"></div>
 
             <button type="button" class="btn-gold checkout-btn" onclick="checkout()">PROCEED TO CHECKOUT</button>
         </div>
     </div>
 </section>
 
+<!-- CHECKOUT CONFIRMATION MODAL -->
+<div id="checkoutModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:9999; align-items:center; justify-content:center;">
+    <div style="background:white; padding:2rem; border-radius:8px; max-width:400px; text-align:center; box-shadow:0 4px 20px rgba(0,0,0,0.3);">
+        <h3 style="font-family:var(--font-heading); color:var(--deep-burgundy);">Confirm Order</h3>
+        <p style="color:var(--text-muted); margin:1rem 0;">Are you sure you want to place this order?</p>
+        <div style="display:flex; gap:1rem; justify-content:center; margin-top:1.5rem;">
+            <button id="modalConfirmYes" class="btn-gold">Yes, Place Order</button>
+            <button id="modalConfirmNo" class="btn-outline">Cancel</button>
+        </div>
+    </div>
+</div>
+
+<!-- REMOVE ITEM CONFIRMATION MODAL -->
+<div id="removeModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:9998; align-items:center; justify-content:center;">
+    <div style="background:white; padding:2rem; border-radius:8px; max-width:400px; text-align:center; box-shadow:0 4px 20px rgba(0,0,0,0.3);">
+        <h3 style="font-family:var(--font-heading); color:var(--deep-burgundy);">Remove Item</h3>
+        <p id="removeModalMessage" style="color:var(--text-muted); margin:1rem 0;">Are you sure you want to remove this item from your cart?</p>
+        <div style="display:flex; gap:1rem; justify-content:center; margin-top:1.5rem;">
+            <button id="removeConfirmYes" class="btn-gold">Yes, Remove</button>
+            <button id="removeConfirmNo" class="btn-outline">Cancel</button>
+        </div>
+    </div>
+</div>
+
 @section Scripts {
     <script>
-        function updateCartQty(id, change) {
-            const input = document.getElementById('qty-' + id);
-            let val = parseInt(input.value) + change;
-            if (val < 1) val = 1;
-            input.value = val;
-            recalculateCartTotals();
+        let removeItemId = null;
+        let removeItemName = '';
+
+        // --- 1. LOAD CART ---
+        async function loadCart() {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                document.getElementById('cartItemsContainer').innerHTML = `
+                            <div style="text-align:center; padding:3rem;">
+                                <p>Please <a href="/Account/Login">login</a> to view your cart.</p>
+                            </div>
+                        `;
+                document.getElementById('cartActionsBar').style.display = 'none';
+                updateEmptySummary();
+                return;
+            }
+
+            try {
+                const res = await fetch('/api/cart', {
+                    headers: { 'Authorization': 'Bearer ' + token }
+                });
+                if (!res.ok) throw new Error('Failed to fetch cart');
+                const data = await res.json();
+                renderCart(data.items, data.totalAmount);
+            } catch (error) {
+                console.error('Error loading cart:', error);
+                document.getElementById('cartItemsContainer').innerHTML = `
+                            <div style="text-align:center; padding:2rem; color: red;">Failed to load cart. Please try again.</div>
+                        `;
+                document.getElementById('cartActionsBar').style.display = 'none';
+                updateEmptySummary();
+            }
         }
 
-        function removeCartItem(btn) {
-            const row = btn.closest('.cart-item-row');
-            row.remove();
-            recalculateCartTotals();
-        }
+        // --- 2. RENDER CART ---
+        function renderCart(items, totalAmount) {
+            const container = document.getElementById('cartItemsContainer');
+            const actionsBar = document.getElementById('cartActionsBar');
+            const checkoutBtn = document.querySelector('.checkout-btn');
 
-        function recalculateCartTotals() {
-            let sub = 0;
-            document.querySelectorAll('.cart-item-row').forEach(row => {
-                const priceText = row.querySelector('.cart-unit-price').innerText.replace('₹', '');
-                const price = parseFloat(priceText);
-                const qty = parseInt(row.querySelector('.qty-input').value);
-                const itemTotal = price * qty;
-                row.querySelector('.cart-item-total').innerText = '₹' + itemTotal.toFixed(2);
-                sub += itemTotal;
+            if (!items || items.length === 0) {
+                container.innerHTML = `
+                            <div style="text-align:center; padding:3rem;">
+                                <p>Your cart is empty.</p>
+                                <a href="/Home/Catalog" class="btn-gold" style="margin-top:1rem;">Continue Shopping</a>
+                            </div>
+                        `;
+                actionsBar.style.display = 'none';
+                if (checkoutBtn) checkoutBtn.style.display = 'none';
+                updateEmptySummary();
+                return;
+            }
+
+            actionsBar.style.display = 'block';
+            if (checkoutBtn) checkoutBtn.style.display = 'block';
+
+            container.innerHTML = '';
+            items.forEach(item => {
+                const row = document.createElement('div');
+                row.className = 'cart-item-row';
+                row.dataset.cartItemId = item.cartItemId;
+                row.innerHTML = `
+                            <div class="cart-product-info">
+                                <img src="${item.productImage || 'https://via.placeholder.com/80'}" alt="${item.productName}" onerror="this.src='https://via.placeholder.com/80'">
+                                <div>
+                                    <h3>${item.productName}</h3>
+                                    <span class="scent-tag">${item.size}</span>
+                                </div>
+                            </div>
+                            <div class="cart-size-badge">${item.size}</div>
+                            <div class="cart-unit-price">₹${item.price.toFixed(2)}</div>
+                            <div class="qty-selector">
+                                <button type="button" class="qty-btn" onclick="updateCartQty(${item.cartItemId}, -1)">&minus;</button>
+                                <input type="text" id="qty-${item.cartItemId}" value="${item.quantity}" readonly class="qty-input" />
+                                <button type="button" class="qty-btn" onclick="updateCartQty(${item.cartItemId}, 1)">&plus;</button>
+                            </div>
+                            <div class="cart-item-total" id="total-${item.cartItemId}">₹${item.total.toFixed(2)}</div>
+                            <button type="button" class="cart-remove-btn" onclick="confirmRemoveItem('${item.productName}', ${item.cartItemId})">&times;</button>
+                        `;
+                container.appendChild(row);
             });
 
-            const gst = sub * 0.18;
-            const grand = sub + gst;
+            // Update summary (no GST)
+            document.getElementById('summarySubtotal').innerText = '₹' + totalAmount.toFixed(2);
+            document.getElementById('summaryGrandTotal').innerText = '₹' + totalAmount.toFixed(2);
 
-            document.getElementById('summarySubtotal').innerText = '₹' + sub.toFixed(2);
-            document.getElementById('summaryGst').innerText = '₹' + gst.toFixed(2);
-            document.getElementById('summaryGrandTotal').innerText = '₹' + grand.toFixed(2);
+            validate6mlQuantity();
+            updateCartBadge();
         }
 
-        // --- CUSTOM CHECKOUT WITH TOAST ---
+        // --- UPDATE SUMMARY WHEN EMPTY ---
+        function updateEmptySummary() {
+            document.getElementById('summarySubtotal').innerText = '₹0.00';
+            document.getElementById('summaryGrandTotal').innerText = '₹0.00';
+        }
+
+        // --- 3. UPDATE CART QUANTITY ---
+        async function updateCartQty(cartItemId, change) {
+            const input = document.getElementById('qty-' + cartItemId);
+            let newQty = parseInt(input.value) + change;
+            if (newQty < 1) newQty = 1;
+
+            const token = localStorage.getItem('token');
+            if (!token) return;
+
+            try {
+                const res = await fetch('/api/cart/update', {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + token
+                    },
+                    body: JSON.stringify({ cartItemId, quantity: newQty })
+                });
+                if (!res.ok) {
+                    const err = await res.json();
+                    showToast(err.message || 'Failed to update quantity', 'error');
+                    return;
+                }
+                loadCart();
+            } catch (error) {
+                console.error('Error updating cart:', error);
+                showToast('Network error. Please try again.', 'error');
+            }
+        }
+
+        // --- 4. REMOVE ITEM WITH THEMED MODAL ---
+        function confirmRemoveItem(itemName, cartItemId) {
+            removeItemId = cartItemId;
+            removeItemName = itemName;
+            document.getElementById('removeModalMessage').innerHTML =
+                `Are you sure you want to remove <strong>${itemName}</strong> from your cart?`;
+            document.getElementById('removeModal').style.display = 'flex';
+        }
+
+        document.getElementById('removeConfirmYes').addEventListener('click', async function () {
+            document.getElementById('removeModal').style.display = 'none';
+            if (removeItemId !== null) {
+                await removeCartItem(removeItemId);
+                removeItemId = null;
+            }
+        });
+
+        document.getElementById('removeConfirmNo').addEventListener('click', function () {
+            document.getElementById('removeModal').style.display = 'none';
+            removeItemId = null;
+        });
+
+        // Close modal on outside click
+        document.getElementById('removeModal').addEventListener('click', function (e) {
+            if (e.target === this) {
+                this.style.display = 'none';
+                removeItemId = null;
+            }
+        });
+
+        async function removeCartItem(cartItemId) {
+            const token = localStorage.getItem('token');
+            if (!token) return;
+
+            try {
+                const res = await fetch(`/api/cart/remove/${cartItemId}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': 'Bearer ' + token }
+                });
+                if (!res.ok) {
+                    const err = await res.json();
+                    showToast(err.message || 'Failed to remove item', 'error');
+                    return;
+                }
+                loadCart();
+                if (typeof window.updateStickyTracker === 'function') {
+                    await window.updateStickyTracker();
+                }
+                showToast('Item removed from cart.', 'success');
+            } catch (error) {
+                console.error('Error removing item:', error);
+                showToast('Network error. Please try again.', 'error');
+            }
+        }
+
+        // --- 5. VALIDATE 6ML QUANTITY ---
+        function validate6mlQuantity() {
+            let total6ml = 0;
+            document.querySelectorAll('.cart-item-row').forEach(row => {
+                const sizeBadge = row.querySelector('.cart-size-badge');
+                if (sizeBadge && sizeBadge.innerText.trim() === '6ml') {
+                    const qtyInput = row.querySelector('.qty-input');
+                    const qty = parseInt(qtyInput.value) || 0;
+                    total6ml += qty;
+                }
+            });
+
+            const checkoutBtn = document.querySelector('.checkout-btn');
+            const warningDiv = document.getElementById('min6mlWarning');
+            if (warningDiv) warningDiv.remove();
+
+            if (total6ml > 0 && total6ml < 3) {
+                const warning = document.createElement('div');
+                warning.id = 'min6mlWarning';
+                warning.className = 'validation-error';
+                warning.style.cssText = `
+                            background-color: #fff3cd;
+                            color: #856404;
+                            padding: 0.75rem 1rem;
+                            border-radius: 4px;
+                            margin-top: 1rem;
+                            border-left: 4px solid #ffc107;
+                            font-size: 0.9rem;
+                        `;
+                warning.innerHTML = `
+                            ⚠️ You must purchase at least <strong>3 bottles of 6ml</strong> to place an order.
+                            You currently have <strong>${total6ml}</strong> in your cart.
+                        `;
+                const summaryCard = document.querySelector('.cart-summary-card');
+                const checkoutBtnElement = document.querySelector('.checkout-btn');
+                summaryCard.insertBefore(warning, checkoutBtnElement);
+
+                checkoutBtn.disabled = true;
+                checkoutBtn.style.opacity = '0.5';
+                checkoutBtn.style.cursor = 'not-allowed';
+            } else {
+                const btn = document.querySelector('.checkout-btn');
+                if (btn) {
+                    btn.disabled = false;
+                    btn.style.opacity = '1';
+                    btn.style.cursor = 'pointer';
+                }
+            }
+        }
+
+        // --- 6. CHECKOUT ---
         function checkout() {
             const token = localStorage.getItem('token');
             if (!token) {
@@ -137,30 +321,26 @@
                 return;
             }
 
-            // Use custom modal instead of confirm
-            const modalHtml = `
-                        <div id="confirmModal" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); display:flex; align-items:center; justify-content:center; z-index:9999;">
-                            <div style="background:white; padding:2rem; border-radius:8px; max-width:400px; text-align:center; box-shadow:0 4px 20px rgba(0,0,0,0.3);">
-                                <h3 style="font-family:var(--font-heading); color:var(--deep-burgundy);">Confirm Order</h3>
-                                <p style="color:var(--text-muted); margin:1rem 0;">Are you sure you want to place this order?</p>
-                                <div style="display:flex; gap:1rem; justify-content:center; margin-top:1.5rem;">
-                                    <button id="confirmYes" class="btn-gold">Yes, Place Order</button>
-                                    <button id="confirmNo" class="btn-outline">Cancel</button>
-                                </div>
-                            </div>
-                        </div>
-                    `;
-            document.body.insertAdjacentHTML('beforeend', modalHtml);
-
-            document.getElementById('confirmYes').addEventListener('click', async function () {
-                document.getElementById('confirmModal').remove();
-                await placeOrder();
-            });
-            document.getElementById('confirmNo').addEventListener('click', function () {
-                document.getElementById('confirmModal').remove();
-            });
+            document.getElementById('checkoutModal').style.display = 'flex';
         }
 
+        document.getElementById('modalConfirmYes').addEventListener('click', async function () {
+            document.getElementById('checkoutModal').style.display = 'none';
+            await placeOrder();
+        });
+
+        document.getElementById('modalConfirmNo').addEventListener('click', function () {
+            document.getElementById('checkoutModal').style.display = 'none';
+        });
+
+        // Close checkout modal on outside click
+        document.getElementById('checkoutModal').addEventListener('click', function (e) {
+            if (e.target === this) {
+                this.style.display = 'none';
+            }
+        });
+
+        // --- 7. PLACE ORDER ---
         async function placeOrder() {
             const token = localStorage.getItem('token');
             try {
@@ -185,5 +365,29 @@
                 showToast('Network error. Please try again.', 'error');
             }
         }
+
+        // --- 8. CART BADGE ---
+        async function updateCartBadge() {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                const badge = document.getElementById('cartCountBadge');
+                if (badge) badge.innerText = '0';
+                return;
+            }
+            try {
+                const res = await fetch('/api/cart', {
+                    headers: { 'Authorization': 'Bearer ' + token }
+                });
+                const data = await res.json();
+                const total = (data.items || []).reduce((s, i) => s + i.quantity, 0);
+                const badge = document.getElementById('cartCountBadge');
+                if (badge) badge.innerText = total;
+            } catch (e) {
+                console.error('Badge update error:', e);
+            }
+        }
+
+        // --- 9. INIT ---
+        document.addEventListener('DOMContentLoaded', loadCart);
     </script>
 }

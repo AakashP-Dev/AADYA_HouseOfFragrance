@@ -1977,3 +1977,64 @@ footer a, footer p {
         color: var(--text-dark);
         margin: 0.1rem 0;
     }
+
+/* ==========================================================================
+   STICKY 6ML TRACKER
+   ========================================================================== */
+#sticky6mlTracker {
+    box-shadow: 0 -4px 20px rgba(0,0,0,0.08);
+    backdrop-filter: blur(4px);
+}
+
+    #sticky6mlTracker .tracker-item {
+        background: var(--warm-beige);
+        border: 1px solid var(--border-color);
+        border-radius: 20px;
+        padding: 0.2rem 0.6rem 0.2rem 0.4rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        font-size: 0.8rem;
+        transition: all 0.2s ease;
+        white-space: nowrap;
+    }
+
+        #sticky6mlTracker .tracker-item:hover {
+            border-color: var(--champagne-gold);
+            box-shadow: 0 2px 8px rgba(203, 164, 99, 0.15);
+        }
+
+        #sticky6mlTracker .tracker-item img {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 1px solid var(--border-color);
+            background: white;
+        }
+
+    #sticky6mlTracker .tracker-remove {
+        background: none;
+        border: none;
+        color: #d32f2f;
+        cursor: pointer;
+        font-size: 1rem;
+        line-height: 1;
+        padding: 0 2px;
+        transition: transform 0.2s;
+    }
+
+        #sticky6mlTracker .tracker-remove:hover {
+            transform: scale(1.2);
+        }
+
+    #sticky6mlTracker .tracker-message {
+        font-size: 0.85rem;
+        color: var(--text-muted);
+    }
+
+    #sticky6mlTracker .btn-gold {
+        font-size: 0.75rem;
+        padding: 0.4rem 1.2rem;
+        white-space: nowrap;
+    }
