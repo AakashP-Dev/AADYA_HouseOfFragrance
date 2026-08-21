@@ -12,7 +12,7 @@
         <button class="btn-gold" onclick="openAddProductDrawer()">+ ADD NEW FRAGRANCE</button>
     </div>
 
-    <!-- STATS CARDS - DYNAMIC -->
+    <!-- STATS CARDS -->
     <div class="admin-stats-grid" id="adminStatsGrid">
         <div class="stat-card"><span class="stat-label">Total Sales Revenue</span><div class="stat-value" id="statRevenue">₹0</div><span class="stat-sub text-green">Loading...</span></div>
         <div class="stat-card"><span class="stat-label">Catalog Products</span><div class="stat-value" id="statProducts">0</div><span class="stat-sub">100% Alcohol-Free</span></div>
@@ -20,8 +20,17 @@
         <div class="stat-card"><span class="stat-label">Registered Clients</span><div class="stat-value" id="statClients">0</div><span class="stat-sub">Secure User Database</span></div>
     </div>
 
-    <!-- ORDER MANAGEMENT SECTION -->
-    <div class="admin-table-card">
+    <!-- TAB NAVIGATION -->
+    <div style="display:flex; gap:1rem; margin-bottom:2rem; border-bottom:1px solid var(--border-color); padding-bottom:0.5rem; flex-wrap:wrap;">
+        <button class="filter-btn active" data-tab="orders" onclick="switchTab('orders')">📦 Orders</button>
+        <button class="filter-btn" data-tab="products" onclick="switchTab('products')">🧴 Products</button>
+        <button class="filter-btn" data-tab="users" onclick="switchTab('users')">👥 Users</button>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- TAB 1: ORDERS -->
+    <!-- ============================================================ -->
+    <div id="tabOrders" class="admin-table-card">
         <div class="admin-table-header-row">
             <h3 class="table-card-title">Order Management & Fulfillment Logs</h3>
             <div class="admin-filter-pills" id="orderFilterPills">
@@ -32,205 +41,664 @@
                 <button class="filter-btn" data-status="Cancelled">Cancelled</button>
             </div>
         </div>
-
         <div class="table-responsive">
             <table class="admin-table">
                 <thead>
                     <tr><th>Order ID</th><th>Customer</th><th>Items</th><th>Total</th><th>Status</th><th style="text-align: right;">Actions</th></tr>
                 </thead>
                 <tbody id="adminOrdersTbody">
-                    <!-- Rows injected by JavaScript -->
+                    <tr><td colspan="6" style="text-align:center; padding:2rem;">Loading orders...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- TAB 2: PRODUCTS -->
+    <!-- ============================================================ -->
+    <div id="tabProducts" style="display:none;" class="admin-table-card">
+        <div class="admin-table-header-row">
+            <h3 class="table-card-title">Product Catalog</h3>
+            <button class="btn-gold" onclick="openAddProductDrawer()" style="font-size:0.75rem; padding:0.4rem 1rem;">+ ADD PRODUCT</button>
+        </div>
+        <div class="table-responsive">
+            <table class="admin-table">
+                <thead>
+                    <tr><th>Image</th><th>Name</th><th>Category</th><th>Price (6ml/12ml)</th><th>Stock</th><th style="text-align: right;">Actions</th></tr>
+                </thead>
+                <tbody id="adminProductsTbody">
+                    <tr><td colspan="6" style="text-align:center; padding:2rem;">Loading products...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- TAB 3: USERS -->
+    <!-- ============================================================ -->
+    <div id="tabUsers" style="display:none;" class="admin-table-card">
+        <div class="admin-table-header-row">
+            <h3 class="table-card-title">User Management</h3>
+        </div>
+        <div class="table-responsive">
+            <table class="admin-table">
+                <thead>
+                    <tr><th>Name</th><th>Phone</th><th>Email</th><th>Address</th><th style="text-align: right;">Action</th></tr>
+                </thead>
+                <tbody id="adminUsersTbody">
+                    <tr><td colspan="5" style="text-align:center; padding:2rem;">Loading users...</td></tr>
                 </tbody>
             </table>
         </div>
     </div>
 </section>
 
+<!-- ============================================================ -->
 <!-- ADD PRODUCT SLIDING DRAWER -->
+<!-- ============================================================ -->
 <div class="drawer-overlay" id="addProductOverlay" onclick="closeAddProductDrawer()"></div>
 <div class="product-drawer" id="addProductDrawer">
     <button class="drawer-close-btn" onclick="closeAddProductDrawer()">&times;</button>
     <div class="drawer-content">
         <span class="drawer-tagline">OBJECTIVE (C): CATALOGING</span>
         <h2 class="drawer-title">Add New Fragrance</h2>
-        <form id="addProductForm" onsubmit="handleCreateProduct(event)" class="auth-form">
-            <div class="form-group"><label for="prodName">Fragrance Title</label><input type="text" id="prodName" class="custom-input" required /></div>
-            <div class="form-group"><label for="prodCategory">Category</label><select id="prodCategory" class="custom-select" required><option value="oud">Oud & Heritage</option><option value="fresh">Aquatic & Fresh</option><option value="floral">Floral & Rose</option><option value="gourmand">Gourmand & Amber</option></select></div>
-            <div class="form-group"><label for="prodFamily">Scent Family</label><input type="text" id="prodFamily" class="custom-input" placeholder="e.g. Woody, Floral" required /></div>
-            <div class="form-group"><label for="prodDesc">Description</label><textarea id="prodDesc" class="custom-input custom-textarea" rows="3" required></textarea></div>
+        <p class="drawer-desc">Fill in the details to add a new product to the catalog.</p>
+
+        <form id="addProductForm" class="auth-form">
+            <div class="form-group">
+                <label for="prodName">Fragrance Title</label>
+                <input type="text" id="prodName" class="custom-input" required />
+            </div>
+            <div class="form-group">
+                <label for="prodCategory">Category</label>
+                <select id="prodCategory" class="custom-select" required>
+                    <option value="Signature Blends">Signature Blends</option>
+                    <option value="Attars & Oud">Attars & Oud</option>
+                    <option value="Contemporary Fragrances">Contemporary Fragrances</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="prodFamily">Scent Family</label>
+                <input type="text" id="prodFamily" class="custom-input" placeholder="e.g. Woody, Floral" required />
+            </div>
+            <div class="form-group">
+                <label for="prodDesc">Description</label>
+                <textarea id="prodDesc" class="custom-input custom-textarea" rows="3" required></textarea>
+            </div>
+            <div class="form-group">
+                <label for="prodImage">Product Image</label>
+                <input type="file" id="prodImage" accept="image/*" />
+                <div id="imagePreview" style="margin-top:0.5rem; max-width:100px; display:none;">
+                    <img id="previewImg" src="#" alt="Preview" style="width:100%; border:1px solid var(--border-color); border-radius:4px;" />
+                </div>
+            </div>
             <div class="size-qty-row">
-                <div class="form-group" style="flex:1; margin-right:0.5rem;"><label>6ml Price (₹)</label><input type="number" id="prodPrice6" class="custom-input" required /></div>
-                <div class="form-group" style="flex:1;"><label>12ml Price (₹)</label><input type="number" id="prodPrice12" class="custom-input" required /></div>
+                <div class="form-group" style="flex:1; margin-right:0.5rem;">
+                    <label>6ml Price (₹)</label>
+                    <input type="number" id="prodPrice6" class="custom-input" required />
+                </div>
+                <div class="form-group" style="flex:1;">
+                    <label>12ml Price (₹)</label>
+                    <input type="number" id="prodPrice12" class="custom-input" required />
+                </div>
             </div>
             <button type="submit" class="btn-gold checkout-btn" style="margin-top:1rem;">SAVE TO CATALOG</button>
         </form>
     </div>
 </div>
 
+<!-- STOCK UPDATE MODAL -->
+<div id="stockModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:9998; align-items:center; justify-content:center;">
+    <div style="background:white; padding:2rem; border-radius:8px; max-width:420px; text-align:center; box-shadow:0 4px 20px rgba(0,0,0,0.3); width:90%;">
+        <h3 style="font-family:var(--font-heading); color:var(--deep-burgundy); margin:0 0 0.5rem 0;">Update Stock</h3>
+        <p style="color:var(--text-muted); margin:0 0 1rem 0;">Enter the new stock quantity for <strong id="stockProductName"></strong></p>
+        <div class="form-group">
+            <label for="stockInput">Stock Quantity</label>
+            <input type="number" id="stockInput" class="custom-input" style="width:100%; text-align:center; font-size:1.2rem; padding:0.5rem;" min="0" />
+        </div>
+        <div style="display:flex; gap:1rem; justify-content:center; margin-top:1.5rem;">
+            <button id="stockConfirmBtn" class="btn-gold">Update</button>
+            <button id="stockCancelBtn" class="btn-outline">Cancel</button>
+        </div>
+    </div>
+</div>
+
+<!-- REJECT ORDER REASON MODAL -->
+<div id="reasonModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:9998; align-items:center; justify-content:center;">
+    <div style="background:white; padding:2rem; border-radius:8px; max-width:420px; text-align:center; box-shadow:0 4px 20px rgba(0,0,0,0.3); width:90%;">
+        <h3 style="font-family:var(--font-heading); color:var(--deep-burgundy); margin:0 0 0.5rem 0;">Reject Order</h3>
+        <p style="color:var(--text-muted); margin:0 0 1rem 0;">Please provide a reason for rejecting <strong id="rejectOrderId"></strong></p>
+        <div class="form-group">
+            <label for="reasonInput">Reason</label>
+            <textarea id="reasonInput" class="custom-input custom-textarea" rows="3" style="width:100%;" placeholder="e.g. Out of stock, Customer request, etc."></textarea>
+        </div>
+        <div style="display:flex; gap:1rem; justify-content:center; margin-top:1.5rem;">
+            <button id="reasonConfirmBtn" class="btn-gold">Reject Order</button>
+            <button id="reasonCancelBtn" class="btn-outline">Cancel</button>
+        </div>
+    </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- CONFIRMATION MODAL -->
+<!-- ============================================================ -->
+<div id="confirmModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:9999; align-items:center; justify-content:center;">
+    <div style="background:white; padding:2rem; border-radius:8px; max-width:420px; text-align:center; box-shadow:0 4px 20px rgba(0,0,0,0.3); width:90%;">
+        <div id="modalIcon" style="font-size:3rem; margin-bottom:0.5rem;">⚠️</div>
+        <h3 id="modalTitle" style="font-family:var(--font-heading); color:var(--deep-burgundy); margin:0 0 0.5rem 0;">Confirm Action</h3>
+        <p id="modalMessage" style="color:var(--text-muted); margin:0 0 1.5rem 0; line-height:1.6;"></p>
+        <div style="display:flex; gap:1rem; justify-content:center;">
+            <button id="modalConfirmBtn" class="btn-gold">Yes, Proceed</button>
+            <button id="modalCancelBtn" class="btn-outline">Cancel</button>
+        </div>
+    </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- USER ORDERS MODAL -->
+<!-- ============================================================ -->
+<div id="userOrdersModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:9998; align-items:center; justify-content:center; overflow-y:auto;">
+    <div style="background:white; padding:2rem; border-radius:8px; max-width:600px; width:90%; max-height:80vh; overflow-y:auto; box-shadow:0 4px 20px rgba(0,0,0,0.3);">
+        <h3 id="userOrdersTitle" style="font-family:var(--font-heading); color:var(--deep-burgundy); margin:0 0 1rem 0;">Orders for <span id="userOrdersName"></span></h3>
+        <div id="userOrdersList"></div>
+        <div style="text-align:center; margin-top:1rem;">
+            <button class="btn-outline" onclick="closeUserOrders()">Close</button>
+        </div>
+    </div>
+</div>
+
 @section Scripts {
     <script>
-        // --- 1. FETCH DASHBOARD DATA ---
-        async function loadDashboardData() {
+        let activeTab = 'orders';
+        let currentProductId = null;
+
+        // --- 1. TAB SWITCHING ---
+        function switchTab(tab) {
+            activeTab = tab;
+            document.querySelectorAll('.filter-btn[data-tab]').forEach(b => b.classList.remove('active'));
+            document.querySelector(`.filter-btn[data-tab="${tab}"]`).classList.add('active');
+
+            document.getElementById('tabOrders').style.display = tab === 'orders' ? 'block' : 'none';
+            document.getElementById('tabProducts').style.display = tab === 'products' ? 'block' : 'none';
+            document.getElementById('tabUsers').style.display = tab === 'users' ? 'block' : 'none';
+
+            if (tab === 'orders') loadOrders();
+            if (tab === 'products') loadProducts();
+            if (tab === 'users') loadUsers();
+        }
+
+        // --- 2. LOAD DASHBOARD STATS ---
+        async function loadStats() {
+            const token = localStorage.getItem('token');
+            if (!token) return;
             try {
-                // TODO: Replace with actual API calls
-                // const statsRes = await fetch('/api/admin/stats');
-                // const ordersRes = await fetch('/api/admin/orders');
-                // const stats = await statsRes.json();
-                // const orders = await ordersRes.json();
-
-                // Simulated data (REMOVE IN PRODUCTION)
-                const stats = { totalRevenue: 148250, totalProducts: 34, totalOrders: 3, totalClients: 184 };
-                const orders = [
-                    { id: '#AAD-1048', customer: 'Ananya Sharma', items: 'Kesar Chandan (12ml), Oud Al Noor (6ml)', total: 1097.40, status: 'Processing' },
-                    { id: '#AAD-1047', customer: 'Priya S.', items: 'Turkish Rose (12ml)', total: 885.00, status: 'Dispatched' },
-                    { id: '#AAD-1046', customer: 'Rahul M.', items: 'Black Oud (12ml)', total: 1298.00, status: 'Delivered' }
-                ];
-
-                // Update Stats
+                const res = await fetch('/api/admin/stats', { headers: { 'Authorization': 'Bearer ' + token } });
+                if (!res.ok) throw new Error('Failed to load stats');
+                const stats = await res.json();
                 document.getElementById('statRevenue').innerText = '₹' + stats.totalRevenue.toLocaleString('en-IN');
                 document.getElementById('statProducts').innerText = stats.totalProducts;
                 document.getElementById('statOrders').innerText = stats.totalOrders;
                 document.getElementById('statClients').innerText = stats.totalClients;
-
-                // Render Orders
-                renderOrders(orders);
-
             } catch (error) {
-                console.error('Failed to load dashboard:', error);
-                showToast('Failed to load dashboard data.', 'error');
+                console.error('Error loading stats:', error);
+                document.querySelectorAll('.stat-value').forEach(el => el.innerText = 'Error');
             }
         }
 
-        // --- 2. RENDER ORDERS ---
+        // --- 3. LOAD ORDERS ---
+        async function loadOrders() {
+            const token = localStorage.getItem('token');
+            if (!token) return;
+            const tbody = document.getElementById('adminOrdersTbody');
+            tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:2rem;">Loading orders...</td></tr>';
+            try {
+                const res = await fetch('/api/admin/orders', { headers: { 'Authorization': 'Bearer ' + token } });
+                if (!res.ok) throw new Error('Failed to load orders');
+                const orders = await res.json();
+                renderOrders(orders);
+            } catch (error) {
+                console.error('Error loading orders:', error);
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:2rem; color:red;">Failed to load orders.</td></tr>';
+            }
+        }
+
         function renderOrders(orders) {
             const tbody = document.getElementById('adminOrdersTbody');
             tbody.innerHTML = '';
-
+            if (!orders || orders.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:2rem;">No orders found.</td></tr>';
+                return;
+            }
             orders.forEach(order => {
                 const statusClass = order.status.toLowerCase();
                 const tr = document.createElement('tr');
                 tr.dataset.status = order.status;
-
                 let actionsHtml = '';
                 if (order.status === 'Processing') {
-                    actionsHtml = `<button class="btn-outline admin-sm-btn" onclick="updateOrderStatus('${order.id}', 'Dispatched')">Mark Dispatched</button>
-                                                   <button class="btn-outline admin-sm-btn btn-danger" onclick="rejectOrder('${order.id}')">Reject</button>`;
+                    actionsHtml = `
+                                <button class="btn-outline admin-sm-btn" onclick="updateOrderStatus('${order.id}', 'Dispatched')">Mark Dispatched</button>
+                                <button class="btn-outline admin-sm-btn btn-danger" onclick="rejectOrder('${order.id}')">Reject</button>
+                            `;
                 } else if (order.status === 'Dispatched') {
-                    actionsHtml = `<button class="btn-outline admin-sm-btn" onclick="updateOrderStatus('${order.id}', 'Delivered')">Mark Delivered</button>
-                                                   <button class="btn-outline admin-sm-btn btn-danger" onclick="rejectOrder('${order.id}')">Reject</button>`;
+                    actionsHtml = `
+                                <button class="btn-outline admin-sm-btn" onclick="updateOrderStatus('${order.id}', 'Delivered')">Mark Delivered</button>
+                                <button class="btn-outline admin-sm-btn btn-danger" onclick="rejectOrder('${order.id}')">Reject</button>
+                            `;
                 } else {
                     actionsHtml = `<span class="status-text-completed">Completed</span>`;
                 }
-
                 tr.innerHTML = `
-                                    <td><strong>${order.id}</strong></td>
-                                    <td><div class="client-contact-info"><strong>${order.customer}</strong><div class="contact-links"><a href="https://wa.me/919824292270?text=Hello%20${encodeURIComponent(order.customer)}" target="_blank" class="contact-btn whatsapp">💬 WhatsApp</a><a href="mailto:customer@example.com" class="contact-btn email">✉️ Email</a></div></div></td>
-                                    <td>${order.items}</td>
-                                    <td>₹${order.total.toFixed(2)}</td>
-                                    <td><span class="status-pill status-${statusClass}">${order.status}</span></td>
-                                    <td style="text-align: right;">${actionsHtml}</td>
-                                `;
+                            <td><strong>${order.id}</strong></td>
+                            <td><div class="client-contact-info"><strong>${order.customer}</strong><div class="contact-links"><a href="https://wa.me/919824292270?text=Hello%20${encodeURIComponent(order.customer)}" target="_blank" class="contact-btn whatsapp">💬 WhatsApp</a><a href="mailto:customer@example.com" class="contact-btn email">✉️ Email</a></div></div></td>
+                            <td>${order.items}</td>
+                            <td>₹${order.total.toFixed(2)}</td>
+                            <td><span class="status-pill status-${statusClass}">${order.status}</span></td>
+                            <td style="text-align: right;">${actionsHtml}</td>
+                        `;
                 tbody.appendChild(tr);
             });
         }
 
-        // --- 3. ORDER OPERATIONS (API CALLS) with TOAST ---
+        // --- 4. ORDER ACTIONS ---
         async function updateOrderStatus(orderId, newStatus) {
-            if (!confirm(`Update ${orderId} to ${newStatus}?`)) return;
-            try {
-                // TODO: await fetch(`/api/admin/orders/${orderId}/status`, { method: 'PUT', body: JSON.stringify({ status: newStatus }) });
-                showToast(`${orderId} updated to ${newStatus}.`, 'success');
-                // Refresh UI or update row manually
-                const rows = document.querySelectorAll('#adminOrdersTbody tr');
-                rows.forEach(row => {
-                    if (row.querySelector('td strong').innerText === orderId) {
-                        row.dataset.status = newStatus;
-                        const statusTd = row.children[4];
-                        statusTd.innerHTML = `<span class="status-pill status-${newStatus.toLowerCase()}">${newStatus}</span>`;
-                        // Update actions
-                        const actionTd = row.children[5];
-                        if (newStatus === 'Dispatched') {
-                            actionTd.innerHTML = `<button class="btn-outline admin-sm-btn" onclick="updateOrderStatus('${orderId}', 'Delivered')">Mark Delivered</button>
-                                                                   <button class="btn-outline admin-sm-btn btn-danger" onclick="rejectOrder('${orderId}')">Reject</button>`;
-                        } else if (newStatus === 'Delivered') {
-                            actionTd.innerHTML = `<span class="status-text-completed">Completed</span>`;
-                        }
+            showModal('🔄', 'Update Status', `Are you sure you want to mark ${orderId} as ${newStatus}?`, async function() {
+                const token = localStorage.getItem('token');
+                try {
+                    const res = await fetch(`/api/admin/orders/${orderId}/status`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+                        body: JSON.stringify({ status: newStatus })
+                    });
+                    const data = await res.json();
+                    if (res.ok) {
+                        showToast(data.message, 'success');
+                        loadOrders();
+                        loadStats();
+                    } else {
+                        showToast(data.message || 'Failed to update status.', 'error');
                     }
-                });
+                } catch (error) {
+                    showToast('Network error.', 'error');
+                }
+            });
+        }
+
+        // --- 5. LOAD PRODUCTS ---
+        async function loadProducts() {
+            const token = localStorage.getItem('token');
+            if (!token) return;
+            const tbody = document.getElementById('adminProductsTbody');
+            tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:2rem;">Loading products...</td></tr>';
+            try {
+                const res = await fetch('/api/admin/products', { headers: { 'Authorization': 'Bearer ' + token } });
+                if (!res.ok) throw new Error('Failed to load products');
+                const products = await res.json();
+                renderProducts(products);
             } catch (error) {
-                showToast('Failed to update status.', 'error');
+                console.error('Error loading products:', error);
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:2rem; color:red;">Failed to load products.</td></tr>';
             }
         }
 
-        async function rejectOrder(orderId) {
-            const reason = prompt(`Provide a valid reason for rejecting ${orderId}:`);
-            if (!reason || reason.trim() === "") return;
-            try {
-                // TODO: await fetch(`/api/admin/orders/${orderId}/reject`, { method: 'PUT', body: JSON.stringify({ reason: reason }) });
-                showToast(`${orderId} rejected. Reason: ${reason}`, 'error');
-                // Remove or mark row
-                const rows = document.querySelectorAll('#adminOrdersTbody tr');
-                rows.forEach(row => {
-                    if (row.querySelector('td strong').innerText === orderId) {
-                        row.dataset.status = 'Cancelled';
-                        const statusTd = row.children[4];
-                        statusTd.innerHTML = `<span class="status-pill status-cancelled">Cancelled</span><br><small style="color:#d32f2f;font-size:0.7rem;">Reason: ${reason}</small>`;
-                        row.children[5].innerHTML = `<span style="font-size:0.75rem;color:#888;">Rejected</span>`;
-                    }
-                });
-            } catch (error) {
-                showToast('Failed to reject order.', 'error');
+        function renderProducts(products) {
+            const tbody = document.getElementById('adminProductsTbody');
+            tbody.innerHTML = '';
+            if (!products || products.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:2rem;">No products found.</td></tr>';
+                return;
             }
+            products.forEach(p => {
+                const variants = p.variants || [];
+                const price6 = variants.find(v => v.size === '6ml')?.price || 0;
+                const price12 = variants.find(v => v.size === '12ml')?.price || 0;
+                const stock = variants.length > 0 ? variants[0].stockQuantity : 0;
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                            <td><img src="${p.imageUrl || 'https://via.placeholder.com/50'}" alt="${p.name}" style="width:50px; height:50px; object-fit:cover; border-radius:4px; border:1px solid var(--border-color);" onerror="this.src='https://via.placeholder.com/50'"></td>
+                            <td><strong>${p.name}</strong></td>
+                            <td>${p.categoryName}</td>
+                            <td>₹${price6} / ₹${price12}</td>
+                            <td>${stock}</td>
+                            <td style="text-align: right;">
+                                <button class="btn-outline admin-sm-btn" onclick="updateStock(${p.productId}, ${stock})">Update Stock</button>
+                                <button class="btn-outline admin-sm-btn btn-danger" onclick="deleteProduct(${p.productId}, '${p.name}')">Delete</button>
+                            </td>
+                        `;
+                tbody.appendChild(tr);
+            });
         }
 
-        // --- 4. ADD PRODUCT (API CALL) with TOAST ---
-        async function handleCreateProduct(e) {
+        // --- UPDATE STOCK with themed modal ---
+        let stockProductId = null;
+
+        function updateStock(productId, currentStock, productName) {
+            stockProductId = productId;
+            document.getElementById('stockProductName').innerText = productName;
+            document.getElementById('stockInput').value = currentStock;
+            document.getElementById('stockModal').style.display = 'flex';
+            document.getElementById('stockInput').focus();
+            document.getElementById('stockInput').select();
+        }
+
+        document.getElementById('stockConfirmBtn').addEventListener('click', async function() {
+            const newStock = parseInt(document.getElementById('stockInput').value);
+            if (isNaN(newStock) || newStock < 0) {
+                showToast('Please enter a valid stock number (0 or greater).', 'error');
+                return;
+            }
+            document.getElementById('stockModal').style.display = 'none';
+            const token = localStorage.getItem('token');
+            try {
+                const res = await fetch(`/api/admin/products/${stockProductId}/stock`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+                    body: JSON.stringify({ stockQuantity: newStock })
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    showToast(data.message, 'success');
+                    loadProducts();
+                } else {
+                    showToast(data.message || 'Failed to update stock.', 'error');
+                }
+            } catch (error) {
+                showToast('Network error.', 'error');
+            }
+            stockProductId = null;
+        });
+
+        document.getElementById('stockCancelBtn').addEventListener('click', function() {
+            document.getElementById('stockModal').style.display = 'none';
+            stockProductId = null;
+        });
+
+        // Close modal on outside click
+        document.getElementById('stockModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                this.style.display = 'none';
+                stockProductId = null;
+            }
+        });
+
+        // --- REJECT ORDER with themed modal ---
+        let rejectOrderId = null;
+
+        function rejectOrder(orderId) {
+            rejectOrderId = orderId;
+            document.getElementById('rejectOrderId').innerText = orderId;
+            document.getElementById('reasonInput').value = '';
+            document.getElementById('reasonModal').style.display = 'flex';
+            document.getElementById('reasonInput').focus();
+        }
+
+        document.getElementById('reasonConfirmBtn').addEventListener('click', async function() {
+            const reason = document.getElementById('reasonInput').value.trim();
+            if (!reason) {
+                showToast('Please provide a reason for rejecting the order.', 'error');
+                return;
+            }
+            document.getElementById('reasonModal').style.display = 'none';
+            const token = localStorage.getItem('token');
+            try {
+                const res = await fetch(`/api/admin/orders/${rejectOrderId}/status`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+                    body: JSON.stringify({ status: 'Cancelled' })
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    showToast(`Order ${rejectOrderId} rejected. Reason: ${reason}`, 'error');
+                    loadOrders();
+                    loadStats();
+                } else {
+                    showToast(data.message || 'Failed to reject order.', 'error');
+                }
+            } catch (error) {
+                showToast('Network error.', 'error');
+            }
+            rejectOrderId = null;
+        });
+
+        document.getElementById('reasonCancelBtn').addEventListener('click', function() {
+            document.getElementById('reasonModal').style.display = 'none';
+            rejectOrderId = null;
+        });
+
+        // Close modal on outside click
+        document.getElementById('reasonModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                this.style.display = 'none';
+                rejectOrderId = null;
+            }
+        });
+
+        async function deleteProduct(productId, productName) {
+            showModal('🗑️', 'Delete Product', `Are you sure you want to permanently delete <strong>${productName}</strong>? This action cannot be undone.`, async function() {
+                const token = localStorage.getItem('token');
+                try {
+                    const res = await fetch(`/api/admin/products/${productId}`, {
+                        method: 'DELETE',
+                        headers: { 'Authorization': 'Bearer ' + token }
+                    });
+                    const data = await res.json();
+                    if (res.ok) {
+                        showToast(data.message, 'success');
+                        loadProducts();
+                        loadStats();
+                    } else {
+                        showToast(data.message || 'Failed to delete product.', 'error');
+                    }
+                } catch (error) {
+                    showToast('Network error.', 'error');
+                }
+            });
+        }
+
+        // --- 7. ADD PRODUCT ---
+        document.getElementById('prodImage').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    document.getElementById('previewImg').src = event.target.result;
+                    document.getElementById('imagePreview').style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        document.getElementById('addProductForm').addEventListener('submit', async function(e) {
             e.preventDefault();
+            const token = localStorage.getItem('token');
+            if (!token) return;
+
+            const imageFile = document.getElementById('prodImage').files[0];
+            let imageBase64 = '';
+            if (imageFile) {
+                const reader = new FileReader();
+                const dataUrl = await new Promise(resolve => {
+                    reader.onload = ev => resolve(ev.target.result);
+                    reader.readAsDataURL(imageFile);
+                });
+                imageBase64 = dataUrl;
+            }
+
             const payload = {
-                name: document.getElementById('prodName').value,
+                name: document.getElementById('prodName').value.trim(),
                 category: document.getElementById('prodCategory').value,
-                scentFamily: document.getElementById('prodFamily').value,
-                description: document.getElementById('prodDesc').value,
+                scentFamily: document.getElementById('prodFamily').value.trim(),
+                description: document.getElementById('prodDesc').value.trim(),
+                imageUrl: imageBase64 || '',
                 price6ml: parseFloat(document.getElementById('prodPrice6').value),
                 price12ml: parseFloat(document.getElementById('prodPrice12').value)
             };
 
             try {
-                // TODO: await fetch('/api/admin/products', { method: 'POST', body: JSON.stringify(payload) });
-                showToast(`Fragrance "${payload.name}" saved to catalog!`, 'success');
-                closeAddProductDrawer();
-                document.getElementById('addProductForm').reset();
-                loadDashboardData(); // Refresh stats
+                const res = await fetch('/api/admin/products', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+                    body: JSON.stringify(payload)
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    showToast(data.message, 'success');
+                    closeAddProductDrawer();
+                    document.getElementById('addProductForm').reset();
+                    document.getElementById('imagePreview').style.display = 'none';
+                    loadProducts();
+                    loadStats();
+                } else {
+                    showToast(data.message || 'Failed to add product.', 'error');
+                }
             } catch (error) {
-                showToast('Failed to add product.', 'error');
+                showToast('Network error.', 'error');
+            }
+        });
+
+        // --- 8. LOAD USERS ---
+        async function loadUsers() {
+            const token = localStorage.getItem('token');
+            if (!token) return;
+            const tbody = document.getElementById('adminUsersTbody');
+            tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:2rem;">Loading users...</td></tr>';
+            try {
+                const res = await fetch('/api/admin/users', { headers: { 'Authorization': 'Bearer ' + token } });
+                if (!res.ok) throw new Error('Failed to load users');
+                const users = await res.json();
+                renderUsers(users);
+            } catch (error) {
+                console.error('Error loading users:', error);
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:2rem; color:red;">Failed to load users.</td></tr>';
             }
         }
 
-        // --- 5. DRAWER CONTROLS ---
+        function renderUsers(users) {
+            const tbody = document.getElementById('adminUsersTbody');
+            tbody.innerHTML = '';
+            if (!users || users.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:2rem;">No users found.</td></tr>';
+                return;
+            }
+            users.forEach(user => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                            <td><strong>${user.fullName}</strong></td>
+                            <td>${user.phoneNumber || 'N/A'}</td>
+                            <td>${user.email}</td>
+                            <td>${user.address || 'N/A'}</td>
+                            <td style="text-align: right;">
+                                <button class="btn-outline admin-sm-btn" onclick="viewUserOrders(${user.userId}, '${user.fullName}')">View Orders</button>
+                            </td>
+                        `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // --- 9. VIEW USER ORDERS ---
+        async function viewUserOrders(userId, userName) {
+            document.getElementById('userOrdersName').innerText = userName;
+            document.getElementById('userOrdersList').innerHTML = 'Loading orders...';
+            document.getElementById('userOrdersModal').style.display = 'flex';
+
+            const token = localStorage.getItem('token');
+            try {
+                const res = await fetch(`/api/admin/users/${userId}/orders`, {
+                    headers: { 'Authorization': 'Bearer ' + token }
+                });
+                if (!res.ok) throw new Error('Failed to load user orders');
+                const orders = await res.json();
+                renderUserOrders(orders);
+            } catch (error) {
+                document.getElementById('userOrdersList').innerHTML = '<p style="color:red;">Failed to load orders.</p>';
+                console.error(error);
+            }
+        }
+
+        function renderUserOrders(orders) {
+            const container = document.getElementById('userOrdersList');
+            if (!orders || orders.length === 0) {
+                container.innerHTML = '<p style="color:var(--text-muted); text-align:center;">No orders found for this user.</p>';
+                return;
+            }
+            let html = '';
+            orders.forEach(o => {
+                html += `
+                            <div style="background:var(--warm-ivory); border:1px solid var(--border-color); border-radius:4px; padding:1rem; margin-bottom:1rem;">
+                                <div style="display:flex; justify-content:space-between; flex-wrap:wrap;">
+                                    <strong>Order #${o.orderId}</strong>
+                                    <span class="status-pill status-${o.orderStatus.toLowerCase()}">${o.orderStatus}</span>
+                                </div>
+                                <p style="margin:0.2rem 0;">Total: ₹${o.totalAmount.toFixed(2)}</p>
+                                <p style="margin:0.2rem 0; font-size:0.85rem; color:var(--text-muted);">${new Date(o.createdAt).toLocaleDateString()}</p>
+                                <p style="margin:0.2rem 0; font-size:0.85rem; color:var(--text-muted);">Shipping: ${o.shippingAddress}</p>
+                                <div style="margin-top:0.5rem;">
+                                    <strong>Items:</strong>
+                                    <ul style="list-style:none; padding:0; margin:0.2rem 0;">
+                                        ${o.items.map(item => `<li style="font-size:0.85rem; padding:0.1rem 0;">${item.productName} (${item.size}) × ${item.quantity} = ₹${item.total.toFixed(2)}</li>`).join('')}
+                                    </ul>
+                                </div>
+                            </div>
+                        `;
+            });
+            container.innerHTML = html;
+        }
+
+        function closeUserOrders() {
+            document.getElementById('userOrdersModal').style.display = 'none';
+        }
+
+        // --- 10. DRAWER CONTROLS ---
         function openAddProductDrawer() {
             document.getElementById('addProductOverlay').classList.add('open');
             document.getElementById('addProductDrawer').classList.add('open');
             document.body.style.overflow = 'hidden';
         }
+
         function closeAddProductDrawer() {
             document.getElementById('addProductOverlay').classList.remove('open');
             document.getElementById('addProductDrawer').classList.remove('open');
             document.body.style.overflow = 'auto';
         }
 
-        // --- 6. FILTER ORDERS ---
+        // --- 11. CONFIRMATION MODAL ---
+        function showModal(icon, title, message, onConfirm) {
+            document.getElementById('modalIcon').textContent = icon;
+            document.getElementById('modalTitle').textContent = title;
+            document.getElementById('modalMessage').innerHTML = message;
+
+            const modal = document.getElementById('confirmModal');
+            modal.style.display = 'flex';
+
+            document.getElementById('modalConfirmBtn').onclick = function() {
+                modal.style.display = 'none';
+                if (onConfirm) onConfirm();
+            };
+            document.getElementById('modalCancelBtn').onclick = function() {
+                modal.style.display = 'none';
+            };
+            modal.onclick = function(e) {
+                if (e.target === modal) modal.style.display = 'none';
+            };
+        }
+
+        // --- 12. ORDER FILTER ---
         document.getElementById('orderFilterPills').addEventListener('click', (e) => {
             if (e.target.classList.contains('filter-btn')) {
                 document.querySelectorAll('#orderFilterPills .filter-btn').forEach(b => b.classList.remove('active'));
                 e.target.classList.add('active');
                 const status = e.target.dataset.status;
                 document.querySelectorAll('#adminOrdersTbody tr').forEach(row => {
-                    row.style.display = (status === 'all' || row.dataset.status === status) ? '' : 'none';
+                    if (row.dataset.status) {
+                        row.style.display = (status === 'all' || row.dataset.status === status) ? '' : 'none';
+                    }
                 });
             }
         });
 
-        // --- INIT ---
-        loadDashboardData();
+        // --- 13. INIT ---
+        document.addEventListener('DOMContentLoaded', function() {
+            loadStats();
+            loadOrders(); // default tab
+        });
     </script>
 }

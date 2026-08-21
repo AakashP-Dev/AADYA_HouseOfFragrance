@@ -15,4 +15,9 @@
         public decimal Price6ml { get; set; }
         public decimal Price12ml { get; set; }
     }
+
+    public class StockUpdateDto
+    {
+        public int StockQuantity { get; set; }
+    }
 }

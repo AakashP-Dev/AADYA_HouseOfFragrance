@@ -100,5 +100,121 @@ namespace AADYA_HouseOfFragrance.Controllers
 
             return Ok(new { message = "Product added successfully.", productId = product.ProductId });
         }
+
+        // GET: api/admin/products
+        [HttpGet("products")]
+        public async Task<IActionResult> GetProducts()
+        {
+            var products = await _context.Products
+                .Include(p => p.Category)
+                .Include(p => p.Variants)
+                .Select(p => new
+                {
+                    p.ProductId,
+                    p.Name,
+                    p.Description,
+                    p.ImageUrl,
+                    p.ScentFamily,
+                    p.RecommendedOccasion,
+                    p.Intensity,
+                    p.CreatedAt,
+                    CategoryName = p.Category.CategoryName,
+                    Variants = p.Variants.Select(v => new { v.VariantId, v.Size, v.Price, v.StockQuantity })
+                })
+                .ToListAsync();
+
+            return Ok(products);
+        }
+
+        // DELETE: api/admin/products/{id}
+        [HttpDelete("products/{id}")]
+        public async Task<IActionResult> DeleteProduct(int id)
+        {
+            var product = await _context.Products
+                .Include(p => p.Variants)
+                .FirstOrDefaultAsync(p => p.ProductId == id);
+
+            if (product == null)
+                return NotFound(new { message = "Product not found." });
+
+            if (product.Variants.Any())
+                _context.ProductVariants.RemoveRange(product.Variants);
+
+            _context.Products.Remove(product);
+            await _context.SaveChangesAsync();
+
+            return Ok(new { message = "Product deleted successfully." });
+        }
+
+        // PUT: api/admin/products/{id}/stock
+        [HttpPut("products/{id}/stock")]
+        public async Task<IActionResult> UpdateStock(int id, [FromBody] StockUpdateDto request)
+        {
+            var product = await _context.Products
+                .Include(p => p.Variants)
+                .FirstOrDefaultAsync(p => p.ProductId == id);
+
+            if (product == null)
+                return NotFound(new { message = "Product not found." });
+
+            foreach (var variant in product.Variants)
+            {
+                variant.StockQuantity = request.StockQuantity;
+            }
+            await _context.SaveChangesAsync();
+
+            return Ok(new { message = "Stock updated successfully." });
+        }
+
+        // GET: api/admin/users
+        [HttpGet("users")]
+        public async Task<IActionResult> GetUsers()
+        {
+            var users = await _context.Users
+                .Select(u => new
+                {
+                    u.UserId,
+                    u.FullName,
+                    u.Email,
+                    u.PhoneNumber,
+                    u.Address,
+                    u.CreatedAt
+                })
+                .ToListAsync();
+
+            return Ok(users);
+        }
+
+        // GET: api/admin/users/{id}/orders
+        [HttpGet("users/{id}/orders")]
+        public async Task<IActionResult> GetUserOrders(int id)
+        {
+            var orders = await _context.Orders
+                .Where(o => o.UserId == id)
+                .Include(o => o.OrderItems)
+                    .ThenInclude(oi => oi.ProductVariant)
+                        .ThenInclude(v => v.Product)
+                .OrderByDescending(o => o.CreatedAt)
+                .ToListAsync();
+
+            var result = orders.Select(o => new
+            {
+                o.OrderId,
+                o.OrderStatus,
+                o.TotalAmount,
+                o.CreatedAt,
+                o.ShippingAddress,
+                Items = o.OrderItems.Select(oi => new
+                {
+                    ProductName = oi.ProductVariant?.Product?.Name ?? "Unknown",
+                    Size = oi.ProductVariant?.Size ?? "N/A",
+                    Quantity = oi.Quantity,
+                    UnitPrice = oi.UnitPriceAtSale,
+                    Total = oi.UnitPriceAtSale * oi.Quantity
+                })
+            });
+
+            return Ok(result);
+        }
     }
 }
