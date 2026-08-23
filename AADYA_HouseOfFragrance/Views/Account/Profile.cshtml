@@ -1,4 +1,4 @@
-﻿@{
+﻿﻿@{
     ViewData["Title"] = "My Profile - AADYA";
 }
 
@@ -140,7 +140,7 @@
                 <div class="password-wrapper">
                     <input type="password" id="oldPassword" class="custom-input" style="width:100%;" required />
                     <button type="button" class="toggle-password-btn" onclick="togglePasswordVisibility('oldPassword', this)" aria-label="Toggle password visibility">
-                        <!-- SVG icons (as before) -->
+                        <!-- SVG icons -->
                     </button>
                 </div>
             </div>
@@ -191,16 +191,18 @@
         <!-- Divider -->
         <hr style="border: none; border-top: 1px solid var(--border-color); margin: 1.5rem 0;" />
 
-        <!-- Add Address Form -->
-        <form id="addAddressForm">
-            <h4 style="font-family:var(--font-heading); color:var(--deep-burgundy); margin:0 0 1.2rem 0; font-size:1.1rem;">
+        <!-- Add/Edit Address Form -->
+        <form id="addressForm">
+            <h4 id="addressFormTitle" style="font-family:var(--font-heading); color:var(--deep-burgundy); margin:0 0 1.2rem 0; font-size:1.1rem;">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle; margin-right:4px;">
                     <circle cx="12" cy="12" r="10" />
                     <line x1="12" y1="8" x2="12" y2="16" />
                     <line x1="8" y1="12" x2="16" y2="12" />
                 </svg>
-                Add New Address
+                <span id="addressFormLabel">Add New Address</span>
             </h4>
+
+            <input type="hidden" id="editAddressId" value="0" />
 
             <div class="form-group">
                 <label for="addrLabel">Label</label>
@@ -258,8 +260,13 @@
                     <line x1="12" y1="8" x2="12" y2="16" />
                     <line x1="8" y1="12" x2="16" y2="12" />
                 </svg>
-                ADD ADDRESS
+                <span id="addressSubmitBtn">ADD ADDRESS</span>
             </button>
+
+            <!-- Cancel Edit button -->
+            <div style="margin-top:0.8rem; text-align:center;">
+                <button type="button" class="btn-outline" id="cancelEditAddress" style="display:none; font-size:0.8rem; padding:0.4rem 1.2rem;">CANCEL EDIT</button>
+            </div>
         </form>
 
         <div style="margin-top:1.5rem; text-align:center;">
@@ -529,27 +536,71 @@
         // --- 5. ADDRESS BOOK ---
         async function openAddressBook() {
             document.getElementById('addressBookModal').style.display = 'flex';
+            resetAddressForm();
             await loadAddresses();
-            document.getElementById('addAddressForm').reset();
-            document.getElementById('addrIsDefault').checked = false;
         }
 
         function closeAddressBook() {
             document.getElementById('addressBookModal').style.display = 'none';
         }
 
+        function resetAddressForm() {
+            document.getElementById('editAddressId').value = '0';
+            document.getElementById('addressFormLabel').textContent = 'Add New Address';
+            document.getElementById('addressSubmitBtn').textContent = 'ADD ADDRESS';
+            document.getElementById('addressForm').reset();
+            document.getElementById('addrIsDefault').checked = false;
+            document.getElementById('addrLabel').value = 'Home';
+            document.getElementById('cancelEditAddress').style.display = 'none';
+        }
+
+        // Cancel Edit button click
+        document.getElementById('cancelEditAddress').addEventListener('click', function() {
+            resetAddressForm();
+        });
+
         async function loadAddresses() {
             const token = localStorage.getItem('token');
+            const listContainer = document.getElementById('addressList');
+
+            if (!token) {
+                listContainer.innerHTML = `
+                    <p style="color:var(--text-muted); text-align:center; padding:1rem 0;">
+                        Please <a href="/Account/Login">login</a> to manage your addresses.
+                    </p>
+                `;
+                return;
+            }
+
             try {
-                const response = await fetch('/Account/getaddresses', {
+                const response = await fetch('/Account/GetAddresses', {
                     headers: { 'Authorization': 'Bearer ' + token }
                 });
-                if (!response.ok) throw new Error('Failed to load addresses');
+
+                if (!response.ok) {
+                    if (response.status === 401) {
+                        localStorage.removeItem('token');
+                        localStorage.removeItem('userName');
+                        localStorage.removeItem('userId');
+                        window.location.href = '/Account/Login';
+                        return;
+                    }
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+
                 const addresses = await response.json();
                 renderAddresses(addresses);
+
             } catch (error) {
                 console.error('Error loading addresses:', error);
-                document.getElementById('addressList').innerHTML = '<p style="color:red;">Failed to load addresses.</p>';
+                listContainer.innerHTML = `
+                    <p style="color:#d32f2f; text-align:center; padding:1rem 0;">
+                        Failed to load addresses.
+                        <button class="btn-outline" onclick="loadAddresses()" style="font-size:0.7rem; padding:0.2rem 0.8rem; margin-top:0.3rem;">
+                            RETRY
+                        </button>
+                    </p>
+                `;
             }
         }
 
@@ -562,24 +613,70 @@
             let html = '';
             addresses.forEach(addr => {
                 html += `
-                    <div class="address-card">
+                    <div class="address-card" data-address-id="${addr.addressId}">
                         ${addr.isDefault ? '<span class="default-badge">⭐ DEFAULT</span>' : ''}
                         <div class="address-label">${addr.label}</div>
                         <div class="address-detail">${addr.addressLine1}</div>
                         ${addr.addressLine2 ? `<div class="address-detail">${addr.addressLine2}</div>` : ''}
                         <div class="address-detail">${addr.city}, ${addr.state} - ${addr.pincode}</div>
                         <div class="address-detail">📞 ${addr.phoneNumber}</div>
-                        <button class="btn-outline" onclick="deleteAddress(${addr.addressId})" style="font-size:0.7rem; padding:0.2rem 0.8rem; margin-top:0.3rem;">🗑️ Remove</button>
+                        <div style="margin-top:0.5rem; display:flex; gap:0.5rem;">
+                            <button class="btn-outline" onclick="editAddress(${addr.addressId})" style="font-size:0.7rem; padding:0.2rem 0.8rem;">✎ Edit</button>
+                            <button class="btn-outline" onclick="deleteAddress(${addr.addressId})" style="font-size:0.7rem; padding:0.2rem 0.8rem;">🗑️ Remove</button>
+                        </div>
                     </div>
                 `;
             });
             container.innerHTML = html;
         }
 
-        document.getElementById('addAddressForm').addEventListener('submit', async function(e) {
+        // --- EDIT ADDRESS ---
+        async function editAddress(addressId) {
+            const token = localStorage.getItem('token');
+            try {
+                const response = await fetch('/Account/GetAddresses', {
+                    headers: { 'Authorization': 'Bearer ' + token }
+                });
+                if (!response.ok) throw new Error('Failed to fetch addresses');
+                const addresses = await response.json();
+                const address = addresses.find(a => a.addressId === addressId);
+                if (!address) {
+                    showToast('Address not found.', 'error');
+                    return;
+                }
+
+                document.getElementById('editAddressId').value = addressId;
+                document.getElementById('addressFormLabel').textContent = 'Edit Address';
+                document.getElementById('addressSubmitBtn').textContent = 'UPDATE ADDRESS';
+                document.getElementById('addrLabel').value = address.label || 'Home';
+                document.getElementById('addrLine1').value = address.addressLine1 || '';
+                document.getElementById('addrLine2').value = address.addressLine2 || '';
+                document.getElementById('addrCity').value = address.city || '';
+                document.getElementById('addrState').value = address.state || '';
+                document.getElementById('addrPincode').value = address.pincode || '';
+                document.getElementById('addrPhone').value = address.phoneNumber || '';
+                document.getElementById('addrIsDefault').checked = address.isDefault || false;
+                document.getElementById('cancelEditAddress').style.display = 'inline-block';
+
+                // Scroll to the form
+                document.getElementById('addressForm').scrollIntoView({ behavior: 'smooth' });
+
+            } catch (error) {
+                console.error('Error loading address for edit:', error);
+                showToast('Failed to load address details.', 'error');
+            }
+        }
+
+        // --- ADDRESS FORM SUBMIT (Add or Update) ---
+        document.getElementById('addressForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             const token = localStorage.getItem('token');
+            if (!token) {
+                showToast('Please login to manage addresses.', 'error');
+                return;
+            }
 
+            const addressId = parseInt(document.getElementById('editAddressId').value);
             const payload = {
                 label: document.getElementById('addrLabel').value,
                 addressLine1: document.getElementById('addrLine1').value.trim(),
@@ -595,52 +692,82 @@
                 showToast('Please fill in all required fields.', 'error');
                 return;
             }
-            if (payload.pincode.length !== 6) {
+            if (payload.pincode.length !== 6 || !/^[0-9]{6}$/.test(payload.pincode)) {
                 showToast('Please enter a valid 6-digit pincode.', 'error');
                 return;
             }
-            if (payload.phoneNumber.length < 10) {
-                showToast('Please enter a valid phone number.', 'error');
+            if (payload.phoneNumber.length !== 10 || !/^[0-9]{10}$/.test(payload.phoneNumber)) {
+                showToast('Please enter a valid 10-digit phone number.', 'error');
                 return;
             }
 
             try {
-                const response = await fetch('/Account/addaddress', {
-                    method: 'POST',
+                let url, method, successMessage;
+                if (addressId > 0) {
+                    url = `/Account/UpdateAddress/${addressId}`;
+                    method = 'PUT';
+                    successMessage = 'Address updated successfully!';
+                } else {
+                    url = '/Account/AddAddress';
+                    method = 'POST';
+                    successMessage = 'Address added successfully!';
+                }
+
+                const response = await fetch(url, {
+                    method: method,
                     headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
                     body: JSON.stringify(payload)
                 });
-                const data = await response.json();
-                if (response.ok) {
-                    showToast(data.message, 'success');
-                    await loadAddresses();
-                    document.getElementById('addAddressForm').reset();
-                    document.getElementById('addrIsDefault').checked = false;
-                } else {
-                    showToast(data.message || 'Failed to add address.', 'error');
+
+                if (!response.ok) {
+                    if (response.status === 401) {
+                        localStorage.removeItem('token');
+                        localStorage.removeItem('userName');
+                        localStorage.removeItem('userId');
+                        window.location.href = '/Account/Login';
+                        return;
+                    }
+                    const errorText = await response.text();
+                    throw new Error(`HTTP ${response.status}: ${errorText}`);
                 }
+
+                const data = await response.json();
+                showToast(data.message || successMessage, 'success');
+                resetAddressForm();
+                await loadAddresses();
+
             } catch (error) {
-                showToast('Network error.', 'error');
+                console.error('Error saving address:', error);
+                showToast(error.message || 'Failed to save address.', 'error');
             }
         });
 
+        // --- DELETE ADDRESS ---
         async function deleteAddress(addressId) {
             showModal('🗑️', 'Delete Address', 'Are you sure you want to remove this address?', async function() {
                 const token = localStorage.getItem('token');
                 try {
-                    const response = await fetch(`/Account/deleteaddress/${addressId}`, {
+                    const response = await fetch(`/Account/DeleteAddress/${addressId}`, {
                         method: 'DELETE',
                         headers: { 'Authorization': 'Bearer ' + token }
                     });
-                    const data = await response.json();
-                    if (response.ok) {
-                        showToast(data.message, 'success');
-                        await loadAddresses();
-                    } else {
-                        showToast(data.message || 'Failed to delete address.', 'error');
+                    if (!response.ok) {
+                        if (response.status === 401) {
+                            localStorage.removeItem('token');
+                            localStorage.removeItem('userName');
+                            localStorage.removeItem('userId');
+                            window.location.href = '/Account/Login';
+                            return;
+                        }
+                        const errorText = await response.text();
+                        throw new Error(`HTTP ${response.status}: ${errorText}`);
                     }
+                    const data = await response.json();
+                    showToast(data.message || 'Address deleted successfully.', 'success');
+                    await loadAddresses();
                 } catch (error) {
-                    showToast('Network error.', 'error');
+                    console.error('Error deleting address:', error);
+                    showToast(error.message || 'Failed to delete address.', 'error');
                 }
             });
         }

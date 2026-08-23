@@ -92,7 +92,6 @@ namespace AADYA_HouseOfFragrance.Controllers
 
             var token = _jwtHelper.GenerateToken(user, request.RememberMe);
 
-            // 👇 Set session flag for admin
             if (request.AdminLogin && user.IsAdmin)
             {
                 HttpContext.Session.SetString("AdminLoggedIn", "true");
@@ -217,7 +216,7 @@ namespace AADYA_HouseOfFragrance.Controllers
             return int.Parse(userIdClaim.Value);
         }
 
-        // POST: /Account/changepassword
+        // POST: /Account/ChangePassword
         [HttpPost]
         public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordDto request)
         {
@@ -269,7 +268,7 @@ namespace AADYA_HouseOfFragrance.Controllers
         }
 
         // GET: /Account/GetAddresses
-        [HttpGet("getaddresses")]
+        [HttpGet]
         public async Task<IActionResult> GetAddresses()
         {
             try
@@ -279,7 +278,6 @@ namespace AADYA_HouseOfFragrance.Controllers
                     .Where(a => a.UserId == userId)
                     .OrderByDescending(a => a.IsDefault)
                     .ToListAsync();
-
                 return Ok(addresses);
             }
             catch (UnauthorizedAccessException)
@@ -289,7 +287,7 @@ namespace AADYA_HouseOfFragrance.Controllers
         }
 
         // POST: /Account/AddAddress
-        [HttpPost("addaddress")]
+        [HttpPost]
         public async Task<IActionResult> AddAddress([FromBody] AddressDto request)
         {
             try
@@ -331,7 +329,7 @@ namespace AADYA_HouseOfFragrance.Controllers
         }
 
         // PUT: /Account/UpdateAddress/{id}
-        [HttpPut("updateaddress/{id}")]
+        [HttpPut]
         public async Task<IActionResult> UpdateAddress(int id, [FromBody] AddressDto request)
         {
             try
@@ -368,7 +366,7 @@ namespace AADYA_HouseOfFragrance.Controllers
         }
 
         // DELETE: /Account/DeleteAddress/{id}
-        [HttpDelete("deleteaddress/{id}")]
+        [HttpDelete]
         public async Task<IActionResult> DeleteAddress(int id)
         {
             try
