@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 using AADYA_HouseOfFragrance.Data;
@@ -7,8 +8,9 @@ using AADYA_HouseOfFragrance.Models.Entities;
 
 namespace AADYA_HouseOfFragrance.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/orders")]   // ← Changed from "api/[controller]" to "api/orders"
     [ApiController]
+    [Authorize]
     public class OrderController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
@@ -18,7 +20,6 @@ namespace AADYA_HouseOfFragrance.Controllers
             _context = context;
         }
 
-        // Helper method to get current user ID from JWT
         private int GetCurrentUserId()
         {
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
@@ -34,26 +35,18 @@ namespace AADYA_HouseOfFragrance.Controllers
             try
             {
                 var userId = GetCurrentUserId();
-
-                // Get user details
                 var user = await _context.Users.FindAsync(userId);
                 if (user == null)
-                {
                     return Unauthorized(new { message = "User not found." });
-                }
 
-                // Get cart items
                 var cartItems = await _context.ShoppingCarts
                     .Include(c => c.ProductVariant)
                     .Where(c => c.UserId == userId)
                     .ToListAsync();
 
                 if (!cartItems.Any())
-                {
                     return BadRequest(new { message = "Your cart is empty." });
-                }
 
-                // Calculate total and prepare order items
                 decimal totalAmount = 0;
                 var orderItems = new List<OrderItem>();
 
@@ -61,25 +54,17 @@ namespace AADYA_HouseOfFragrance.Controllers
                 {
                     var variant = cartItem.ProductVariant;
                     if (variant == null)
-                    {
-                        return BadRequest(new { message = $"Invalid product variant in cart." });
-                    }
+                        return BadRequest(new { message = "Invalid product variant in cart." });
 
-                    // Check stock
                     if (variant.StockQuantity < cartItem.Quantity)
-                    {
                         return BadRequest(new { message = $"Not enough stock for {variant.Product?.Name} ({variant.Size}). Available: {variant.StockQuantity}" });
-                    }
 
-                    // Reduce stock
                     variant.StockQuantity -= cartItem.Quantity;
                     _context.ProductVariants.Update(variant);
 
-                    // Calculate subtotal
                     var subtotal = variant.Price * cartItem.Quantity;
                     totalAmount += subtotal;
 
-                    // Create order item
                     orderItems.Add(new OrderItem
                     {
                         VariantId = variant.VariantId,
@@ -88,7 +73,6 @@ namespace AADYA_HouseOfFragrance.Controllers
                     });
                 }
 
-                // Create order
                 var order = new Order
                 {
                     UserId = userId,
@@ -100,10 +84,7 @@ namespace AADYA_HouseOfFragrance.Controllers
                 };
 
                 await _context.Orders.AddAsync(order);
-
-                // Clear cart
                 _context.ShoppingCarts.RemoveRange(cartItems);
-
                 await _context.SaveChangesAsync();
 
                 return Ok(new
@@ -178,9 +159,7 @@ namespace AADYA_HouseOfFragrance.Controllers
                     .FirstOrDefaultAsync(o => o.OrderId == id && o.UserId == userId);
 
                 if (order == null)
-                {
                     return NotFound(new { message = "Order not found." });
-                }
 
                 var result = new OrderResponseDto
                 {

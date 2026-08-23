@@ -32,6 +32,18 @@ namespace AADYA_HouseOfFragrance.Controllers
             return View();
         }
 
+        // GET: /Account/Profile
+        public IActionResult Profile()
+        {
+            return View();
+        }
+
+        // GET: /Account/Orders
+        public IActionResult Orders()
+        {
+            return View();
+        }
+
         // POST: /Account/Register
         [HttpPost]
         public async Task<IActionResult> Register([FromBody] RegisterDto request)
@@ -108,12 +120,6 @@ namespace AADYA_HouseOfFragrance.Controllers
                 IsSuperAdmin = user.IsSuperAdmin,
                 Message = "Login Successful!"
             });
-        }
-
-        // GET: /Account/Profile
-        public IActionResult Profile()
-        {
-            return View();
         }
 
         // GET: /Account/GetProfile
