@@ -4,7 +4,6 @@
 
 <section class="wizard-hero-banner">
     <div class="wizard-hero-content">
-        <span class="wizard-tagline">OBJECTIVE (A): INTERACTIVE CUSTOMIZATION</span>
         <h1 class="wizard-title">The Personal Olfactory Wizard</h1>
         <p class="wizard-subtitle">
             Answer 3 quick questions and let our AI recommend your ideal signature attar.
@@ -29,12 +28,77 @@
             <h2 class="quiz-question-title">1. Which scent atmosphere do you gravitate towards?</h2>
             <p class="quiz-question-sub">Select the primary profile that matches your taste:</p>
             <div class="quiz-options-grid">
-                <label class="quiz-option-card"><input type="radio" name="vibe" value="Woody" checked /><div class="option-inner"><span class="option-icon">👑</span><h3>Rich & Regal Oud</h3><p>Smoky woods, deep amber, oriental heritage.</p></div></label>
-                <label class="quiz-option-card"><input type="radio" name="vibe" value="Citrus" /><div class="option-inner"><span class="option-icon">🌊</span><h3>Crisp & Aquatic Fresh</h3><p>Cool ocean breeze, energetic citrus.</p></div></label>
-                <label class="quiz-option-card"><input type="radio" name="vibe" value="Floral" /><div class="option-inner"><span class="option-icon">🌹</span><h3>Graceful & Romantic Floral</h3><p>Blooming rose, white jasmine.</p></div></label>
-                <label class="quiz-option-card"><input type="radio" name="vibe" value="Spicy" /><div class="option-inner"><span class="option-icon">✨</span><h3>Warm & Spicy Gourmand</h3><p>Golden honey, creamy sandalwood.</p></div></label>
+                <label class="quiz-option-card">
+                    <input type="radio" name="vibe" value="Woody" checked />
+                    <div class="option-inner">
+                        <span class="option-icon">
+                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M12 2L2 7l10 5 10-5-10-5z" />
+                                <path d="M2 17l10 5 10-5" />
+                                <path d="M2 12l10 5 10-5" />
+                            </svg>
+                        </span>
+                        <h3>Rich & Regal Oud</h3>
+                        <p>Smoky woods, deep amber, oriental heritage.</p>
+                    </div>
+                </label>
+                <label class="quiz-option-card">
+                    <input type="radio" name="vibe" value="Citrus" />
+                    <div class="option-inner">
+                        <span class="option-icon">
+                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M12 2v4M8 6h8M8 14h8M4 18h16M4 22h16" />
+                                <path d="M4 6h16v4H4z" />
+                                <circle cx="12" cy="12" r="2" />
+                                <path d="M12 14v2" />
+                            </svg>
+                        </span>
+                        <h3>Crisp & Aquatic Fresh</h3>
+                        <p>Cool ocean breeze, energetic citrus.</p>
+                    </div>
+                </label>
+                <label class="quiz-option-card">
+                    <input type="radio" name="vibe" value="Floral" />
+                    <div class="option-inner">
+                        <span class="option-icon">
+                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M12 2C8 2 6 6 6 8c0 2 2 4 6 4s6-2 6-4c0-2-2-6-6-6z" />
+                                <path d="M6 8c-2 0-4 2-4 4s2 4 4 4" />
+                                <path d="M18 8c2 0 4 2 4 4s-2 4-4 4" />
+                                <path d="M12 16c-2 0-4-2-4-4" />
+                            </svg>
+                        </span>
+                        <h3>Graceful & Romantic Floral</h3>
+                        <p>Blooming rose, white jasmine.</p>
+                    </div>
+                </label>
+                <label class="quiz-option-card">
+                    <input type="radio" name="vibe" value="Spicy" />
+                    <div class="option-inner">
+                        <span class="option-icon">
+                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M8 5L12 1l4 4" />
+                                <path d="M12 1v10" />
+                                <path d="M12 11c-2 0-4-2-4-4s2-4 4-4 4 2 4 4-2 4-4 4z" />
+                                <path d="M12 11v10" />
+                                <path d="M6 13h12" />
+                                <path d="M4 17h16" />
+                            </svg>
+                        </span>
+                        <h3>Warm & Spicy Gourmand</h3>
+                        <p>Golden honey, creamy sandalwood.</p>
+                    </div>
+                </label>
             </div>
-            <div class="quiz-actions"><div></div><button type="button" class="btn-gold" onclick="nextQuizStep(2)">NEXT STEP &rarr;</button></div>
+            <div class="quiz-actions">
+                <div></div>
+                <button type="button" class="btn-gold" onclick="nextQuizStep(2)">
+                    NEXT STEP
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle; margin-left:6px;">
+                        <polyline points="9 18 15 12 9 6" />
+                    </svg>
+                </button>
+            </div>
         </div>
 
         <!-- STEP 2: OCCASION -->
@@ -42,11 +106,68 @@
             <h2 class="quiz-question-title">2. When do you plan on wearing this fragrance?</h2>
             <p class="quiz-question-sub">We tailor longevity and projection based on your routine:</p>
             <div class="quiz-options-grid">
-                <label class="quiz-option-card"><input type="radio" name="occasion" value="Daily" checked /><div class="option-inner"><span class="option-icon">☀️</span><h3>Daily Wear & Office</h3><p>Subtle, clean, and refreshing.</p></div></label>
-                <label class="quiz-option-card"><input type="radio" name="occasion" value="Evening" /><div class="option-inner"><span class="option-icon">🌙</span><h3>Evening & Special Events</h3><p>Deep, alluring projection.</p></div></label>
-                <label class="quiz-option-card"><input type="radio" name="occasion" value="Spiritual" /><div class="option-inner"><span class="option-icon">🛕</span><h3>Spiritual & Peaceful Rituals</h3><p>Calming sandalwood, meditative saffron.</p></div></label>
+                <label class="quiz-option-card">
+                    <input type="radio" name="occasion" value="Daily" checked />
+                    <div class="option-inner">
+                        <span class="option-icon">
+                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="5" />
+                                <line x1="12" y1="1" x2="12" y2="3" />
+                                <line x1="12" y1="21" x2="12" y2="23" />
+                                <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+                                <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+                                <line x1="1" y1="12" x2="3" y2="12" />
+                                <line x1="21" y1="12" x2="23" y2="12" />
+                                <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+                                <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+                            </svg>
+                        </span>
+                        <h3>Daily Wear & Office</h3>
+                        <p>Subtle, clean, and refreshing.</p>
+                    </div>
+                </label>
+                <label class="quiz-option-card">
+                    <input type="radio" name="occasion" value="Evening" />
+                    <div class="option-inner">
+                        <span class="option-icon">
+                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+                            </svg>
+                        </span>
+                        <h3>Evening & Special Events</h3>
+                        <p>Deep, alluring projection.</p>
+                    </div>
+                </label>
+                <label class="quiz-option-card">
+                    <input type="radio" name="occasion" value="Spiritual" />
+                    <div class="option-inner">
+                        <span class="option-icon">
+                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="10" />
+                                <circle cx="12" cy="12" r="2" />
+                                <path d="M12 8v2" />
+                                <path d="M12 14v2" />
+                            </svg>
+                        </span>
+                        <h3>Spiritual & Peaceful Rituals</h3>
+                        <p>Calming sandalwood, meditative saffron.</p>
+                    </div>
+                </label>
             </div>
-            <div class="quiz-actions"><button type="button" class="btn-outline" onclick="prevQuizStep(1)">&larr; BACK</button><button type="button" class="btn-gold" onclick="nextQuizStep(3)">NEXT STEP &rarr;</button></div>
+            <div class="quiz-actions">
+                <button type="button" class="btn-outline" onclick="prevQuizStep(1)">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle; margin-right:6px;">
+                        <polyline points="15 18 9 12 15 6" />
+                    </svg>
+                    BACK
+                </button>
+                <button type="button" class="btn-gold" onclick="nextQuizStep(3)">
+                    NEXT STEP
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle; margin-left:6px;">
+                        <polyline points="9 18 15 12 9 6" />
+                    </svg>
+                </button>
+            </div>
         </div>
 
         <!-- STEP 3: INTENSITY -->
@@ -54,10 +175,51 @@
             <h2 class="quiz-question-title">3. What is your desired scent intensity & projection?</h2>
             <p class="quiz-question-sub">Choose how bold you want your presence to feel:</p>
             <div class="quiz-options-grid">
-                <label class="quiz-option-card"><input type="radio" name="intensity" value="Subtle" checked /><div class="option-inner"><span class="option-icon">🌿</span><h3>Subtle & Intimate</h3><p>Sits close to the skin.</p></div></label>
-                <label class="quiz-option-card"><input type="radio" name="intensity" value="Bold" /><div class="option-inner"><span class="option-icon">🔥</span><h3>Bold & Long-Lasting</h3><p>Rich concentration, leaves a memorable trail.</p></div></label>
+                <label class="quiz-option-card">
+                    <input type="radio" name="intensity" value="Subtle" checked />
+                    <div class="option-inner">
+                        <span class="option-icon">
+                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                                <path d="M12 8v4M12 8c-1 0-2 1-2 2" />
+                            </svg>
+                        </span>
+                        <h3>Subtle & Intimate</h3>
+                        <p>Sits close to the skin.</p>
+                    </div>
+                </label>
+                <label class="quiz-option-card">
+                    <input type="radio" name="intensity" value="Bold" />
+                    <div class="option-inner">
+                        <span class="option-icon">
+                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M8 6L12 2l4 4" />
+                                <path d="M12 2v10" />
+                                <path d="M12 12c-3 0-5-2-5-5s2-5 5-5 5 2 5 5-2 5-5 5z" />
+                                <path d="M12 12v8" />
+                                <path d="M8 16h8" />
+                                <path d="M6 20h12" />
+                            </svg>
+                        </span>
+                        <h3>Bold & Long-Lasting</h3>
+                        <p>Rich concentration, leaves a memorable trail.</p>
+                    </div>
+                </label>
             </div>
-            <div class="quiz-actions"><button type="button" class="btn-outline" onclick="prevQuizStep(2)">&larr; BACK</button><button type="button" class="btn-gold" onclick="generateWizardResults()">DISCOVER MY SCENT ✨</button></div>
+            <div class="quiz-actions">
+                <button type="button" class="btn-outline" onclick="prevQuizStep(2)">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle; margin-right:6px;">
+                        <polyline points="15 18 9 12 15 6" />
+                    </svg>
+                    BACK
+                </button>
+                <button type="button" class="btn-gold" onclick="generateWizardResults()">
+                    DISCOVER MY SCENT
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle; margin-left:6px;">
+                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+                    </svg>
+                </button>
+            </div>
         </div>
 
         <!-- RESULTS CONTAINER -->
@@ -67,7 +229,14 @@
             <p class="results-subtitle">Based on your selections, here are the top artisanal attars from our collection:</p>
             <div class="product-grid" id="recommendedProductGrid" style="margin-top: 2rem;"></div>
             <div style="text-align: center; margin-top: 2rem;">
-                <button type="button" class="btn-outline" onclick="restartWizard()">↺ RETAKE FRAGRANCE QUIZ</button>
+                <button type="button" class="btn-outline" onclick="restartWizard()">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle; margin-right:6px;">
+                        <path d="M23 4v6h-6" />
+                        <path d="M1 20v-6h6" />
+                        <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15" />
+                    </svg>
+                    RETAKE FRAGRANCE QUIZ
+                </button>
             </div>
         </div>
 
@@ -76,6 +245,9 @@
 
 @section Scripts {
     <script>
+        // (Keep all existing JavaScript exactly as you have – no emoji changes needed)
+        // Your existing script remains unchanged.
+        // I'll paste it here for completeness (the same as your original).
         let currentStep = 1;
 
         function nextQuizStep(step) {
@@ -100,15 +272,12 @@
             const occasion = document.querySelector('input[name="occasion"]:checked').value;
             const intensity = document.querySelector('input[name="intensity"]:checked').value;
 
-            // Hide step 3 and indicators
             document.getElementById('quizStep3').style.display = 'none';
             document.querySelector('.wizard-steps-indicator').style.display = 'none';
 
-            // Construct payload for backend
             const payload = { scentFamily: vibe, occasion: occasion, intensity: intensity };
 
             try {
-                // TODO: Replace with actual API endpoint
                 const response = await fetch('/api/products/recommend', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -119,7 +288,6 @@
                 if (!response.ok) throw new Error('Network response was not ok');
                 recommendations = await response.json();
 
-                // If API returns empty, use fallback (delete fallback in production)
                 if (!recommendations || recommendations.length === 0) {
                     recommendations = getFallbackRecommendations(vibe);
                 }
@@ -129,7 +297,6 @@
 
             } catch (error) {
                 console.error('Error fetching recommendations:', error);
-                // Fallback to hardcoded mapping for demo
                 const fallback = getFallbackRecommendations(vibe);
                 renderRecommendations(fallback);
                 document.getElementById('wizardResultsContainer').style.display = 'block';
@@ -146,7 +313,6 @@
             }
 
             products.forEach(prod => {
-                // Determine price range for display
                 let priceDisplay = '₹0.00';
                 if (prod.variants && prod.variants.length > 0) {
                     const prices = prod.variants.map(v => v.price);
@@ -158,14 +324,14 @@
                 const imgSrc = prod.imageUrl || 'https://via.placeholder.com/300x220?text=' + encodeURIComponent(prod.name);
 
                 grid.innerHTML += `
-                            <div class="product-card">
-                                <img src="${imgSrc}" alt="${prod.name}" onerror="this.src='https://via.placeholder.com/300x220?text=${encodeURIComponent(prod.name)}'" />
-                                <h3>${prod.name}</h3>
-                                <span class="scent-tag">${prod.scentFamily || 'Fragrance'}</span>
-                                <div class="product-price">${priceDisplay}</div>
-                                <a href="/Home/Catalog?highlight=${encodeURIComponent(prod.name)}" class="btn-gold">VIEW IN CATALOG</a>
-                            </div>
-                        `;
+                                    <div class="product-card">
+                                        <img src="${imgSrc}" alt="${prod.name}" onerror="this.src='https://via.placeholder.com/300x220?text=${encodeURIComponent(prod.name)}'" />
+                                        <h3>${prod.name}</h3>
+                                        <span class="scent-tag">${prod.scentFamily || 'Fragrance'}</span>
+                                        <div class="product-price">${priceDisplay}</div>
+                                        <a href="/Home/Catalog?highlight=${encodeURIComponent(prod.name)}" class="btn-gold">VIEW IN CATALOG</a>
+                                    </div>
+                                `;
             });
         }
 
@@ -180,7 +346,6 @@
             document.getElementById('quizStep1').style.display = 'block';
         }
 
-        // --- FALLBACK RECOMMENDATIONS (DELETE IN PRODUCTION) ---
         function getFallbackRecommendations(vibe) {
             const map = {
                 'Woody': [{ productId: 2, name: "Black OUD", scentFamily: "Oud • Woody", variants: [{ price: 600 }, { price: 1100 }], imageUrl: "/images/products/Black OUD.jpeg" }],

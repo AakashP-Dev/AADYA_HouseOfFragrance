@@ -36,8 +36,14 @@
 
             <div class="form-options">
                 <label class="checkbox-container">
-                    <input type="checkbox" id="RememberMe" name="RememberMe" />
-                    <span>Remember Me</span>
+                    <input type="checkbox" id="AdminLogin" name="AdminLogin" />
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 2v4M8 6h8M8 14h8M4 18h16M4 22h16" />
+                        <path d="M4 6h16v4H4z" />
+                        <circle cx="12" cy="12" r="2" />
+                        <path d="M12 14v2" />
+                    </svg>
+                    <span>Admin Login</span>
                 </label>
                 <a href="#" class="forgot-link">Forgot Password?</a>
             </div>
@@ -90,7 +96,7 @@
 
             const email = document.getElementById('Email').value.trim();
             const password = document.getElementById('Password').value;
-            const rememberMe = document.getElementById('RememberMe').checked;
+            const adminLogin = document.getElementById('AdminLogin').checked;
 
             let isValid = true;
 
@@ -119,7 +125,7 @@
                 const response = await fetch('/Account/Login', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email, password, rememberMe })
+                    body: JSON.stringify({ email, password, rememberMe: false, adminLogin })
                 });
 
                 const data = await response.json();
@@ -128,8 +134,18 @@
                     localStorage.setItem('token', data.token);
                     localStorage.setItem('userName', data.fullName);
                     localStorage.setItem('userId', data.userId);
-                    showToast('Login Successful! Welcome back, ' + data.fullName, 'success');
-                    window.location.href = '/';
+                    localStorage.setItem('isAdmin', data.isAdmin ? 'true' : 'false');
+                    localStorage.setItem('isSuperAdmin', data.isSuperAdmin ? 'true' : 'false');
+
+                    if (adminLogin && data.isAdmin) {
+                        window.location.href = '/Admin/Dashboard';
+                    } else if (adminLogin && !data.isAdmin) {
+                        document.getElementById('emailError').textContent = 'You are not authorized as admin.';
+                        document.getElementById('emailError').style.display = 'block';
+                    } else {
+                        showToast('Login Successful! Welcome back, ' + data.fullName, 'success');
+                        window.location.href = '/';
+                    }
                 } else {
                     document.getElementById('emailError').textContent = data.message || 'Invalid email or password.';
                     document.getElementById('emailError').style.display = 'block';

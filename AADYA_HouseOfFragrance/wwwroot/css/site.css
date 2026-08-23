@@ -2038,3 +2038,168 @@ footer a, footer p {
         padding: 0.4rem 1.2rem;
         white-space: nowrap;
     }
+
+/* ==========================================================================
+   RECOMMENDATIONS CAROUSEL
+   ========================================================================== */
+.carousel-container {
+    position: relative;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 3rem; /* space for arrows */
+}
+
+.carousel-track-wrapper {
+    overflow: hidden;
+    border-radius: 4px;
+}
+
+.carousel-track {
+    display: flex;
+    transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    gap: 1.2rem;
+    will-change: transform;
+}
+
+    .carousel-track .product-card {
+        flex: 0 0 calc(25% - 0.9rem); /* 4 items per view */
+        min-width: 0;
+        margin: 0;
+        transition: box-shadow 0.2s;
+    }
+
+/* Arrows */
+.carousel-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: var(--warm-ivory);
+    border: 1px solid var(--border-color);
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 5;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    transition: all 0.2s ease;
+    color: var(--deep-burgundy);
+}
+
+    .carousel-arrow:hover {
+        background: var(--deep-burgundy);
+        color: var(--warm-ivory);
+        border-color: var(--deep-burgundy);
+        box-shadow: 0 4px 12px rgba(59,14,20,0.15);
+    }
+
+.carousel-arrow-left {
+    left: 0;
+}
+
+.carousel-arrow-right {
+    right: 0;
+}
+
+/* Dots */
+.carousel-dots {
+    display: flex;
+    justify-content: center;
+    gap: 0.6rem;
+    margin-top: 1.2rem;
+}
+
+.carousel-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--border-color);
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+    .carousel-dot.active {
+        background: var(--champagne-gold);
+    }
+
+/* Responsive: adjust items per view */
+@media screen and (max-width: 1024px) {
+    .carousel-track .product-card {
+        flex: 0 0 calc(33.333% - 0.8rem); /* 3 items */
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .carousel-container {
+        padding: 0 1.5rem;
+    }
+
+    .carousel-track .product-card {
+        flex: 0 0 calc(50% - 0.6rem); /* 2 items */
+    }
+
+    .carousel-arrow {
+        width: 32px;
+        height: 32px;
+    }
+
+    .carousel-arrow svg {
+        width: 18px;
+        height: 18px;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .carousel-track .product-card {
+        flex: 0 0 calc(100% - 0rem); /* 1 item */
+    }
+
+    .carousel-arrow {
+        width: 28px;
+        height: 28px;
+        top: 45%;
+    }
+}
+
+/* ==========================================================================
+   ICON STYLES
+   ========================================================================== */
+.nav-actions svg,
+.dropdown-icon svg {
+    stroke: var(--deep-burgundy);
+    transition: stroke 0.3s ease;
+}
+
+.nav-actions .btn-gold svg {
+    stroke: var(--warm-ivory);
+}
+
+.nav-actions .btn-gold:hover svg {
+    stroke: var(--matte-black);
+}
+
+.nav-actions .btn-outline:hover svg {
+    stroke: var(--warm-ivory);
+}
+
+.dropdown-item:hover svg {
+    stroke: var(--champagne-gold);
+}
+
+/* Adjust spacing */
+.nav-btn svg,
+.nav-link-sign svg {
+    margin-right: 4px;
+    vertical-align: middle;
+}
+
+.dropdown-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+}

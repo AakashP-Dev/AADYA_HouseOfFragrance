@@ -1,8 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using AADYA_HouseOfFragrance.Data;
+﻿using AADYA_HouseOfFragrance.Data;
 using AADYA_HouseOfFragrance.Models.DTOs;
 using AADYA_HouseOfFragrance.Models.Entities;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 
 namespace AADYA_HouseOfFragrance.Controllers
 {
@@ -172,6 +173,188 @@ namespace AADYA_HouseOfFragrance.Controllers
             });
 
             return Ok(result);
+        }
+
+        // GET: api/products/recommend/me
+        [HttpGet("recommend/me")]
+        public async Task<IActionResult> GetPersonalizedRecommendations()
+        {
+            try
+            {
+                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+                if (userIdClaim == null)
+                {
+                    // Not logged in → return trending only
+                    var trending = await GetTrendingProducts(6);
+                    return Ok(new { triggerProductName = "", recommendations = trending });
+                }
+
+                var userId = int.Parse(userIdClaim.Value);
+
+                // 1. Get user's order history (last 10 orders)
+                var userOrders = await _context.Orders
+                    .Where(o => o.UserId == userId)
+                    .OrderByDescending(o => o.CreatedAt)
+                    .Take(10)
+                    .Include(o => o.OrderItems)
+                        .ThenInclude(oi => oi.ProductVariant)
+                            .ThenInclude(v => v.Product)
+                    .ToListAsync();
+
+                // If user has no orders → fallback to trending
+                if (!userOrders.Any() || !userOrders.Any(o => o.OrderItems.Any()))
+                {
+                    var trending = await GetTrendingProducts(6);
+                    return Ok(new { triggerProductName = "", recommendations = trending });
+                }
+
+                // 2. Extract the most recent purchased product name (first item of first order)
+                var mostRecentOrder = userOrders.First();
+                var firstItem = mostRecentOrder.OrderItems.FirstOrDefault();
+                string triggerProductName = firstItem?.ProductVariant?.Product?.Name ?? "";
+
+                // 3. Extract ScentFamily, Occasion, Intensity and bought Product IDs
+                var purchasedProductIds = new HashSet<int>();
+                var scentFamilies = new List<string>();
+                var occasions = new List<string>();
+                var intensities = new List<string>();
+
+                foreach (var order in userOrders)
+                {
+                    foreach (var item in order.OrderItems)
+                    {
+                        var product = item.ProductVariant?.Product;
+                        if (product != null)
+                        {
+                            purchasedProductIds.Add(product.ProductId);
+                            if (!string.IsNullOrEmpty(product.ScentFamily))
+                                scentFamilies.Add(product.ScentFamily);
+                            if (!string.IsNullOrEmpty(product.RecommendedOccasion))
+                                occasions.Add(product.RecommendedOccasion);
+                            if (!string.IsNullOrEmpty(product.Intensity))
+                                intensities.Add(product.Intensity);
+                        }
+                    }
+                }
+
+                // 4. Find the most common scent family (or fallback)
+                var topScent = scentFamilies.GroupBy(s => s)
+                    .OrderByDescending(g => g.Count())
+                    .Select(g => g.Key)
+                    .FirstOrDefault();
+
+                var topOccasion = occasions.GroupBy(s => s)
+                    .OrderByDescending(g => g.Count())
+                    .Select(g => g.Key)
+                    .FirstOrDefault();
+
+                var topIntensity = intensities.GroupBy(s => s)
+                    .OrderByDescending(g => g.Count())
+                    .Select(g => g.Key)
+                    .FirstOrDefault();
+
+                // 5. Build recommendation query
+                var query = _context.Products
+                    .Include(p => p.Variants)
+                    .Where(p => !purchasedProductIds.Contains(p.ProductId));
+
+                if (!string.IsNullOrEmpty(topScent))
+                    query = query.Where(p => p.ScentFamily == topScent);
+                else if (!string.IsNullOrEmpty(topOccasion))
+                    query = query.Where(p => p.RecommendedOccasion == topOccasion);
+                else if (!string.IsNullOrEmpty(topIntensity))
+                    query = query.Where(p => p.Intensity == topIntensity);
+
+                var recommendations = await query.Take(6).ToListAsync();
+
+                if (!recommendations.Any())
+                {
+                    // Fallback to trending
+                    var trending = await GetTrendingProducts(6);
+                    return Ok(new { triggerProductName, recommendations = trending });
+                }
+
+                // Map to DTO
+                var result = recommendations.Select(p => new ProductResponseDto
+                {
+                    ProductId = p.ProductId,
+                    Name = p.Name,
+                    Description = p.Description,
+                    ImageUrl = p.ImageUrl,
+                    ScentFamily = p.ScentFamily,
+                    RecommendedOccasion = p.RecommendedOccasion,
+                    Intensity = p.Intensity,
+                    CategoryName = p.Category?.CategoryName ?? "Uncategorized",
+                    Variants = p.Variants?.Select(v => new VariantDto
+                    {
+                        VariantId = v.VariantId,
+                        Size = v.Size,
+                        Price = v.Price,
+                        StockQuantity = v.StockQuantity
+                    }).ToList() ?? new List<VariantDto>()
+                });
+
+                return Ok(new { triggerProductName, recommendations = result });
+            }
+            catch (Exception)
+            {
+                // Fallback to trending on any error
+                var trending = await GetTrendingProducts(6);
+                return Ok(new { triggerProductName = "", recommendations = trending });
+            }
+        }
+
+        // Helper: Get trending products (most ordered)
+        private async Task<IEnumerable<ProductResponseDto>> GetTrendingProducts(int count)
+        {
+            var trendingProductIds = await _context.OrderItems
+                .GroupBy(oi => oi.VariantId)
+                .Select(g => new { VariantId = g.Key, Count = g.Sum(oi => oi.Quantity) })
+                .OrderByDescending(x => x.Count)
+                .Take(count * 2) // Get more to account for duplicate products
+                .Join(_context.ProductVariants,
+                    g => g.VariantId,
+                    v => v.VariantId,
+                    (g, v) => v.ProductId)
+                .Distinct()
+                .Take(count)
+                .ToListAsync();
+
+            var products = await _context.Products
+                .Include(p => p.Variants)
+                .Include(p => p.Category)
+                .Where(p => trendingProductIds.Contains(p.ProductId))
+                .ToListAsync();
+
+            // If no trending products (fresh DB), fallback to newest products
+            if (!products.Any())
+            {
+                products = await _context.Products
+                    .Include(p => p.Variants)
+                    .Include(p => p.Category)
+                    .OrderByDescending(p => p.CreatedAt)
+                    .Take(count)
+                    .ToListAsync();
+            }
+
+            return products.Select(p => new ProductResponseDto
+            {
+                ProductId = p.ProductId,
+                Name = p.Name,
+                Description = p.Description,
+                ImageUrl = p.ImageUrl,
+                ScentFamily = p.ScentFamily,
+                RecommendedOccasion = p.RecommendedOccasion,
+                Intensity = p.Intensity,
+                CategoryName = p.Category?.CategoryName ?? "Uncategorized",
+                Variants = p.Variants?.Select(v => new VariantDto
+                {
+                    VariantId = v.VariantId,
+                    Size = v.Size,
+                    Price = v.Price,
+                    StockQuantity = v.StockQuantity
+                }).ToList() ?? new List<VariantDto>()
+            });
         }
     }
 }

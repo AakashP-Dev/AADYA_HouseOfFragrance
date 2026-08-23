@@ -1,13 +1,16 @@
 ﻿using AADYA_HouseOfFragrance.Data;
 using AADYA_HouseOfFragrance.Models.DTOs;
 using AADYA_HouseOfFragrance.Models.Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 
 namespace AADYA_HouseOfFragrance.Controllers
 {
     [Route("api/admin")]
     [ApiController]
+    [Authorize(Roles = "Admin")]
     public class AdminApiController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
@@ -23,8 +26,7 @@ namespace AADYA_HouseOfFragrance.Controllers
             var totalRevenue = await _context.Orders.SumAsync(o => o.TotalAmount);
             var totalProducts = await _context.Products.CountAsync();
             var totalOrders = await _context.Orders.CountAsync();
-            var totalClients = await _context.Users.CountAsync();
-
+            var totalClients = await _context.Users.CountAsync(u => u.IsAdmin == false);
             return Ok(new { totalRevenue, totalProducts, totalOrders, totalClients });
         }
 
@@ -51,7 +53,6 @@ namespace AADYA_HouseOfFragrance.Controllers
             return Ok(result);
         }
 
-        // PUT: api/admin/orders/{id}/status
         [HttpPut("orders/{id}/status")]
         public async Task<IActionResult> UpdateOrderStatus(int id, [FromBody] StatusUpdateDto request)
         {
@@ -65,11 +66,9 @@ namespace AADYA_HouseOfFragrance.Controllers
             return Ok(new { message = "Order status updated." });
         }
 
-        // POST: api/admin/products
         [HttpPost("products")]
         public async Task<IActionResult> AddProduct([FromBody] AddProductDto request)
         {
-            // Find category by name
             var category = await _context.Categories.FirstOrDefaultAsync(c => c.CategoryName.ToLower() == request.Category.ToLower());
             if (category == null)
                 return BadRequest(new { message = "Category not found." });
@@ -81,15 +80,14 @@ namespace AADYA_HouseOfFragrance.Controllers
                 Description = request.Description,
                 ImageUrl = request.ImageUrl ?? "/images/products/default.jpg",
                 ScentFamily = request.ScentFamily,
-                RecommendedOccasion = "Evening", // default
-                Intensity = "Bold",              // default
+                RecommendedOccasion = "Evening",
+                Intensity = "Bold",
                 CreatedAt = DateTime.Now
             };
 
             _context.Products.Add(product);
             await _context.SaveChangesAsync();
 
-            // Add variants
             var variants = new List<ProductVariant>
             {
                 new ProductVariant { ProductId = product.ProductId, Size = "6ml", Price = request.Price6ml, StockQuantity = 50 },
@@ -101,7 +99,6 @@ namespace AADYA_HouseOfFragrance.Controllers
             return Ok(new { message = "Product added successfully.", productId = product.ProductId });
         }
 
-        // GET: api/admin/products
         [HttpGet("products")]
         public async Task<IActionResult> GetProducts()
         {
@@ -126,7 +123,6 @@ namespace AADYA_HouseOfFragrance.Controllers
             return Ok(products);
         }
 
-        // DELETE: api/admin/products/{id}
         [HttpDelete("products/{id}")]
         public async Task<IActionResult> DeleteProduct(int id)
         {
@@ -146,7 +142,6 @@ namespace AADYA_HouseOfFragrance.Controllers
             return Ok(new { message = "Product deleted successfully." });
         }
 
-        // PUT: api/admin/products/{id}/stock
         [HttpPut("products/{id}/stock")]
         public async Task<IActionResult> UpdateStock(int id, [FromBody] StockUpdateDto request)
         {
@@ -166,26 +161,26 @@ namespace AADYA_HouseOfFragrance.Controllers
             return Ok(new { message = "Stock updated successfully." });
         }
 
-        // GET: api/admin/users
         [HttpGet("users")]
-        public async Task<IActionResult> GetUsers()
+public async Task<IActionResult> GetUsers()
+{
+    var users = await _context.Users
+        .Select(u => new
         {
-            var users = await _context.Users
-                .Select(u => new
-                {
-                    u.UserId,
-                    u.FullName,
-                    u.Email,
-                    u.PhoneNumber,
-                    u.Address,
-                    u.CreatedAt
-                })
-                .ToListAsync();
+            u.UserId,
+            u.FullName,
+            u.Email,
+            u.PhoneNumber,
+            u.Address,
+            u.IsAdmin,
+            u.IsSuperAdmin,
+            u.CreatedAt
+        })
+        .ToListAsync();
 
-            return Ok(users);
-        }
+    return Ok(users);
+}
 
-        // GET: api/admin/users/{id}/orders
         [HttpGet("users/{id}/orders")]
         public async Task<IActionResult> GetUserOrders(int id)
         {
@@ -215,6 +210,65 @@ namespace AADYA_HouseOfFragrance.Controllers
             });
 
             return Ok(result);
+        }
+
+        // --- Promote user to admin ---
+        // PUT: api/admin/users/{id}/promote
+        [HttpPut("users/{id}/promote")]
+        public async Task<IActionResult> PromoteUser(int id)
+        {
+            // Get current admin user from token
+            var currentUserId = GetCurrentUserId();
+            var currentUser = await _context.Users.FindAsync(currentUserId);
+            if (currentUser == null || !currentUser.IsSuperAdmin)
+                return Unauthorized(new { message = "Only the super admin can promote users." });
+
+            var user = await _context.Users.FindAsync(id);
+            if (user == null)
+                return NotFound(new { message = "User not found." });
+
+            if (user.IsAdmin)
+                return BadRequest(new { message = "User is already an admin." });
+
+            user.IsAdmin = true;
+            await _context.SaveChangesAsync();
+
+            return Ok(new { message = $"User '{user.FullName}' promoted to admin successfully." });
+        }
+
+        // PUT: api/admin/users/{id}/demote
+        [HttpPut("users/{id}/demote")]
+        public async Task<IActionResult> DemoteUser(int id)
+        {
+            var currentUserId = GetCurrentUserId();
+            var currentUser = await _context.Users.FindAsync(currentUserId);
+            if (currentUser == null || !currentUser.IsSuperAdmin)
+                return Unauthorized(new { message = "Only the super admin can demote users." });
+
+            var user = await _context.Users.FindAsync(id);
+            if (user == null)
+                return NotFound(new { message = "User not found." });
+
+            if (!user.IsAdmin)
+                return BadRequest(new { message = "User is not an admin." });
+
+            // Prevent demoting yourself (super admin cannot demote themselves)
+            if (id == currentUserId)
+                return BadRequest(new { message = "You cannot demote yourself." });
+
+            user.IsAdmin = false;
+            await _context.SaveChangesAsync();
+
+            return Ok(new { message = $"User '{user.FullName}' has been demoted to regular user." });
+        }
+
+        // Helper method to get current user ID from JWT
+        private int GetCurrentUserId()
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+            if (userIdClaim == null)
+                throw new UnauthorizedAccessException("User not authenticated");
+            return int.Parse(userIdClaim.Value);
         }
     }
 }

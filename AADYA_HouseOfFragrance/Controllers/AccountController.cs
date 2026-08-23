@@ -80,18 +80,24 @@ namespace AADYA_HouseOfFragrance.Controllers
         public async Task<IActionResult> Login([FromBody] LoginDto request)
         {
             var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == request.Email);
-            if (user == null)
+            if (user == null || !BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash))
             {
                 return Unauthorized(new AuthResponseDto { Message = "Invalid email or password." });
             }
 
-            bool isPasswordValid = BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash);
-            if (!isPasswordValid)
+            if (request.AdminLogin && !user.IsAdmin)
             {
-                return Unauthorized(new AuthResponseDto { Message = "Invalid email or password." });
+                return Unauthorized(new AuthResponseDto { Message = "Access denied. You do not have admin privileges." });
             }
 
             var token = _jwtHelper.GenerateToken(user, request.RememberMe);
+
+            // 👇 Set session flag for admin
+            if (request.AdminLogin && user.IsAdmin)
+            {
+                HttpContext.Session.SetString("AdminLoggedIn", "true");
+                HttpContext.Session.SetInt32("AdminUserId", user.UserId);
+            }
 
             return Ok(new AuthResponseDto
             {
@@ -99,6 +105,8 @@ namespace AADYA_HouseOfFragrance.Controllers
                 UserId = user.UserId,
                 FullName = user.FullName,
                 Email = user.Email,
+                IsAdmin = user.IsAdmin,
+                IsSuperAdmin = user.IsSuperAdmin,
                 Message = "Login Successful!"
             });
         }
@@ -389,6 +397,13 @@ namespace AADYA_HouseOfFragrance.Controllers
             {
                 return Unauthorized(new { message = "Please login to delete your address." });
             }
+        }
+
+        [HttpPost]
+        public IActionResult Logout()
+        {
+            HttpContext.Session.Clear();
+            return Ok(new { message = "Logged out" });
         }
     }
 }

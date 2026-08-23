@@ -1,5 +1,5 @@
-﻿@{
-    ViewData["Title"] = "Home - Pure Luxury Timeless";
+﻿﻿@{
+ViewData["Title"] = "Home - Pure Luxury Timeless";
 }
 
 <!-- 1. HERO BANNER -->
@@ -17,6 +17,39 @@
     </div>
 </section>
 
+<!-- ============================================================ -->
+<!-- RECOMMENDED FOR YOU - CAROUSEL -->
+<!-- ============================================================ -->
+<section class="section-padding" style="padding-top: 1rem;">
+    <div class="section-header">
+        <h2 class="section-title" id="recTitle">Recommended For You</h2>
+        <p class="section-subtitle" id="recSubtitle">Based on your preferences and trends</p>
+    </div>
+
+    <div class="carousel-container">
+        <button class="carousel-arrow carousel-arrow-left" id="carouselPrev" aria-label="Previous">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="15 18 9 12 15 6"></polyline>
+            </svg>
+        </button>
+
+        <div class="carousel-track-wrapper">
+            <div class="carousel-track" id="recommendedTrack">
+                <!-- Cards will be injected here by JavaScript -->
+            </div>
+        </div>
+
+        <button class="carousel-arrow carousel-arrow-right" id="carouselNext" aria-label="Next">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+        </button>
+    </div>
+
+    <!-- Dot indicators -->
+    <div class="carousel-dots" id="carouselDots"></div>
+</section>
+
 <!-- 2. FEATURED COLLECTION -->
 <section class="section-padding">
     <div class="section-header">
@@ -24,7 +57,6 @@
         <p class="section-subtitle">Showcase best-selling or signature attars</p>
     </div>
 
-    <!-- WRAPPER FIX: COMPACT 4-COLUMN PRODUCT GRID -->
     <div class="product-grid">
         <!-- CARD 1 -->
         <div class="product-card">
@@ -120,3 +152,276 @@
         </div>
     </div>
 </section>
+
+@section Scripts {
+    <script>
+        let recProducts = [];
+        let currentSlide = 0;
+        let itemsPerView = 4;
+        let autoSlideInterval = null;
+        const TRACK = document.getElementById('recommendedTrack');
+        const PREV_BTN = document.getElementById('carouselPrev');
+        const NEXT_BTN = document.getElementById('carouselNext');
+        const DOTS_CONTAINER = document.getElementById('carouselDots');
+        const CLONE_COUNT = 4;
+
+        function getItemsPerView() {
+            const w = window.innerWidth;
+            if (w >= 1024) return 4;
+            if (w >= 768) return 3;
+            if (w >= 480) return 2;
+            return 1;
+        }
+
+        function updateArrowsAndDotsVisibility() {
+            const totalProducts = recProducts.length;
+            const hide = totalProducts <= itemsPerView;
+            // Hide arrows
+            PREV_BTN.style.display = hide ? 'none' : 'flex';
+            NEXT_BTN.style.display = hide ? 'none' : 'flex';
+            // Hide dots container if no need for pagination
+            DOTS_CONTAINER.style.display = hide ? 'none' : 'flex';
+        }
+
+        function renderCarousel(products) {
+            recProducts = products;
+            const track = TRACK;
+            track.innerHTML = '';
+
+            if (!products || products.length === 0) {
+                track.innerHTML = '<div style="flex:1; text-align:center; padding:2rem; color:var(--text-muted);">No recommendations available.</div>';
+                DOTS_CONTAINER.innerHTML = '';
+                PREV_BTN.style.display = 'none';
+                NEXT_BTN.style.display = 'none';
+                DOTS_CONTAINER.style.display = 'none';
+                return;
+            }
+
+            products.forEach(product => {
+                const card = createProductCard(product);
+                track.appendChild(card);
+            });
+
+            // Clone first few items for infinite effect (only if more than itemsPerView)
+            if (products.length > itemsPerView) {
+                for (let i = 0; i < Math.min(CLONE_COUNT, products.length); i++) {
+                    const clone = createProductCard(products[i]);
+                    clone.classList.add('clone');
+                    track.appendChild(clone);
+                }
+            }
+
+            itemsPerView = getItemsPerView();
+            currentSlide = 0;
+            updateCarousel(false);
+            buildDots();
+            updateArrowsAndDotsVisibility();
+            startAutoSlide();
+        }
+
+        function createProductCard(product) {
+            const prices = product.variants.map(v => v.price);
+            const minPrice = Math.min(...prices);
+            const maxPrice = Math.max(...prices);
+            const priceDisplay = minPrice === maxPrice ? `₹${minPrice}.00` : `₹${minPrice}.00 – ₹${maxPrice}.00`;
+            const imgSrc = product.imageUrl || 'https://via.placeholder.com/300x220?text=' + encodeURIComponent(product.name);
+
+            const card = document.createElement('div');
+            card.className = 'product-card';
+            card.dataset.productId = product.productId;
+            card.innerHTML = `
+                                <img src="${imgSrc}" alt="${product.name}" onerror="this.src='https://via.placeholder.com/300x220?text=${encodeURIComponent(product.name)}'" />
+                                <h3><a href="/Home/Catalog?highlight=${encodeURIComponent(product.name)}">${product.name}</a></h3>
+                                <span class="scent-tag">${product.scentFamily || 'Fragrance'}</span>
+                                <div class="product-price">${priceDisplay}</div>
+                                <a href="/Home/Catalog?highlight=${encodeURIComponent(product.name)}" class="btn-gold" style="font-size:0.7rem;">VIEW DETAILS</a>
+                            `;
+            return card;
+        }
+
+        function buildDots() {
+            const totalSlides = Math.ceil(recProducts.length / itemsPerView);
+            DOTS_CONTAINER.innerHTML = '';
+            if (totalSlides <= 1) {
+                DOTS_CONTAINER.style.display = 'none';
+                return;
+            }
+            DOTS_CONTAINER.style.display = 'flex';
+            for (let i = 0; i < totalSlides; i++) {
+                const dot = document.createElement('button');
+                dot.className = 'carousel-dot' + (i === 0 ? ' active' : '');
+                dot.dataset.index = i;
+                dot.addEventListener('click', () => goToSlide(i));
+                DOTS_CONTAINER.appendChild(dot);
+            }
+            updateArrowsAndDotsVisibility();
+        }
+
+        function updateCarousel(animate = true) {
+            const track = TRACK;
+            const firstCard = track.querySelector('.product-card');
+            if (!firstCard) return;
+
+            const cardWidth = firstCard.offsetWidth;
+            const gap = 1.2 * 16;
+            const slideWidth = cardWidth + gap;
+            const offset = currentSlide * slideWidth;
+
+            track.style.transition = animate ? 'transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94)' : 'none';
+            track.style.transform = `translateX(-${offset}px)`;
+
+            const realSlideCount = Math.ceil(recProducts.length / itemsPerView);
+            const dotIndex = currentSlide % realSlideCount;
+            document.querySelectorAll('.carousel-dot').forEach((dot, idx) => {
+                dot.classList.toggle('active', idx === dotIndex);
+            });
+
+            // Seamless loop (only if more than one slide)
+            const maxSlide = recProducts.length;
+            if (currentSlide >= maxSlide && recProducts.length > itemsPerView) {
+                setTimeout(() => {
+                    const newIndex = currentSlide - maxSlide;
+                    track.style.transition = 'none';
+                    currentSlide = newIndex;
+                    const newOffset = currentSlide * slideWidth;
+                    track.style.transform = `translateX(-${newOffset}px)`;
+                    void track.offsetHeight;
+                    track.style.transition = 'transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+                }, 400);
+            }
+        }
+
+        function goToSlide(index) {
+            const totalItems = recProducts.length;
+            if (totalItems <= itemsPerView) return;
+            const maxSlide = totalItems;
+            if (index < 0) index = 0;
+            if (index > maxSlide) index = maxSlide;
+            currentSlide = index;
+            updateCarousel(true);
+            resetAutoSlide();
+        }
+
+        function nextSlide() {
+            const totalItems = recProducts.length;
+            if (totalItems <= itemsPerView) return;
+            const maxSlide = totalItems + Math.min(CLONE_COUNT, totalItems) - itemsPerView + 1;
+            if (currentSlide < maxSlide) {
+                goToSlide(currentSlide + 1);
+            } else {
+                goToSlide(0);
+            }
+        }
+
+        function prevSlide() {
+            const totalItems = recProducts.length;
+            if (totalItems <= itemsPerView) return;
+            if (currentSlide > 0) {
+                goToSlide(currentSlide - 1);
+            } else {
+                const maxSlide = totalItems + Math.min(CLONE_COUNT, totalItems) - itemsPerView + 1;
+                goToSlide(maxSlide);
+            }
+        }
+
+        function startAutoSlide() {
+            if (autoSlideInterval) clearInterval(autoSlideInterval);
+            if (recProducts.length <= itemsPerView) return;
+            autoSlideInterval = setInterval(nextSlide, 4000);
+        }
+
+        function resetAutoSlide() {
+            if (autoSlideInterval) {
+                clearInterval(autoSlideInterval);
+                startAutoSlide();
+            }
+        }
+
+        // Event listeners
+        PREV_BTN.addEventListener('click', prevSlide);
+        NEXT_BTN.addEventListener('click', nextSlide);
+
+        const container = document.querySelector('.carousel-container');
+        container.addEventListener('mouseenter', () => {
+            if (autoSlideInterval) clearInterval(autoSlideInterval);
+        });
+        container.addEventListener('mouseleave', startAutoSlide);
+
+        let resizeTimeout;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimeout);
+            resizeTimeout = setTimeout(() => {
+                const newItems = getItemsPerView();
+                if (newItems !== itemsPerView) {
+                    itemsPerView = newItems;
+                    buildDots();
+                    currentSlide = 0;
+                    updateCarousel(false);
+                    updateArrowsAndDotsVisibility();
+                    resetAutoSlide();
+                } else {
+                    updateCarousel(false);
+                }
+            }, 200);
+        });
+
+        async function loadRecommendations() {
+            const title = document.getElementById('recTitle');
+            const subtitle = document.getElementById('recSubtitle');
+
+            try {
+                const token = localStorage.getItem('token');
+                const headers = token ? { 'Authorization': 'Bearer ' + token } : {};
+
+                const response = await fetch('/api/products/recommend/me', {
+                    headers: headers
+                });
+
+                if (!response.ok) throw new Error('Failed to load recommendations');
+                const data = await response.json();
+                const products = data.recommendations || [];
+                const triggerName = data.triggerProductName || '';
+
+                if (!products || products.length === 0) {
+                    TRACK.innerHTML = `
+                                <div style="flex:1; text-align:center; padding:2rem; color:var(--text-muted);">
+                                    No recommendations available. Start shopping to get personalized picks!
+                                </div>
+                            `;
+                    DOTS_CONTAINER.innerHTML = '';
+                    PREV_BTN.style.display = 'none';
+                    NEXT_BTN.style.display = 'none';
+                    DOTS_CONTAINER.style.display = 'none';
+                    return;
+                }
+
+                if (token && triggerName) {
+                    title.textContent = `Because you liked “${triggerName}”…`;
+                    subtitle.textContent = 'We picked these based on your scent preferences.';
+                } else if (token && !triggerName) {
+                    title.textContent = 'Recommended For You';
+                    subtitle.textContent = 'Based on your preferences and trends';
+                } else {
+                    title.textContent = 'Trending Now';
+                    subtitle.textContent = 'Most popular fragrances among our customers';
+                }
+
+                renderCarousel(products);
+
+            } catch (error) {
+                console.error('Failed to load recommendations:', error);
+                TRACK.innerHTML = `
+                            <div style="flex:1; text-align:center; padding:2rem; color:var(--text-muted);">
+                                Could not load recommendations. Please try again later.
+                            </div>
+                        `;
+                DOTS_CONTAINER.innerHTML = '';
+                PREV_BTN.style.display = 'none';
+                NEXT_BTN.style.display = 'none';
+                DOTS_CONTAINER.style.display = 'none';
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', loadRecommendations);
+    </script>
+}

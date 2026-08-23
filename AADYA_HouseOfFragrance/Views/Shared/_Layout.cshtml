@@ -26,20 +26,47 @@
             </ul>
 
             <div class="nav-actions">
+                <!-- Cart Button -->
                 <a href="/Home/Cart" class="btn-outline nav-btn">
-                    🛒 CART <span id="cartCountBadge" class="cart-badge">0</span>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
+                        <line x1="3" y1="6" x2="21" y2="6" />
+                        <path d="M16 10a4 4 0 0 1-8 0" />
+                    </svg>
+                    <span>CART</span>
+                    <span id="cartCountBadge" class="cart-badge">0</span>
                 </a>
 
                 <!-- LOGGED OUT STATE -->
                 <div id="navLoggedOut" style="display:flex; gap:0.8rem; align-items:center;">
-                    <a href="/Account/Login" class="nav-link-sign">SIGN IN</a>
-                    <a href="/Account/Register" class="btn-gold nav-btn">REGISTER</a>
+                    <a href="/Account/Login" class="nav-link-sign">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" />
+                            <polyline points="10 17 15 12 10 7" />
+                            <line x1="15" y1="12" x2="3" y2="12" />
+                        </svg>
+                        SIGN IN
+                    </a>
+                    <a href="/Account/Register" class="btn-gold nav-btn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                            <circle cx="8.5" cy="7" r="4" />
+                            <line x1="20" y1="8" x2="20" y2="14" />
+                            <line x1="23" y1="11" x2="17" y2="11" />
+                        </svg>
+                        REGISTER
+                    </a>
                 </div>
 
                 <!-- LOGGED IN STATE -->
                 <div id="navLoggedIn" style="display:none; position:relative;">
                     <button id="userMenuBtn" class="user-menu-btn">
-                        <span id="navUserAvatar">👤</span>
+                        <span id="navUserAvatar">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                                <circle cx="12" cy="7" r="4" />
+                            </svg>
+                        </span>
                         <span id="navUserName">User</span>
                         <svg class="dropdown-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <polyline points="6 9 12 15 18 9"></polyline>
@@ -48,16 +75,46 @@
                     <!-- DROPDOWN -->
                     <div id="userDropdown" class="user-dropdown" style="display:none;">
                         <a href="/Account/Profile" class="dropdown-item">
-                            <span class="dropdown-icon">👤</span>
+                            <span class="dropdown-icon">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                                    <circle cx="12" cy="7" r="4" />
+                                </svg>
+                            </span>
                             <span>My Profile</span>
                         </a>
                         <a href="/Account/Orders" class="dropdown-item">
-                            <span class="dropdown-icon">📋</span>
+                            <span class="dropdown-icon">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <rect x="2" y="3" width="20" height="18" rx="2" />
+                                    <line x1="8" y1="9" x2="16" y2="9" />
+                                    <line x1="8" y1="13" x2="16" y2="13" />
+                                    <line x1="8" y1="17" x2="12" y2="17" />
+                                </svg>
+                            </span>
                             <span>My Orders</span>
+                        </a>
+                        <!-- Admin Dashboard link -->
+                        <a href="/Admin/Dashboard" class="dropdown-item" id="adminDashboardLink" style="display:none;">
+                            <span class="dropdown-icon">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <rect x="3" y="3" width="7" height="7" />
+                                    <rect x="14" y="3" width="7" height="7" />
+                                    <rect x="3" y="14" width="7" height="7" />
+                                    <rect x="14" y="14" width="7" height="7" />
+                                </svg>
+                            </span>
+                            <span>Admin Dashboard</span>
                         </a>
                         <hr class="dropdown-divider">
                         <a href="#" class="dropdown-item dropdown-signout" onclick="logoutUser()">
-                            <span class="dropdown-icon">🚪</span>
+                            <span class="dropdown-icon">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                                    <polyline points="16 17 21 12 16 7" />
+                                    <line x1="21" y1="12" x2="9" y2="12" />
+                                </svg>
+                            </span>
                             <span>Sign Out</span>
                         </a>
                     </div>
@@ -94,16 +151,41 @@
 
             <div>
                 <h4>Contact Care</h4>
-                <p>📞 WhatsApp: +91 98242 92270</p>
-                <p>✉️ houseofaadya.in@gmail.com</p>
+                <p>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle; margin-right:6px;">
+                        <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" />
+                    </svg>
+                    WhatsApp: +91 98242 92270
+                </p>
+                <p>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle; margin-right:6px;">
+                        <rect x="2" y="4" width="20" height="16" rx="2" />
+                        <path d="M22 6L12 13 2 6" />
+                    </svg>
+                    houseofaadya.in@gmail.com
+                </p>
             </div>
         </div>
 
         <div class="footer-bottom">
             &copy; 2026 AADYA: The House of Fragrance. All Rights Reserved.
-            <a asp-controller="Admin" asp-action="Dashboard" class="admin-hidden-link" title="Admin Access">⚙️</a>
         </div>
     </footer>
+
+    <!-- ============================================================ -->
+    <!-- GLOBAL CONFIRMATION MODAL (used for logout and other actions) -->
+    <!-- ============================================================ -->
+    <div id="globalConfirmModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:9999; align-items:center; justify-content:center;">
+        <div style="background:white; padding:2rem; border-radius:8px; max-width:420px; text-align:center; box-shadow:0 4px 20px rgba(0,0,0,0.3); width:90%;">
+            <div id="globalModalIcon" style="font-size:3rem; margin-bottom:0.5rem;">⚠️</div>
+            <h3 id="globalModalTitle" style="font-family:var(--font-heading); color:var(--deep-burgundy); margin:0 0 0.5rem 0;">Confirm Action</h3>
+            <p id="globalModalMessage" style="color:var(--text-muted); margin:0 0 1.5rem 0; line-height:1.6;"></p>
+            <div style="display:flex; gap:1rem; justify-content:center;">
+                <button id="globalModalConfirmBtn" class="btn-gold">Yes, Proceed</button>
+                <button id="globalModalCancelBtn" class="btn-outline">Cancel</button>
+            </div>
+        </div>
+    </div>
 
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)

@@ -31,11 +31,10 @@ namespace AADYA_HouseOfFragrance.Models.DTOs
         [Required(ErrorMessage = "Email is required.")]
         [EmailAddress(ErrorMessage = "Please enter a valid email address.")]
         public string Email { get; set; } = string.Empty;
-
         [Required(ErrorMessage = "Password is required.")]
         public string Password { get; set; } = string.Empty;
-
-        public bool RememberMe { get; set; } = false;  // NEW
+        public bool RememberMe { get; set; } = false;
+        public bool AdminLogin { get; set; } = false;
     }
 
     public class AuthResponseDto
@@ -44,6 +43,8 @@ namespace AADYA_HouseOfFragrance.Models.DTOs
         public string FullName { get; set; } = string.Empty;
         public string Email { get; set; } = string.Empty;
         public int UserId { get; set; }
+        public bool IsAdmin { get; set; }
+        public bool IsSuperAdmin { get; set; }
         public string Message { get; set; } = string.Empty;
     }
 }

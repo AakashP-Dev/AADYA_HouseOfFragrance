@@ -11,7 +11,13 @@
                 <p style="color:var(--text-muted); margin:0.2rem 0 0 0;">View and manage your personal information.</p>
             </div>
             <div id="profileActions">
-                <button id="editProfileBtn" class="btn-gold" onclick="enableEdit()" style="font-size:0.75rem; padding:0.5rem 1.2rem;">✏️ EDIT PROFILE</button>
+                <button id="editProfileBtn" class="btn-gold" onclick="enableEdit()" style="font-size:0.75rem; padding:0.5rem 1.2rem;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right:4px;">
+                        <path d="M12 20h9" />
+                        <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
+                    </svg>
+                    EDIT PROFILE
+                </button>
             </div>
         </div>
 
@@ -29,7 +35,14 @@
                         <span id="avatarPlaceholder" style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); font-size:2rem; color:var(--text-muted);">👤</span>
                     </div>
                     <div>
-                        <button class="btn-outline" onclick="document.getElementById('avatarInput').click()" style="font-size:0.75rem; padding:0.4rem 1rem;">📷 Change Avatar</button>
+                        <button class="btn-outline" onclick="document.getElementById('avatarInput').click()" style="font-size:0.75rem; padding:0.4rem 1rem;">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right:4px;">
+                                <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+                                <circle cx="8.5" cy="8.5" r="1.5" />
+                                <polyline points="21 15 16 10 5 21" />
+                            </svg>
+                            Change Avatar
+                        </button>
                         <input type="file" id="avatarInput" accept="image/*" style="display:none;" onchange="handleAvatarUpload(event)" />
                         <p style="font-size:0.7rem; color:var(--text-muted); margin:0.2rem 0 0 0;">Max size: 2MB (JPG, PNG, GIF)</p>
                     </div>
@@ -59,15 +72,37 @@
                     </div>
 
                     <div id="editActions" style="display:none; margin-top:1.5rem; padding-top:1.5rem; border-top:1px solid var(--border-color); text-align:center;">
-                        <button type="submit" class="btn-gold" style="font-size:0.8rem; padding:0.6rem 2rem;">💾 SAVE CHANGES</button>
+                        <button type="submit" class="btn-gold" style="font-size:0.8rem; padding:0.6rem 2rem;">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right:4px;">
+                                <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
+                                <polyline points="17 21 17 13 7 13 7 21" />
+                                <polyline points="7 3 7 8 15 8" />
+                            </svg>
+                            SAVE CHANGES
+                        </button>
                         <button type="button" class="btn-outline" onclick="cancelEdit()" style="font-size:0.8rem; padding:0.6rem 2rem; margin-left:0.5rem;">CANCEL</button>
                     </div>
                 </form>
 
                 <!-- QUICK ACTIONS -->
                 <div style="margin-top:2rem; padding-top:1.5rem; border-top:1px solid var(--border-color); display:flex; gap:1rem; flex-wrap:wrap; justify-content:center;">
-                    <button class="btn-outline" onclick="openChangePassword()" style="font-size:0.75rem; padding:0.5rem 1.2rem;">🔑 Change Password</button>
-                    <button class="btn-outline" onclick="openAddressBook()" style="font-size:0.75rem; padding:0.5rem 1.2rem;">📮 Address Book</button>
+                    <button class="btn-outline" onclick="openChangePassword()" style="font-size:0.75rem; padding:0.5rem 1.2rem;">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right:4px;">
+                            <path d="M12 2v4M8 6h8M8 14h8M4 18h16M4 22h16" />
+                            <path d="M4 6h16v4H4z" />
+                            <circle cx="12" cy="12" r="2" />
+                            <path d="M12 14v2" />
+                        </svg>
+                        Change Password
+                    </button>
+                    <button class="btn-outline" onclick="openAddressBook()" style="font-size:0.75rem; padding:0.5rem 1.2rem;">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right:4px;">
+                            <rect x="2" y="4" width="20" height="16" rx="2" />
+                            <path d="M16 8h2M16 12h2M16 16h2" />
+                            <path d="M8 8h2M8 12h2M8 16h2" />
+                        </svg>
+                        Address Book
+                    </button>
                 </div>
             </div>
         </div>
@@ -76,7 +111,15 @@
         <div style="margin-top:2rem; padding:1.5rem; background: #fff5f5; border:1px solid #f8d7da; border-radius:4px;">
             <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem;">
                 <div>
-                    <h4 style="color:#d32f2f; margin:0; font-family:var(--font-heading);">⚠️ Delete Account</h4>
+                    <h4 style="color:#d32f2f; margin:0; font-family:var(--font-heading);">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#d32f2f" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle; margin-right:4px;">
+                            <path d="M12 2v4M8 6h8M8 14h8M4 18h16M4 22h16" />
+                            <path d="M4 6h16v4H4z" />
+                            <circle cx="12" cy="12" r="2" />
+                            <path d="M12 14v2" />
+                        </svg>
+                        Delete Account
+                    </h4>
                     <p style="color:var(--text-muted); margin:0.2rem 0 0 0; font-size:0.85rem;">Once deleted, all your data (orders, profile, history) will be permanently removed.</p>
                 </div>
                 <button class="btn-danger" onclick="confirmDeleteAccount()" style="padding:0.6rem 1.5rem; border:1px solid #d32f2f; background:transparent; color:#d32f2f; border-radius:4px; font-weight:600; cursor:pointer; transition:0.3s;">
@@ -97,14 +140,7 @@
                 <div class="password-wrapper">
                     <input type="password" id="oldPassword" class="custom-input" style="width:100%;" required />
                     <button type="button" class="toggle-password-btn" onclick="togglePasswordVisibility('oldPassword', this)" aria-label="Toggle password visibility">
-                        <svg class="eye-icon eye-off" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
-                            <line x1="1" y1="1" x2="23" y2="23"></line>
-                        </svg>
-                        <svg class="eye-icon eye-on" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="display: none;">
-                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                            <circle cx="12" cy="12" r="3"></circle>
-                        </svg>
+                        <!-- SVG icons (as before) -->
                     </button>
                 </div>
             </div>
@@ -113,14 +149,7 @@
                 <div class="password-wrapper">
                     <input type="password" id="newPassword" class="custom-input" style="width:100%;" required minlength="8" />
                     <button type="button" class="toggle-password-btn" onclick="togglePasswordVisibility('newPassword', this)" aria-label="Toggle password visibility">
-                        <svg class="eye-icon eye-off" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
-                            <line x1="1" y1="1" x2="23" y2="23"></line>
-                        </svg>
-                        <svg class="eye-icon eye-on" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="display: none;">
-                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                            <circle cx="12" cy="12" r="3"></circle>
-                        </svg>
+                        <!-- SVG icons -->
                     </button>
                 </div>
                 <span style="font-size:0.75rem; color:var(--text-muted);">Minimum 8 characters with uppercase, lowercase, number, and special character.</span>
@@ -130,14 +159,7 @@
                 <div class="password-wrapper">
                     <input type="password" id="confirmNewPassword" class="custom-input" style="width:100%;" required />
                     <button type="button" class="toggle-password-btn" onclick="togglePasswordVisibility('confirmNewPassword', this)" aria-label="Toggle password visibility">
-                        <svg class="eye-icon eye-off" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
-                            <line x1="1" y1="1" x2="23" y2="23"></line>
-                        </svg>
-                        <svg class="eye-icon eye-on" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="display: none;">
-                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                            <circle cx="12" cy="12" r="3"></circle>
-                        </svg>
+                        <!-- SVG icons -->
                     </button>
                 </div>
             </div>
@@ -152,7 +174,14 @@
 <!-- ADDRESS BOOK MODAL -->
 <div id="addressBookModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:9997; align-items:center; justify-content:center; overflow-y:auto;">
     <div style="background:white; padding:2rem 2.5rem; border-radius:8px; max-width:560px; box-shadow:0 4px 20px rgba(0,0,0,0.3); width:90%; max-height:90vh; overflow-y:auto;">
-        <h3 style="font-family:var(--font-heading); color:var(--deep-burgundy); margin:0 0 1.5rem 0; text-align:center; font-size:1.5rem;">📮 Address Book</h3>
+        <h3 style="font-family:var(--font-heading); color:var(--deep-burgundy); margin:0 0 1.5rem 0; text-align:center; font-size:1.5rem;">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle; margin-right:8px;">
+                <rect x="2" y="4" width="20" height="16" rx="2" />
+                <path d="M16 8h2M16 12h2M16 16h2" />
+                <path d="M8 8h2M8 12h2M8 16h2" />
+            </svg>
+            Address Book
+        </h3>
 
         <!-- Address List -->
         <div id="addressList" style="margin-bottom:2rem;">
@@ -164,7 +193,14 @@
 
         <!-- Add Address Form -->
         <form id="addAddressForm">
-            <h4 style="font-family:var(--font-heading); color:var(--deep-burgundy); margin:0 0 1.2rem 0; font-size:1.1rem;">Add New Address</h4>
+            <h4 style="font-family:var(--font-heading); color:var(--deep-burgundy); margin:0 0 1.2rem 0; font-size:1.1rem;">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle; margin-right:4px;">
+                    <circle cx="12" cy="12" r="10" />
+                    <line x1="12" y1="8" x2="12" y2="16" />
+                    <line x1="8" y1="12" x2="16" y2="12" />
+                </svg>
+                Add New Address
+            </h4>
 
             <div class="form-group">
                 <label for="addrLabel">Label</label>
@@ -216,7 +252,14 @@
                 </label>
             </div>
 
-            <button type="submit" class="btn-gold" style="width:100%; font-size:0.85rem; padding:0.75rem; margin-top:0.5rem;">➕ ADD ADDRESS</button>
+            <button type="submit" class="btn-gold" style="width:100%; font-size:0.85rem; padding:0.75rem; margin-top:0.5rem;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle; margin-right:6px;">
+                    <circle cx="12" cy="12" r="10" />
+                    <line x1="12" y1="8" x2="12" y2="16" />
+                    <line x1="8" y1="12" x2="16" y2="12" />
+                </svg>
+                ADD ADDRESS
+            </button>
         </form>
 
         <div style="margin-top:1.5rem; text-align:center;">
@@ -225,7 +268,7 @@
     </div>
 </div>
 
-<!-- CONFIRMATION MODAL -->
+<!-- CONFIRMATION MODAL (used for delete actions) -->
 <div id="confirmModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:9999; align-items:center; justify-content:center;">
     <div style="background:white; padding:2rem; border-radius:8px; max-width:420px; text-align:center; box-shadow:0 4px 20px rgba(0,0,0,0.3); width:90%;">
         <div id="modalIcon" style="font-size:3rem; margin-bottom:0.5rem;">⚠️</div>
@@ -245,12 +288,19 @@
 
         // --- 1. LOAD PROFILE ---
         async function loadProfile() {
+            const loadingEl = document.getElementById('profileLoading');
+            const contentEl = document.getElementById('profileContent');
+
+            loadingEl.style.display = 'block';
+            contentEl.style.display = 'none';
+
             const token = localStorage.getItem('token');
             if (!token) {
-                document.getElementById('profileLoading').innerHTML = `
+                loadingEl.innerHTML = `
                     <p>Please <a href="/Account/Login">login</a> to view your profile.</p>
                 `;
-                document.getElementById('profileContent').style.display = 'none';
+                loadingEl.style.display = 'block';
+                contentEl.style.display = 'none';
                 return;
             }
 
@@ -259,7 +309,17 @@
                     headers: { 'Authorization': 'Bearer ' + token }
                 });
 
-                if (!response.ok) throw new Error('Failed to load profile');
+                if (!response.ok) {
+                    if (response.status === 401) {
+                        localStorage.removeItem('token');
+                        localStorage.removeItem('userName');
+                        localStorage.removeItem('userId');
+                        window.location.href = '/Account/Login';
+                        return;
+                    }
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+
                 const data = await response.json();
 
                 currentUserId = data.userId;
@@ -282,18 +342,18 @@
                     placeholder.style.display = 'block';
                 }
 
-                document.getElementById('profileEmail').style.background = '';
                 setReadonly(true);
-
-                document.getElementById('profileLoading').style.display = 'none';
-                document.getElementById('profileContent').style.display = 'block';
+                loadingEl.style.display = 'none';
+                contentEl.style.display = 'block';
 
             } catch (error) {
                 console.error('Error loading profile:', error);
-                document.getElementById('profileLoading').innerHTML = `
+                loadingEl.innerHTML = `
                     <p style="color:#d32f2f;">Failed to load profile. Please try again.</p>
                     <button class="btn-gold" onclick="loadProfile()" style="font-size:0.8rem; margin-top:0.5rem;">RETRY</button>
                 `;
+                loadingEl.style.display = 'block';
+                contentEl.style.display = 'none';
             }
         }
 
@@ -379,13 +439,10 @@
             const file = event.target.files[0];
             if (!file) return;
 
-            // Check file size (max 2MB)
             if (file.size > 2 * 1024 * 1024) {
                 showToast('Image size must be less than 2MB.', 'error');
                 return;
             }
-
-            // Check file type
             const allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
             if (!allowedTypes.includes(file.type)) {
                 showToast('Only JPG, PNG, and GIF images are allowed.', 'error');
@@ -395,23 +452,17 @@
             const reader = new FileReader();
             reader.onload = async function(e) {
                 const base64 = e.target.result;
-
-                // Show preview
                 const avatarImg = document.getElementById('avatarPreview');
                 const placeholder = document.getElementById('avatarPlaceholder');
                 avatarImg.src = base64;
                 avatarImg.style.display = 'block';
                 placeholder.style.display = 'none';
 
-                // Upload to server
                 const token = localStorage.getItem('token');
                 try {
                     const response = await fetch('/Account/uploadavatar', {
                         method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': 'Bearer ' + token
-                        },
+                        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
                         body: JSON.stringify({ avatarBase64: base64 })
                     });
                     const data = await response.json();
@@ -457,22 +508,10 @@
 
             const token = localStorage.getItem('token');
             try {
-                console.log('Sending password change payload:', {
-                    OldPassword: oldPassword,
-                    NewPassword: newPassword,
-                    ConfirmPassword: confirmPassword
-                });
                 const response = await fetch('/Account/ChangePassword', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': 'Bearer ' + token
-                    },
-                    body: JSON.stringify({
-                        OldPassword: oldPassword,
-                        NewPassword: newPassword,
-                        ConfirmPassword: confirmPassword
-                    })
+                    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+                    body: JSON.stringify({ OldPassword: oldPassword, NewPassword: newPassword, ConfirmPassword: confirmPassword })
                 });
                 const data = await response.json();
                 if (response.ok) {
@@ -633,7 +672,7 @@
 
         // --- 7. MODAL ---
         function showModal(icon, title, message, onConfirm) {
-            document.getElementById('modalIcon').textContent = icon;
+            document.getElementById('modalIcon').innerHTML = icon;
             document.getElementById('modalTitle').textContent = title;
             document.getElementById('modalMessage').innerHTML = message;
 

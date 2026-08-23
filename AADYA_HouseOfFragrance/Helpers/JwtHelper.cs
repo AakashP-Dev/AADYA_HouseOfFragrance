@@ -23,18 +23,23 @@ namespace AADYA_HouseOfFragrance.Helpers
                 throw new InvalidOperationException("JWT Key is missing from appsettings.json. Please add 'Jwt:Key'.");
             }
 
-            var claims = new[]
+            var claims = new List<Claim>
+    {
+        new Claim(ClaimTypes.NameIdentifier, user.UserId.ToString()),
+        new Claim(ClaimTypes.Email, user.Email),
+        new Claim(ClaimTypes.Name, user.FullName)
+    };
+
+            // Add admin role claim if user is an admin
+            if (user.IsAdmin)
             {
-                new Claim(ClaimTypes.NameIdentifier, user.UserId.ToString()),
-                new Claim(ClaimTypes.Email, user.Email),
-                new Claim(ClaimTypes.Name, user.FullName)
-            };
+                claims.Add(new Claim(ClaimTypes.Role, "Admin"));
+            }
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
-            // Set expiration based on RememberMe flag
-            var expires = rememberMe ? DateTime.Now.AddDays(30) : DateTime.Now.AddHours(24); // 30 days or 1 day
+            var expires = rememberMe ? DateTime.Now.AddDays(30) : DateTime.Now.AddHours(24);
 
             var token = new JwtSecurityToken(
                 issuer: _configuration["Jwt:Issuer"],
