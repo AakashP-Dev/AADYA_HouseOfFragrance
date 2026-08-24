@@ -8,15 +8,33 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// 1. Add MySQL DbContext
+// ============================================================
+// 1. DATABASE CONTEXT
+// ============================================================
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
 
-// 2. Add JWT Helper
+// ============================================================
+// 2. DEPENDENCY INJECTION (Services)
+// ============================================================
 builder.Services.AddScoped<JwtHelper>();
+builder.Services.AddScoped<EmailService>();
 
-// 3. Add Authentication & JWT Bearer
+// ============================================================
+// 3. SESSION
+// ============================================================
+builder.Services.AddDistributedMemoryCache();
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(30);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+});
+
+// ============================================================
+// 4. JWT AUTHENTICATION
+// ============================================================
 var jwtKey = builder.Configuration["Jwt:Key"];
 if (string.IsNullOrEmpty(jwtKey))
 {
@@ -46,44 +64,35 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
-builder.Services.AddScoped<EmailService>();
-builder.Services.AddScoped<SmsService>();
-builder.Services.AddDistributedMemoryCache();
-builder.Services.AddSession(options =>
-{
-    options.IdleTimeout = TimeSpan.FromMinutes(30);
-    options.Cookie.HttpOnly = true;
-    options.Cookie.IsEssential = true;
-});
-
-// 4. Add CORS (so your frontend JS can call the API)
+// ============================================================
+// 5. CORS
+// ============================================================
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend",
         policy =>
         {
-            policy.WithOrigins("http://localhost:5000", "https://localhost:5001") // Your frontend URLs
+            policy.WithOrigins("http://localhost:5000", "https://localhost:5001")
                   .AllowAnyHeader()
                   .AllowAnyMethod();
         });
 });
 
+// ============================================================
+// 6. CONTROLLERS
+// ============================================================
 builder.Services.AddControllersWithViews()
     .AddNewtonsoftJson(options =>
         options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
 
-// 👇 ADD SESSION HERE (before Build)
-builder.Services.AddDistributedMemoryCache();
-builder.Services.AddSession(options =>
-{
-    options.IdleTimeout = TimeSpan.FromMinutes(30);
-    options.Cookie.HttpOnly = true;
-    options.Cookie.IsEssential = true;
-});
-
+// ============================================================
+// BUILD THE APP
+// ============================================================
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// ============================================================
+// 7. PIPELINE MIDDLEWARE
+// ============================================================
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
@@ -92,16 +101,14 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
-
 app.UseRouting();
 
-// 👇 Use Session after Routing
+// Session must come AFTER UseRouting and BEFORE UseAuthorization
 app.UseSession();
 
-// 5. Enable CORS
 app.UseCors("AllowFrontend");
 
-// 6. IMPORTANT: Authentication comes BEFORE Authorization
+// Authentication must come BEFORE Authorization
 app.UseAuthentication();
 app.UseAuthorization();
 
