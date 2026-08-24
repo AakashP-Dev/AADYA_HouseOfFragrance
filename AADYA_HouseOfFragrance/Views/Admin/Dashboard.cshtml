@@ -478,7 +478,7 @@ ViewData["Title"] = "Admin Operations Dashboard - House of AADYA";
             document.getElementById('reasonInput').focus();
         }
 
-        document.getElementById('reasonConfirmBtn').addEventListener('click', async function () {
+        document.getElementById('reasonConfirmBtn').addEventListener('click', async function() {
             const reason = document.getElementById('reasonInput').value.trim();
             if (!reason) {
                 showToast('Please provide a reason for rejecting the order.', 'error');
@@ -490,7 +490,10 @@ ViewData["Title"] = "Admin Operations Dashboard - House of AADYA";
                 const res = await fetch(`/api/admin/orders/${rejectOrderId}/status`, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
-                    body: JSON.stringify({ status: 'Cancelled' })
+                    body: JSON.stringify({
+                        status: 'Cancelled',
+                        reason: reason
+                    })
                 });
                 const data = await res.json();
                 if (res.ok) {

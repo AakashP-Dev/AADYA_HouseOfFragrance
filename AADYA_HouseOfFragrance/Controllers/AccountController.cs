@@ -2,6 +2,7 @@
 using AADYA_HouseOfFragrance.Helpers;
 using AADYA_HouseOfFragrance.Models.DTOs;
 using AADYA_HouseOfFragrance.Models.Entities;
+using AADYA_HouseOfFragrance.Services;
 using BCrypt.Net;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -13,11 +14,13 @@ namespace AADYA_HouseOfFragrance.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly JwtHelper _jwtHelper;
+        private readonly EmailService _emailService;
 
-        public AccountController(ApplicationDbContext context, JwtHelper jwtHelper)
+        public AccountController(ApplicationDbContext context, JwtHelper jwtHelper, EmailService emailService)
         {
             _context = context;
             _jwtHelper = jwtHelper;
+            _emailService = emailService;
         }
 
         // GET: /Account/Login
@@ -77,6 +80,16 @@ namespace AADYA_HouseOfFragrance.Controllers
 
             await _context.Users.AddAsync(user);
             await _context.SaveChangesAsync();
+
+            // --- SEND WELCOME EMAIL ---
+            try
+            {
+                await _emailService.SendWelcomeEmailAsync(user.Email, user.FullName);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Welcome email failed: {ex.Message}");
+            }
 
             return Ok(new AuthResponseDto
             {
@@ -242,6 +255,16 @@ namespace AADYA_HouseOfFragrance.Controllers
 
                 user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.NewPassword);
                 await _context.SaveChangesAsync();
+
+                // --- SEND PASSWORD CHANGED ALERT ---
+                try
+                {
+                    await _emailService.SendPasswordChangedAlertAsync(user.Email, user.FullName);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Password change alert email failed: {ex.Message}");
+                }
 
                 return Ok(new { message = "Password changed successfully!" });
             }

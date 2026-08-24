@@ -3,6 +3,7 @@
 using AADYA_HouseOfFragrance.Data;
 using AADYA_HouseOfFragrance.Models.DTOs;
 using AADYA_HouseOfFragrance.Models.Entities;
+using AADYA_HouseOfFragrance.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -16,10 +17,12 @@ namespace AADYA_HouseOfFragrance.Controllers
     public class AdminApiController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
+        private readonly EmailService _emailService;
 
-        public AdminApiController(ApplicationDbContext context)
+        public AdminApiController(ApplicationDbContext context, EmailService emailService)
         {
             _context = context;
+            _emailService = emailService;
         }
 
         [HttpGet("stats")]
@@ -58,12 +61,35 @@ namespace AADYA_HouseOfFragrance.Controllers
         [HttpPut("orders/{id}/status")]
         public async Task<IActionResult> UpdateOrderStatus(int id, [FromBody] StatusUpdateDto request)
         {
-            var order = await _context.Orders.FindAsync(id);
+            var order = await _context.Orders
+                .Include(o => o.User)
+                .Include(o => o.OrderItems)
+                    .ThenInclude(oi => oi.ProductVariant)
+                .FirstOrDefaultAsync(o => o.OrderId == id);
+
             if (order == null)
                 return NotFound(new { message = "Order not found." });
 
             order.OrderStatus = request.Status;
             await _context.SaveChangesAsync();
+
+            // --- SEND STATUS UPDATE EMAIL ---
+            try
+            {
+                if (order.User != null && !string.IsNullOrEmpty(order.User.Email))
+                {
+                    await _emailService.SendOrderStatusUpdateAsync(
+                        order.User.Email,
+                        order.User.FullName ?? "Customer",
+                        order,
+                        request.Reason // Pass the reason (for cancellation etc.)
+                    );
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Failed to send status update email: {ex.Message}");
+            }
 
             return Ok(new { message = "Order status updated." });
         }
@@ -164,24 +190,24 @@ namespace AADYA_HouseOfFragrance.Controllers
         }
 
         [HttpGet("users")]
-public async Task<IActionResult> GetUsers()
-{
-    var users = await _context.Users
-        .Select(u => new
+        public async Task<IActionResult> GetUsers()
         {
-            u.UserId,
-            u.FullName,
-            u.Email,
-            u.PhoneNumber,
-            u.Address,
-            u.IsAdmin,
-            u.IsSuperAdmin,
-            u.CreatedAt
-        })
-        .ToListAsync();
+            var users = await _context.Users
+                .Select(u => new
+                {
+                    u.UserId,
+                    u.FullName,
+                    u.Email,
+                    u.PhoneNumber,
+                    u.Address,
+                    u.IsAdmin,
+                    u.IsSuperAdmin,
+                    u.CreatedAt
+                })
+                .ToListAsync();
 
-    return Ok(users);
-}
+            return Ok(users);
+        }
 
         [HttpGet("users/{id}/orders")]
         public async Task<IActionResult> GetUserOrders(int id)
@@ -214,12 +240,10 @@ public async Task<IActionResult> GetUsers()
             return Ok(result);
         }
 
-        // --- Promote user to admin ---
-        // PUT: api/admin/users/{id}/promote
+        // --- PROMOTE USER ---
         [HttpPut("users/{id}/promote")]
         public async Task<IActionResult> PromoteUser(int id)
         {
-            // Get current admin user from token
             var currentUserId = GetCurrentUserId();
             var currentUser = await _context.Users.FindAsync(currentUserId);
             if (currentUser == null || !currentUser.IsSuperAdmin)
@@ -238,7 +262,7 @@ public async Task<IActionResult> GetUsers()
             return Ok(new { message = $"User '{user.FullName}' promoted to admin successfully." });
         }
 
-        // PUT: api/admin/users/{id}/demote
+        // --- DEMOTE USER ---
         [HttpPut("users/{id}/demote")]
         public async Task<IActionResult> DemoteUser(int id)
         {
@@ -254,7 +278,6 @@ public async Task<IActionResult> GetUsers()
             if (!user.IsAdmin)
                 return BadRequest(new { message = "User is not an admin." });
 
-            // Prevent demoting yourself (super admin cannot demote themselves)
             if (id == currentUserId)
                 return BadRequest(new { message = "You cannot demote yourself." });
 
@@ -264,7 +287,6 @@ public async Task<IActionResult> GetUsers()
             return Ok(new { message = $"User '{user.FullName}' has been demoted to regular user." });
         }
 
-        // Helper method to get current user ID from JWT
         private int GetCurrentUserId()
         {
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);

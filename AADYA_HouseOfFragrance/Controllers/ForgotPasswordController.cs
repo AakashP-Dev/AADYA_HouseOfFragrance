@@ -71,7 +71,6 @@ namespace AADYA_HouseOfFragrance.Controllers
             {
                 message = "OTP has been sent to your email.",
                 method = "Email",
-                otp = reset.Otp // Only for testing – remove in production
             });
         }
 

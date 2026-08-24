@@ -7,19 +7,22 @@ using System.Security.Claims;
 using AADYA_HouseOfFragrance.Data;
 using AADYA_HouseOfFragrance.Models.DTOs;
 using AADYA_HouseOfFragrance.Models.Entities;
+using AADYA_HouseOfFragrance.Services;
 
 namespace AADYA_HouseOfFragrance.Controllers
 {
-    [Route("api/orders")]   // ← Changed from "api/[controller]" to "api/orders"
+    [Route("api/orders")]
     [ApiController]
     [Authorize]
     public class OrderController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
+        private readonly EmailService _emailService;
 
-        public OrderController(ApplicationDbContext context)
+        public OrderController(ApplicationDbContext context, EmailService emailService)
         {
             _context = context;
+            _emailService = emailService;
         }
 
         private int GetCurrentUserId()
@@ -88,6 +91,30 @@ namespace AADYA_HouseOfFragrance.Controllers
                 await _context.Orders.AddAsync(order);
                 _context.ShoppingCarts.RemoveRange(cartItems);
                 await _context.SaveChangesAsync();
+
+                // --- SEND CONFIRMATION EMAIL ---
+                try
+                {
+                    var savedOrder = await _context.Orders
+                        .Include(o => o.OrderItems)
+                            .ThenInclude(oi => oi.ProductVariant)
+                                .ThenInclude(v => v.Product)
+                        .FirstOrDefaultAsync(o => o.OrderId == order.OrderId);
+
+                    if (savedOrder != null && user != null)
+                    {
+                        await _emailService.SendOrderConfirmationAsync(
+                            user.Email,
+                            user.FullName,
+                            savedOrder,
+                            savedOrder.OrderItems.ToList()
+                        );
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Failed to send order confirmation email: {ex.Message}");
+                }
 
                 return Ok(new
                 {
