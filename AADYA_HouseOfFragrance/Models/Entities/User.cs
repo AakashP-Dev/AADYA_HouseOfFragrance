@@ -15,6 +15,8 @@ namespace AADYA_HouseOfFragrance.Models.Entities
         public bool IsAdmin { get; set; } = false;  // ← NEW
         public DateTime CreatedAt { get; set; } = DateTime.Now;
         public bool IsSuperAdmin { get; set; } = false;
+        public bool IsPhoneVerified { get; set; } = false;
+        public bool IsEmailVerified { get; set; } = false;
 
         // Navigation Properties
         public ICollection<Order> Orders { get; set; } = new List<Order>();

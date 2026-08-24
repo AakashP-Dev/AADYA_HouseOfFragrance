@@ -409,5 +409,19 @@ namespace AADYA_HouseOfFragrance.Controllers
             HttpContext.Session.Clear();
             return Ok(new { message = "Logged out" });
         }
+
+        // GET: /Account/ForgotPassword
+        public IActionResult ForgotPassword()
+        {
+            return View();
+        }
+
+        // GET: /Account/ResetPassword
+        public IActionResult ResetPassword(string token, string otp)
+        {
+            ViewData["Token"] = token;
+            ViewData["Otp"] = otp;
+            return View();
+        }
     }
 }

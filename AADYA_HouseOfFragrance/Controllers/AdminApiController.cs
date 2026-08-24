@@ -1,4 +1,6 @@
-﻿using AADYA_HouseOfFragrance.Data;
+﻿#nullable disable
+
+using AADYA_HouseOfFragrance.Data;
 using AADYA_HouseOfFragrance.Models.DTOs;
 using AADYA_HouseOfFragrance.Models.Entities;
 using Microsoft.AspNetCore.Authorization;
