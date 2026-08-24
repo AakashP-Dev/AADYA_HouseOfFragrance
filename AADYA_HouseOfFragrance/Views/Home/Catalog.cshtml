@@ -80,6 +80,27 @@
                 <span class="price-label">Total Amount:</span>
                 <span class="price-value" id="drawerTotal">₹0.00</span>
             </div>
+
+            <!-- FREQUENTLY BOUGHT TOGETHER -->
+            <div id="drawerFrequentlyBought" style="margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid var(--border-color); display: none;">
+                <p style="font-size: 0.8rem; font-weight: 600; color: var(--deep-burgundy); margin-bottom: 0.8rem;">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle; margin-right:6px;">
+                        <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
+                        <line x1="3" y1="6" x2="21" y2="6" />
+                        <path d="M16 10a4 4 0 0 1-8 0" />
+                    </svg>
+                    Frequently Bought Together
+                </p>
+                <div id="drawerFreqBoughtLoading" style="text-align: center; padding: 0.5rem;">
+                    <span style="font-size: 0.8rem; color: var(--text-muted);">Loading...</span>
+                </div>
+                <div id="drawerFreqBoughtContent" style="display: none; display: flex; gap: 0.8rem; flex-wrap: wrap;">
+                    <!-- Related products will be injected here -->
+                </div>
+                <div id="drawerFreqBoughtEmpty" style="display: none; text-align: center; padding: 0.5rem;">
+                    <span style="font-size: 0.8rem; color: var(--text-muted);">No recommendations available.</span>
+                </div>
+            </div>
         </div>
     </div>
     <button type="button" class="btn-gold drawer-add-btn" onclick="handleAddToCart()">ADD SELECTED TO CART</button>
@@ -269,6 +290,11 @@
             document.getElementById('drawerOverlay').classList.add('open');
             document.getElementById('productDrawer').classList.add('open');
             document.body.style.overflow = 'hidden';
+
+            const firstVariant = product.variants?.[0];
+            if (firstVariant) {
+                await loadFrequentlyBoughtInDrawer(firstVariant.variantId);
+            }
         }
 
         function closeProductDrawer() {
@@ -589,5 +615,59 @@
                 }, 500);
             }
         });
+
+        // --- Load Frequently Bought Items in Drawer ---
+        async function loadFrequentlyBoughtInDrawer(variantId) {
+            const loading = document.getElementById('drawerFreqBoughtLoading');
+            const content = document.getElementById('drawerFreqBoughtContent');
+            const empty = document.getElementById('drawerFreqBoughtEmpty');
+            const container = document.getElementById('drawerFrequentlyBought');
+
+            container.style.display = 'block';
+            loading.style.display = 'block';
+            content.style.display = 'none';
+            empty.style.display = 'none';
+
+            try {
+                const response = await fetch(`/api/products/${variantId}/frequently-bought-with`);
+                if (!response.ok) throw new Error('Failed to fetch recommendations');
+                const recommendations = await response.json();
+
+                loading.style.display = 'none';
+
+                if (!recommendations || recommendations.length === 0) {
+                    empty.style.display = 'block';
+                    return;
+                }
+
+                content.style.display = 'flex';
+                content.innerHTML = '';
+
+                recommendations.slice(0, 3).forEach(rec => {
+                    const imgSrc = rec.imageUrl || 'https://via.placeholder.com/60x60?text=' + encodeURIComponent(rec.name);
+                    const prices = rec.variants?.map(v => v.price) || [];
+                    const min = prices.length ? Math.min(...prices) : 0;
+                    const priceDisplay = `₹${min}`;
+
+                    const item = document.createElement('div');
+                    item.style.cssText = 'display: flex; align-items: center; gap: 0.6rem; background: var(--warm-ivory); border: 1px solid var(--border-color); border-radius: 4px; padding: 0.4rem 0.8rem 0.4rem 0.4rem; flex: 1; min-width: 140px;';
+                    item.innerHTML = `
+                        <img src="${imgSrc}" alt="${rec.name}" style="width: 40px; height: 40px; object-fit: cover; border-radius: 3px; border: 1px solid var(--border-color);" onerror="this.src='https://via.placeholder.com/40x40?text=${encodeURIComponent(rec.name.charAt(0))}'" />
+                        <div style="flex: 1;">
+                            <div style="font-size: 0.78rem; font-weight: 600; color: var(--deep-burgundy);">${rec.name}</div>
+                            <div style="font-size: 0.7rem; color: var(--text-muted);">${priceDisplay}</div>
+                        </div>
+                        <a href="/Home/Catalog?highlight=${encodeURIComponent(rec.name)}" style="font-size: 0.65rem; padding: 0.2rem 0.6rem; background: var(--deep-burgundy); color: var(--warm-ivory); border-radius: 2px; text-decoration: none; white-space: nowrap;">VIEW</a>
+                    `;
+                    content.appendChild(item);
+                });
+
+            } catch (error) {
+                console.error('Error loading frequently bought:', error);
+                loading.style.display = 'none';
+                empty.style.display = 'block';
+                empty.innerHTML = '<span style="font-size: 0.8rem; color: var(--text-muted);">Could not load recommendations.</span>';
+            }
+        }
     </script>
 }

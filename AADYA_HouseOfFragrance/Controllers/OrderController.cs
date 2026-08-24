@@ -41,6 +41,10 @@ namespace AADYA_HouseOfFragrance.Controllers
             {
                 var userId = GetCurrentUserId();
                 var user = await _context.Users.FindAsync(userId);
+                var shippingAddress = string.IsNullOrEmpty(request.ShippingAddress) ? user.Address : request.ShippingAddress;
+                if (string.IsNullOrWhiteSpace(shippingAddress))
+                    return BadRequest(new { message = "Shipping address is required." });
+
                 if (user == null)
                     return Unauthorized(new { message = "User not found." });
 

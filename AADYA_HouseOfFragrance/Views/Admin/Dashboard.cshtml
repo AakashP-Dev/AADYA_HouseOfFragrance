@@ -26,6 +26,33 @@ ViewData["Title"] = "Admin Operations Dashboard - House of AADYA";
         <div class="stat-card"><span class="stat-label">Registered Clients</span><div class="stat-value" id="statClients">0</div><span class="stat-sub">Secure User Database</span></div>
     </div>
 
+    <!-- CUSTOMER SEGMENTS -->
+    <div style="margin-bottom: 2rem; margin-top: 1.5rem;">
+        <h3 style="font-family: var(--font-heading); color: var(--deep-burgundy); margin-bottom: 1rem;">Customer Segments</h3>
+        <div class="admin-stats-grid" id="customerSegmentsGrid">
+            <div class="stat-card">
+                <span class="stat-label">High Spenders</span>
+                <div class="stat-value" id="segHighSpenders">Loading...</div>
+                <span class="stat-sub">Total spent > ₹5,000</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-label">Regular</span>
+                <div class="stat-value" id="segRegular">Loading...</div>
+                <span class="stat-sub">₹1,000 – ₹5,000</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-label">Occasional</span>
+                <div class="stat-value" id="segOccasional">Loading...</div>
+                <span class="stat-sub">Up to ₹1,000</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-label">Inactive</span>
+                <div class="stat-value" id="segInactive">Loading...</div>
+                <span class="stat-sub">No orders yet</span>
+            </div>
+        </div>
+    </div>
+
     <!-- TAB NAVIGATION -->
     <div style="display:flex; gap:1rem; margin-bottom:2rem; border-bottom:1px solid var(--border-color); padding-bottom:0.5rem; flex-wrap:wrap;">
         <button class="filter-btn active" data-tab="orders" onclick="switchTab('orders')">
@@ -794,6 +821,7 @@ ViewData["Title"] = "Admin Operations Dashboard - House of AADYA";
         document.addEventListener('DOMContentLoaded', function () {
             loadStats();
             loadOrders(); // default tab
+            loadCustomerSegments(); // load customer segments
         });
 
         // --- PROMOTE USER TO ADMIN ---
@@ -871,5 +899,28 @@ ViewData["Title"] = "Admin Operations Dashboard - House of AADYA";
                 }
             );
         }
+
+        // --- Load Customer Segments ---
+        async function loadCustomerSegments() {
+            const token = localStorage.getItem('token');
+            if (!token) return;
+
+            try {
+                const res = await fetch('/api/admin/customer-segments', {
+                    headers: { 'Authorization': 'Bearer ' + token }
+                });
+                if (!res.ok) throw new Error('Failed to load segments');
+                const data = await res.json();
+
+                document.getElementById('segHighSpenders').innerText = data.highSpenders || 0;
+                document.getElementById('segRegular').innerText = data.regular || 0;
+                document.getElementById('segOccasional').innerText = data.occasional || 0;
+                document.getElementById('segInactive').innerText = data.inactive || 0;
+            } catch (error) {
+                console.error('Error loading customer segments:', error);
+                document.querySelectorAll('#customerSegmentsGrid .stat-value').forEach(el => el.innerText = 'Error');
+            }
+        }
+
     </script>
 }

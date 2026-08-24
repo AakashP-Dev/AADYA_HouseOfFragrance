@@ -25,7 +25,21 @@
 
             <!-- CART ACTIONS BAR - Hidden when empty -->
             <div id="cartActionsBar" class="cart-actions-bar">
-                <a href="/Home/Catalog" class="btn-outline">&larr; CONTINUE SHOPPING</a>
+                <div style="display: flex; gap: 1rem; flex-wrap: wrap; align-items: center; justify-content: space-between;">
+                    <a href="/Home/Catalog" class="btn-outline">&larr; CONTINUE SHOPPING</a>
+                    <button type="button" class="btn-outline" onclick="confirmClearCart()"
+                            style="border-color: #d32f2f; color: #d32f2f; padding: 0.7rem 1.6rem; font-size: 0.78rem; letter-spacing: 1.5px; text-transform: uppercase; font-weight: 600; border-radius: 2px; cursor: pointer; transition: all 0.3s ease; background: transparent;"
+                            onmouseover="this.style.backgroundColor='#d32f2f'; this.style.color='#ffffff';"
+                            onmouseout="this.style.backgroundColor='transparent'; this.style.color='#d32f2f';">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle; margin-right:6px;">
+                            <polyline points="3 6 5 6 21 6" />
+                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                            <line x1="10" y1="11" x2="10" y2="17" />
+                            <line x1="14" y1="11" x2="14" y2="17" />
+                        </svg>
+                        CLEAR CART
+                    </button>
+                </div>
             </div>
         </div>
 
@@ -389,5 +403,66 @@
 
         // --- 9. INIT ---
         document.addEventListener('DOMContentLoaded', loadCart);
+
+        // --- CONFIRM CLEAR CART (uses global modal from _Layout) ---
+        function confirmClearCart() {
+            const trashIcon = `
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom:0.5rem;">
+                    <polyline points="3 6 5 6 21 6" />
+                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                    <line x1="10" y1="11" x2="10" y2="17" />
+                    <line x1="14" y1="11" x2="14" y2="17" />
+                </svg>
+            `;
+            showGlobalConfirmModal(
+                trashIcon,
+                'Clear Cart',
+                'Are you sure you want to <strong>remove all items</strong> from your cart? This action cannot be undone.',
+                function() {
+                    clearCart();
+                },
+                function() {
+                    // User cancelled – do nothing
+                }
+            );
+        }
+
+        // --- CLEAR CART API CALL ---
+        async function clearCart() {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                showToast('Please login to manage your cart.', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/cart/clear', {
+                    method: 'DELETE',
+                    headers: { 'Authorization': 'Bearer ' + token }
+                });
+
+                if (!response.ok) {
+                    const err = await response.json();
+                    showToast(err.message || 'Failed to clear cart.', 'error');
+                    return;
+                }
+
+                // Reload cart UI
+                await loadCart();
+
+                // Update sticky tracker (if on catalog page)
+                if (typeof window.updateStickyTracker === 'function') {
+                    await window.updateStickyTracker();
+                }
+
+                // Update cart badge
+                await updateCartBadge();
+
+                showToast('Cart cleared successfully.', 'success');
+            } catch (error) {
+                console.error('Error clearing cart:', error);
+                showToast('Network error. Please try again.', 'error');
+            }
+        }
     </script>
 }

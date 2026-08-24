@@ -154,6 +154,10 @@ namespace AADYA_HouseOfFragrance.Controllers
         [HttpDelete("products/{id}")]
         public async Task<IActionResult> DeleteProduct(int id)
         {
+            var hasOrders = await _context.OrderItems.AnyAsync(oi => oi.ProductVariant.ProductId == id);
+            if (hasOrders)
+                return BadRequest(new { message = "Cannot delete product that has been ordered." });
+
             var product = await _context.Products
                 .Include(p => p.Variants)
                 .FirstOrDefaultAsync(p => p.ProductId == id);
@@ -173,6 +177,9 @@ namespace AADYA_HouseOfFragrance.Controllers
         [HttpPut("products/{id}/stock")]
         public async Task<IActionResult> UpdateStock(int id, [FromBody] StockUpdateDto request)
         {
+            if (request.StockQuantity < 0)
+                return BadRequest(new { message = "Stock cannot be negative." });
+
             var product = await _context.Products
                 .Include(p => p.Variants)
                 .FirstOrDefaultAsync(p => p.ProductId == id);
@@ -293,6 +300,31 @@ namespace AADYA_HouseOfFragrance.Controllers
             if (userIdClaim == null)
                 throw new UnauthorizedAccessException("User not authenticated");
             return int.Parse(userIdClaim.Value);
+        }
+
+        [HttpGet("customer-segments")]
+        public async Task<IActionResult> GetCustomerSegments()
+        {
+            var users = await _context.Users
+                .Where(u => !u.IsAdmin)
+                .Select(u => new
+                {
+                    u.UserId,
+                    u.FullName,
+                    TotalSpent = _context.Orders.Where(o => o.UserId == u.UserId).Sum(o => o.TotalAmount),
+                    OrderCount = _context.Orders.Count(o => o.UserId == u.UserId)
+                })
+                .ToListAsync();
+
+            var segments = new
+            {
+                HighSpenders = users.Count(u => u.TotalSpent > 5000),
+                Regular = users.Count(u => u.TotalSpent <= 5000 && u.TotalSpent > 1000),
+                Occasional = users.Count(u => u.TotalSpent <= 1000 && u.OrderCount >= 1),
+                Inactive = users.Count(u => u.OrderCount == 0)
+            };
+
+            return Ok(segments);
         }
     }
 }

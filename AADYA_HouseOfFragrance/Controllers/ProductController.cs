@@ -358,5 +358,61 @@ namespace AADYA_HouseOfFragrance.Controllers
                 }).ToList() ?? new List<VariantDto>()
             });
         }
+
+        [HttpGet("{id}/frequently-bought-with")]
+        public async Task<IActionResult> GetFrequentlyBoughtWith(int id)
+        {
+            // Get all order items that contain this variant
+            var orderIds = await _context.OrderItems
+                .Where(oi => oi.VariantId == id)
+                .Select(oi => oi.OrderId)
+                .Distinct()
+                .ToListAsync();
+
+            if (!orderIds.Any())
+                return Ok(new List<ProductResponseDto>());
+
+            // Get other variants bought in the same orders (exclude current)
+            var relatedVariantIds = await _context.OrderItems
+                .Where(oi => orderIds.Contains(oi.OrderId) && oi.VariantId != id)
+                .GroupBy(oi => oi.VariantId)
+                .Select(g => new { VariantId = g.Key, Count = g.Count() })
+                .OrderByDescending(x => x.Count)
+                .Take(4)
+                .Select(x => x.VariantId)
+                .ToListAsync();
+
+            if (!relatedVariantIds.Any())
+                return Ok(new List<ProductResponseDto>());
+
+            // Get full product details with variants and category
+            var products = await _context.Products
+                .Include(p => p.Variants)
+                .Include(p => p.Category)
+                .Where(p => p.Variants.Any(v => relatedVariantIds.Contains(v.VariantId)))
+                .ToListAsync();
+
+            // Map to complete DTO with all fields and variants
+            var result = products.Select(p => new ProductResponseDto
+            {
+                ProductId = p.ProductId,
+                Name = p.Name,
+                Description = p.Description,
+                ImageUrl = p.ImageUrl,
+                ScentFamily = p.ScentFamily,
+                RecommendedOccasion = p.RecommendedOccasion,
+                Intensity = p.Intensity,
+                CategoryName = p.Category?.CategoryName ?? "Uncategorized",
+                Variants = p.Variants?.Select(v => new VariantDto
+                {
+                    VariantId = v.VariantId,
+                    Size = v.Size,
+                    Price = v.Price,
+                    StockQuantity = v.StockQuantity
+                }).ToList() ?? new List<VariantDto>()
+            });
+
+            return Ok(result);
+        }
     }
 }
