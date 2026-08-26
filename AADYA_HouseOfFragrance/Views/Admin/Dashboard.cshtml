@@ -232,17 +232,46 @@ ViewData["Title"] = "Admin Operations Dashboard - House of AADYA";
 </div>
 
 <!-- REJECT ORDER REASON MODAL -->
-<div id="reasonModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:9998; align-items:center; justify-content:center;">
-    <div style="background:white; padding:2rem; border-radius:8px; max-width:420px; text-align:center; box-shadow:0 4px 20px rgba(0,0,0,0.3); width:90%;">
-        <h3 style="font-family:var(--font-heading); color:var(--deep-burgundy); margin:0 0 0.5rem 0;">Reject Order</h3>
-        <p style="color:var(--text-muted); margin:0 0 1rem 0;">Please provide a reason for rejecting <strong id="rejectOrderId"></strong></p>
-        <div class="form-group">
-            <label for="reasonInput">Reason</label>
-            <textarea id="reasonInput" class="custom-input custom-textarea" rows="3" style="width:100%;" placeholder="e.g. Out of stock, Customer request, etc."></textarea>
+<div id="reasonModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); backdrop-filter:blur(2px); z-index:9998; align-items:center; justify-content:center;">
+    <div style="background:#FFFFFF; padding:2rem 2.5rem; border-radius:8px; max-width:480px; width:90%; box-shadow:0 8px 32px rgba(0,0,0,0.2); margin:auto; position:relative;">
+
+        <!-- Modal Header -->
+        <div style="display:flex; align-items:center; gap:0.8rem; margin-bottom:1.2rem;">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#d32f2f" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 2v4M8 6h8M8 14h8M4 18h16M4 22h16" />
+                <path d="M4 6h16v4H4z" />
+                <circle cx="12" cy="12" r="2" />
+                <path d="M12 14v2" />
+            </svg>
+            <h3 style="font-family:var(--font-heading); color:#d32f2f; margin:0; font-size:1.3rem;">Reject Order</h3>
         </div>
-        <div style="display:flex; gap:1rem; justify-content:center; margin-top:1.5rem;">
-            <button id="reasonConfirmBtn" class="btn-gold">Reject Order</button>
-            <button id="reasonCancelBtn" class="btn-outline">Cancel</button>
+
+        <!-- Order ID Display -->
+        <p style="color:var(--text-muted); margin:0 0 1.2rem 0; font-size:0.9rem;">
+            You are about to reject order <strong id="rejectOrderId" style="color:var(--deep-burgundy); font-weight:700;"></strong>
+        </p>
+
+        <!-- Reason Input -->
+        <div style="margin-bottom:1.5rem;">
+            <label for="reasonInput" style="display:block; font-size:0.85rem; font-weight:600; color:var(--deep-burgundy); margin-bottom:0.4rem;">
+                Rejection Reason <span style="color:#d32f2f;">*</span>
+            </label>
+            <textarea id="reasonInput" rows="4" style="width:100%; padding:0.8rem 1rem; border:1px solid var(--border-color); border-radius:4px; font-family:var(--font-body); font-size:0.9rem; resize:vertical; transition:border-color 0.3s; box-sizing:border-box;" placeholder="e.g. Out of stock, Customer requested cancellation, Payment issue, etc."></textarea>
+            <p style="font-size:0.75rem; color:var(--text-muted); margin:0.3rem 0 0 0;">This reason will be sent to the customer via email.</p>
+        </div>
+
+        <!-- Action Buttons -->
+        <div style="display:flex; gap:1rem; justify-content:flex-end; margin-top:0.5rem;">
+            <button id="reasonCancelBtn" class="btn-outline" style="padding:0.6rem 1.8rem; font-size:0.75rem;">CANCEL</button>
+            <button id="reasonConfirmBtn" class="btn-gold" style="padding:0.6rem 1.8rem; font-size:0.75rem; background:#d32f2f !important; border-color:#d32f2f !important;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle; margin-right:6px;">
+                    <path d="M12 2v4M8 6h8M8 14h8M4 18h16M4 22h16" />
+                    <path d="M4 6h16v4H4z" />
+                    <circle cx="12" cy="12" r="2" />
+                    <path d="M12 14v2" />
+                </svg>
+                REJECT ORDER
+            </button>
         </div>
     </div>
 </div>
@@ -333,40 +362,61 @@ ViewData["Title"] = "Admin Operations Dashboard - House of AADYA";
         function renderOrders(orders) {
             const tbody = document.getElementById('adminOrdersTbody');
             tbody.innerHTML = '';
+
             if (!orders || orders.length === 0) {
                 tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:2rem;">No orders found.</td></tr>';
                 return;
             }
+
             orders.forEach(order => {
                 const statusClass = order.status.toLowerCase();
                 const tr = document.createElement('tr');
                 tr.dataset.status = order.status;
+
+                // Extract numeric ID from formatted string
+                const numericId = parseInt(order.id.replace('#AAD-', ''));
+
                 let actionsHtml = '';
-                if (order.status === 'Processing') {
+
+                // Show buttons based on status
+                if (order.status === 'Pending Payment') {
                     actionsHtml = `
-                                        <button class="btn-outline admin-sm-btn" onclick="updateOrderStatus('${order.id}', 'Dispatched')">Mark Dispatched</button>
-                                        <button class="btn-outline admin-sm-btn btn-danger" onclick="rejectOrder('${order.id}')">Reject</button>
-                                    `;
+                        <button class="btn-outline admin-sm-btn" onclick="updateOrderStatus(${numericId}, 'Processing')">Mark Processing</button>
+                        <button class="btn-outline admin-sm-btn btn-danger" onclick="rejectOrder(${numericId})">Reject</button>
+                    `;
+                } else if (order.status === 'Processing') {
+                    actionsHtml = `
+                        <button class="btn-outline admin-sm-btn" onclick="updateOrderStatus(${numericId}, 'Dispatched')">Mark Dispatched</button>
+                        <button class="btn-outline admin-sm-btn btn-danger" onclick="rejectOrder(${numericId})">Reject</button>
+                    `;
                 } else if (order.status === 'Dispatched') {
                     actionsHtml = `
-                                        <button class="btn-outline admin-sm-btn" onclick="updateOrderStatus('${order.id}', 'Delivered')">Mark Delivered</button>
-                                        <button class="btn-outline admin-sm-btn btn-danger" onclick="rejectOrder('${order.id}')">Reject</button>
-                                    `;
-                } else {
+                        <button class="btn-outline admin-sm-btn" onclick="updateOrderStatus(${numericId}, 'Delivered')">Mark Delivered</button>
+                        <button class="btn-outline admin-sm-btn btn-danger" onclick="rejectOrder(${numericId})">Reject</button>
+                    `;
+                } else if (order.status === 'Delivered' || order.status === 'Cancelled') {
                     actionsHtml = `<span class="status-text-completed">Completed</span>`;
                 }
-                // Replace WhatsApp and Email emojis with SVGs
+
                 const whatsappIcon = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle; margin-right:4px;"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>`;
                 const emailIcon = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle; margin-right:4px;"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M22 6L12 13 2 6"/></svg>`;
 
                 tr.innerHTML = `
-                                    <td><strong>${order.id}</strong></td>
-                                    <td><div class="client-contact-info"><strong>${order.customer}</strong><div class="contact-links"><a href="https://wa.me/919824292270?text=Hello%20${encodeURIComponent(order.customer)}" target="_blank" class="contact-btn whatsapp">${whatsappIcon}WhatsApp</a><a href="mailto:customer@example.com" class="contact-btn email">${emailIcon}Email</a></div></div></td>
-                                    <td>${order.items}</td>
-                                    <td>₹${order.total.toFixed(2)}</td>
-                                    <td><span class="status-pill status-${statusClass}">${order.status}</span></td>
-                                    <td style="text-align: right;">${actionsHtml}</td>
-                                `;
+                    <td><strong>${order.id}</strong></td>
+                    <td>
+                        <div class="client-contact-info">
+                            <strong>${order.customer}</strong>
+                            <div class="contact-links">
+                                ${order.customerPhone ? `<a href="https://wa.me/91${order.customerPhone}?text=Hello%20${encodeURIComponent(order.customer)}" target="_blank" class="contact-btn whatsapp">${whatsappIcon}WhatsApp</a>` : '<span style="font-size:0.7rem;color:var(--text-muted);">No WhatsApp</span>'}
+                                ${order.customerEmail ? `<a href="mailto:${order.customerEmail}" class="contact-btn email">${emailIcon}Email</a>` : '<span style="font-size:0.7rem;color:var(--text-muted);">No Email</span>'}
+                            </div>
+                        </div>
+                    </td>
+                    <td>${order.items}</td>
+                    <td>₹${order.total.toFixed(2)}</td>
+                    <td><span class="status-pill status-${statusClass}">${order.status}</span></td>
+                    <td style="text-align: right;">${actionsHtml}</td>
+                `;
                 tbody.appendChild(tr);
             });
         }
@@ -640,12 +690,18 @@ ViewData["Title"] = "Admin Operations Dashboard - House of AADYA";
             tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:2rem;">Loading users...</td></tr>';
             try {
                 const res = await fetch('/api/admin/users', { headers: { 'Authorization': 'Bearer ' + token } });
-                if (!res.ok) throw new Error('Failed to load users');
+                if (!res.ok) {
+                    if (res.status === 401) {
+                        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:2rem; color:red;">Session expired. Please login again.</td></tr>';
+                        return;
+                    }
+                    throw new Error('Failed to load users');
+                }
                 const users = await res.json();
                 renderUsers(users);
             } catch (error) {
                 console.error('Error loading users:', error);
-                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:2rem; color:red;">Failed to load users.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:2rem; color:red;">Failed to load users. Please try again.</td></tr>';
             }
         }
 
@@ -657,23 +713,22 @@ ViewData["Title"] = "Admin Operations Dashboard - House of AADYA";
                 return;
             }
 
-            // Get current user's super admin status (stored in localStorage)
             const isSuperAdmin = localStorage.getItem('isSuperAdmin') === 'true';
 
             users.forEach(user => {
                 const tr = document.createElement('tr');
                 let actionsHtml = '';
-
-                // Determine if current user is the super admin (to show/hide action buttons)
                 const isCurrentUser = user.userId === parseInt(localStorage.getItem('userId'));
 
+                // Truncate address to 30 characters
+                const address = user.address || 'N/A';
+                const shortAddress = address.length > 30 ? address.substring(0, 30) + '…' : address;
+
                 if (user.isAdmin) {
-                    // Admin user
                     let adminBadge = '<span class="status-pill status-processing" style="background:#CBA463; color:#fff;">Admin</span>';
                     if (user.isSuperAdmin) {
                         adminBadge = '<span class="status-pill status-processing" style="background:var(--deep-burgundy); color:var(--warm-ivory);">Super Admin</span>';
                     }
-                    // Only show "Demote" button if current user is super admin and this is NOT the super admin themselves
                     if (isSuperAdmin && !user.isSuperAdmin) {
                         actionsHtml = `
                             <button class="btn-outline admin-sm-btn" onclick="viewUserOrders(${user.userId}, '${user.fullName}')">View Orders</button>
@@ -688,12 +743,11 @@ ViewData["Title"] = "Admin Operations Dashboard - House of AADYA";
                         <td><strong>${user.fullName}</strong> ${adminBadge}</td>
                         <td>${user.phoneNumber || 'N/A'}</td>
                         <td>${user.email}</td>
-                        <td>${user.address || 'N/A'}</td>
-                        <td style="text-align: right;">${actionsHtml}</td>
+                        <td style="max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${address}">${shortAddress}</td>
+                        <td style="text-align: right; white-space: nowrap;">${actionsHtml}</td>
                     `;
                 } else {
-                    // Normal user
-                    // Only show "Make Admin" button if current user is super admin
+                    // Regular user
                     if (isSuperAdmin) {
                         actionsHtml = `
                             <button class="btn-outline admin-sm-btn" onclick="viewUserOrders(${user.userId}, '${user.fullName}')">View Orders</button>
@@ -708,8 +762,8 @@ ViewData["Title"] = "Admin Operations Dashboard - House of AADYA";
                         <td><strong>${user.fullName}</strong></td>
                         <td>${user.phoneNumber || 'N/A'}</td>
                         <td>${user.email}</td>
-                        <td>${user.address || 'N/A'}</td>
-                        <td style="text-align: right;">${actionsHtml}</td>
+                        <td style="max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${address}">${shortAddress}</td>
+                        <td style="text-align: right; white-space: nowrap;">${actionsHtml}</td>
                     `;
                 }
                 tbody.appendChild(tr);

@@ -110,6 +110,12 @@ namespace AADYA_HouseOfFragrance.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
+                    b.Property<string>("PaymentId")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("PaymentMethod")
+                        .HasColumnType("longtext");
+
                     b.Property<string>("ShippingAddress")
                         .IsRequired()
                         .HasColumnType("longtext");
@@ -238,7 +244,7 @@ namespace AADYA_HouseOfFragrance.Migrations
                         {
                             ProductId = 1,
                             CategoryId = 2,
-                            CreatedAt = new DateTime(2026, 8, 24, 14, 19, 12, 753, DateTimeKind.Local).AddTicks(7686),
+                            CreatedAt = new DateTime(2026, 8, 26, 20, 3, 45, 686, DateTimeKind.Local).AddTicks(2384),
                             Description = "Rich oud accords beautifully balanced with warm, refined notes to create a fragrance that is deep, sophisticated, and effortlessly luxurious.",
                             ImageUrl = "/images/products/OUD Al Noor.jpeg",
                             Intensity = "Bold",
@@ -250,7 +256,7 @@ namespace AADYA_HouseOfFragrance.Migrations
                         {
                             ProductId = 2,
                             CategoryId = 2,
-                            CreatedAt = new DateTime(2026, 8, 24, 14, 19, 12, 753, DateTimeKind.Local).AddTicks(7717),
+                            CreatedAt = new DateTime(2026, 8, 26, 20, 3, 45, 686, DateTimeKind.Local).AddTicks(2399),
                             Description = "Crafted for those who appreciate timeless luxury, Royal Oud is a rich and refined fragrance that showcases the majestic character of oud with a smooth, elegant warmth.",
                             ImageUrl = "/images/products/Royal OUD.jpeg",
                             Intensity = "Bold",
@@ -262,7 +268,7 @@ namespace AADYA_HouseOfFragrance.Migrations
                         {
                             ProductId = 3,
                             CategoryId = 2,
-                            CreatedAt = new DateTime(2026, 8, 24, 14, 19, 12, 753, DateTimeKind.Local).AddTicks(7721),
+                            CreatedAt = new DateTime(2026, 8, 26, 20, 3, 45, 686, DateTimeKind.Local).AddTicks(2402),
                             Description = "Experience the perfect balance of depth and elegance with Oud Habib. Rich oud is complemented by warm, refined accords to create a fragrance that feels smooth, luxurious, and irresistibly captivating.",
                             ImageUrl = "/images/products/OUD Habib.jpeg",
                             Intensity = "Bold",
@@ -274,7 +280,7 @@ namespace AADYA_HouseOfFragrance.Migrations
                         {
                             ProductId = 13,
                             CategoryId = 2,
-                            CreatedAt = new DateTime(2026, 8, 24, 14, 19, 12, 753, DateTimeKind.Local).AddTicks(7724),
+                            CreatedAt = new DateTime(2026, 8, 26, 20, 3, 45, 686, DateTimeKind.Local).AddTicks(2404),
                             Description = "Dark, composed, and quietly intriguing—Black Onyx is made for a presence that doesn't need to compete for attention.",
                             ImageUrl = "/images/products/Black Onyx.jpeg",
                             Intensity = "Bold",
@@ -286,7 +292,7 @@ namespace AADYA_HouseOfFragrance.Migrations
                         {
                             ProductId = 30,
                             CategoryId = 2,
-                            CreatedAt = new DateTime(2026, 8, 24, 14, 19, 12, 753, DateTimeKind.Local).AddTicks(7728),
+                            CreatedAt = new DateTime(2026, 8, 26, 20, 3, 45, 686, DateTimeKind.Local).AddTicks(2405),
                             Description = "Oud, reimagined with a cleaner and more refined presence. White Oud carries the distinctive woody character of oud in an elegant profile that feels sophisticated, composed, and easier to wear than darker oud styles.",
                             ImageUrl = "/images/products/White OUD.jpeg",
                             Intensity = "Bold",
@@ -298,7 +304,7 @@ namespace AADYA_HouseOfFragrance.Migrations
                         {
                             ProductId = 31,
                             CategoryId = 2,
-                            CreatedAt = new DateTime(2026, 8, 24, 14, 19, 12, 753, DateTimeKind.Local).AddTicks(7732),
+                            CreatedAt = new DateTime(2026, 8, 26, 20, 3, 45, 686, DateTimeKind.Local).AddTicks(2407),
                             Description = "Bold, intense, and undeniably captivating, Musk is crafted for those who appreciate the rich depth of traditional musk.",
                             ImageUrl = "/images/products/Musk.jpeg",
                             Intensity = "Bold",
@@ -310,7 +316,7 @@ namespace AADYA_HouseOfFragrance.Migrations
                         {
                             ProductId = 33,
                             CategoryId = 2,
-                            CreatedAt = new DateTime(2026, 8, 24, 14, 19, 12, 753, DateTimeKind.Local).AddTicks(7734),
+                            CreatedAt = new DateTime(2026, 8, 26, 20, 3, 45, 686, DateTimeKind.Local).AddTicks(2408),
                             Description = "A fragrance with the poise of a royal gathering—graceful, distinguished, and steeped in tradition.",
                             ImageUrl = "/images/products/Shahi Darbar.jpeg",
                             Intensity = "Bold",
@@ -322,7 +328,7 @@ namespace AADYA_HouseOfFragrance.Migrations
                         {
                             ProductId = 34,
                             CategoryId = 2,
-                            CreatedAt = new DateTime(2026, 8, 24, 14, 19, 12, 753, DateTimeKind.Local).AddTicks(7737),
+                            CreatedAt = new DateTime(2026, 8, 26, 20, 3, 45, 686, DateTimeKind.Local).AddTicks(2410),
                             Description = "Darkness, refined into a fragrance. Black Oud carries the unmistakable depth of oud with a darker, more mysterious character—rich, woody, and composed for those who prefer their scent with genuine presence.",
                             ImageUrl = "/images/products/Black OUD.jpeg",
                             Intensity = "Bold",
@@ -334,7 +340,7 @@ namespace AADYA_HouseOfFragrance.Migrations
                         {
                             ProductId = 35,
                             CategoryId = 2,
-                            CreatedAt = new DateTime(2026, 8, 24, 14, 19, 12, 753, DateTimeKind.Local).AddTicks(7740),
+                            CreatedAt = new DateTime(2026, 8, 26, 20, 3, 45, 686, DateTimeKind.Local).AddTicks(2412),
                             Description = "Deep, woody, and unmistakably commanding. Oud captures the timeless character of one of perfumery's most prized aromas—rich, smoky warmth with an earthy depth that develops beautifully on the skin.",
                             ImageUrl = "/images/products/OUD.jpeg",
                             Intensity = "Bold",
@@ -346,7 +352,7 @@ namespace AADYA_HouseOfFragrance.Migrations
                         {
                             ProductId = 4,
                             CategoryId = 1,
-                            CreatedAt = new DateTime(2026, 8, 24, 14, 19, 12, 753, DateTimeKind.Local).AddTicks(7743),
+                            CreatedAt = new DateTime(2026, 8, 26, 20, 3, 45, 686, DateTimeKind.Local).AddTicks(2413),
                             Description = "Refined, confident, and effortlessly elegant, Ridhaan is a fragrance crafted for those who appreciate understated luxury.",
                             ImageUrl = "/images/products/Ridhaan.jpeg",
                             Intensity = "Subtle",
@@ -358,7 +364,7 @@ namespace AADYA_HouseOfFragrance.Migrations
                         {
                             ProductId = 7,
                             CategoryId = 1,
-                            CreatedAt = new DateTime(2026, 8, 24, 14, 19, 12, 753, DateTimeKind.Local).AddTicks(7745),
+                            CreatedAt = new DateTime(2026, 8, 26, 20, 3, 45, 686, DateTimeKind.Local).AddTicks(2415),
                             Description = "Soft sweetness has a way of being remembered. Lovely wraps you in a delicate, graceful character that feels warm, charming, and beautifully feminine without becoming overwhelming.",
                             ImageUrl = "/images/products/Lovely.jpeg",
                             Intensity = "Subtle",
@@ -370,7 +376,7 @@ namespace AADYA_HouseOfFragrance.Migrations
                         {
                             ProductId = 8,
                             CategoryId = 1,
-                            CreatedAt = new DateTime(2026, 8, 24, 14, 19, 12, 753, DateTimeKind.Local).AddTicks(7753),
+                            CreatedAt = new DateTime(2026, 8, 26, 20, 3, 45, 686, DateTimeKind.Local).AddTicks(2417),
                             Description = "Sweetness, with a sharper sense of character. Jack Hobbs carries a rich, confident sweetness that feels polished rather than delicate, giving it a distinctive personality that works effortlessly on both men and women.",
                             ImageUrl = "/images/products/Jack Hobbs.jpeg",
                             Intensity = "Bold",
@@ -382,7 +388,7 @@ namespace AADYA_HouseOfFragrance.Migrations
                         {
                             ProductId = 9,
                             CategoryId = 1,
-                            CreatedAt = new DateTime(2026, 8, 24, 14, 19, 12, 753, DateTimeKind.Local).AddTicks(7755),
+                            CreatedAt = new DateTime(2026, 8, 26, 20, 3, 45, 686, DateTimeKind.Local).AddTicks(2419),
                             Description = "Warm, mysterious, and irresistibly elegant. Cairo Evening blends rich oriental warmth with smooth woody accords and a touch of soft sweetness, creating a fragrance that evokes golden sunsets, ancient streets, and unforgettable nights.",
                             ImageUrl = "/images/products/Cairo Evening.jpeg",
                             Intensity = "Bold",
@@ -394,7 +400,7 @@ namespace AADYA_HouseOfFragrance.Migrations
                         {
                             ProductId = 12,
                             CategoryId = 1,
-                            CreatedAt = new DateTime(2026, 8, 24, 14, 19, 12, 753, DateTimeKind.Local).AddTicks(7939),
+                            CreatedAt = new DateTime(2026, 8, 26, 20, 3, 45, 686, DateTimeKind.Local).AddTicks(2421),
                             Description = "Delicate, enchanting, and effortlessly captivating. Fantasy opens with soft fruity sweetness that melts into elegant floral notes, resting on a smooth musky base to create a fragrance that feels graceful, dreamy, and unforgettable.",
                             ImageUrl = "/images/products/Fantasy.jpeg",
                             Intensity = "Subtle",
@@ -406,7 +412,7 @@ namespace AADYA_HouseOfFragrance.Migrations
                         {
                             ProductId = 14,
                             CategoryId = 1,
-                            CreatedAt = new DateTime(2026, 8, 24, 14, 19, 12, 753, DateTimeKind.Local).AddTicks(7942),
+                            CreatedAt = new DateTime(2026, 8, 26, 20, 3, 45, 686, DateTimeKind.Local).AddTicks(2422),
                             Description = "Indulge in the rich harmony of golden honey and smooth tobacco. Sweet yet bold, Honey Tobacco creates a warm, sophisticated fragrance with a deep, luxurious character that feels both comforting and unforgettable.",
                             ImageUrl = "/images/products/Honey Tobacco.jpeg",
                             Intensity = "Bold",
@@ -418,7 +424,7 @@ namespace AADYA_HouseOfFragrance.Migrations
                         {
                             ProductId = 15,
                             CategoryId = 1,
-                            CreatedAt = new DateTime(2026, 8, 24, 14, 19, 12, 753, DateTimeKind.Local).AddTicks(7945),
+                            CreatedAt = new DateTime(2026, 8, 26, 20, 3, 45, 686, DateTimeKind.Local).AddTicks(2424),
                             Description = "Experience the richness of tradition with Kesar Chandan. The luxurious warmth of saffron blends beautifully with the creamy depth of sandalwood, creating a fragrance that is soothing, elegant, and deeply comforting.",
                             ImageUrl = "/images/products/Kesar Chandan.jpeg",
                             Intensity = "Bold",
@@ -430,7 +436,7 @@ namespace AADYA_HouseOfFragrance.Migrations
                         {
                             ProductId = 18,
                             CategoryId = 1,
-                            CreatedAt = new DateTime(2026, 8, 24, 14, 19, 12, 753, DateTimeKind.Local).AddTicks(7948),
+                            CreatedAt = new DateTime(2026, 8, 26, 20, 3, 45, 686, DateTimeKind.Local).AddTicks(2425),
                             Description = "Rich, creamy, and irresistibly indulgent. Chocolate wraps you in the comforting aroma of smooth dark cocoa, blended with soft gourmand sweetness for a fragrance that feels warm, cozy, and deliciously addictive.",
                             ImageUrl = "/images/products/Chocolate.jpeg",
                             Intensity = "Bold",
@@ -442,7 +448,7 @@ namespace AADYA_HouseOfFragrance.Migrations
                         {
                             ProductId = 20,
                             CategoryId = 1,
-                            CreatedAt = new DateTime(2026, 8, 24, 14, 19, 12, 753, DateTimeKind.Local).AddTicks(7951),
+                            CreatedAt = new DateTime(2026, 8, 26, 20, 3, 45, 686, DateTimeKind.Local).AddTicks(2427),
                             Description = "Immerse yourself in the enchanting beauty of blooming jasmine. Rich, floral, and naturally captivating, Jasmine captures the essence of freshly blossomed flowers, creating a fragrance that feels elegant, graceful, and timeless.",
                             ImageUrl = "/images/products/Jasmine.jpeg",
                             Intensity = "Subtle",
@@ -454,7 +460,7 @@ namespace AADYA_HouseOfFragrance.Migrations
                         {
                             ProductId = 21,
                             CategoryId = 1,
-                            CreatedAt = new DateTime(2026, 8, 24, 14, 19, 12, 753, DateTimeKind.Local).AddTicks(7954),
+                            CreatedAt = new DateTime(2026, 8, 26, 20, 3, 45, 686, DateTimeKind.Local).AddTicks(2428),
                             Description = "Discover a fragrance that embodies quiet confidence and timeless elegance. Golden Ash opens with a refined freshness before unfolding into a warm, sophisticated character that feels rich, smooth, and effortlessly luxurious.",
                             ImageUrl = "/images/products/Golden Ash.jpeg",
                             Intensity = "Bold",
@@ -466,7 +472,7 @@ namespace AADYA_HouseOfFragrance.Migrations
                         {
                             ProductId = 22,
                             CategoryId = 1,
-                            CreatedAt = new DateTime(2026, 8, 24, 14, 19, 12, 753, DateTimeKind.Local).AddTicks(7957),
+                            CreatedAt = new DateTime(2026, 8, 26, 20, 3, 45, 686, DateTimeKind.Local).AddTicks(2430),
                             Description = "Bright, joyful, and effortlessly captivating, Maya opens with refreshing citrus notes that blend beautifully into a delicate floral heart, finished with a soft touch of sweetness.",
                             ImageUrl = "/images/products/Maya.jpeg",
                             Intensity = "Subtle",
@@ -478,7 +484,7 @@ namespace AADYA_HouseOfFragrance.Migrations
                         {
                             ProductId = 23,
                             CategoryId = 1,
-                            CreatedAt = new DateTime(2026, 8, 24, 14, 19, 12, 753, DateTimeKind.Local).AddTicks(7960),
+                            CreatedAt = new DateTime(2026, 8, 26, 20, 3, 45, 686, DateTimeKind.Local).AddTicks(2431),
                             Description = "Wrap yourself in the comforting warmth of Honey Amber. This rich fragrance blends the smooth sweetness of honey with the deep, resinous elegance of amber, creating a scent that feels warm, inviting, and effortlessly luxurious.",
                             ImageUrl = "/images/products/Honey Ember.jpeg",
                             Intensity = "Bold",
@@ -490,7 +496,7 @@ namespace AADYA_HouseOfFragrance.Migrations
                         {
                             ProductId = 24,
                             CategoryId = 1,
-                            CreatedAt = new DateTime(2026, 8, 24, 14, 19, 12, 753, DateTimeKind.Local).AddTicks(7962),
+                            CreatedAt = new DateTime(2026, 8, 26, 20, 3, 45, 686, DateTimeKind.Local).AddTicks(2433),
                             Description = "A sweetness that lingers softly, like a memory you want to return to. Echo blends a sweet character with floral elegance, creating a fragrance that feels graceful, inviting, and effortlessly polished without becoming overly delicate.",
                             ImageUrl = "/images/products/Echo.jpeg",
                             Intensity = "Subtle",
@@ -502,7 +508,7 @@ namespace AADYA_HouseOfFragrance.Migrations
                         {
                             ProductId = 27,
                             CategoryId = 1,
-                            CreatedAt = new DateTime(2026, 8, 24, 14, 19, 12, 753, DateTimeKind.Local).AddTicks(7965),
+                            CreatedAt = new DateTime(2026, 8, 26, 20, 3, 45, 686, DateTimeKind.Local).AddTicks(2434),
                             Description = "Experience the timeless beauty of blooming Turkish roses. Delicate yet captivating, Turkish Rose unfolds with a rich floral elegance, creating a fragrance that feels romantic, graceful, and effortlessly luxurious.",
                             ImageUrl = "/images/products/Turkish Rose.jpeg",
                             Intensity = "Bold",
@@ -514,7 +520,7 @@ namespace AADYA_HouseOfFragrance.Migrations
                         {
                             ProductId = 29,
                             CategoryId = 1,
-                            CreatedAt = new DateTime(2026, 8, 24, 14, 19, 12, 753, DateTimeKind.Local).AddTicks(7968),
+                            CreatedAt = new DateTime(2026, 8, 26, 20, 3, 45, 686, DateTimeKind.Local).AddTicks(2436),
                             Description = "Pure, creamy, and deeply calming. S.P. Sandal celebrates the timeless beauty of authentic sandalwood with its smooth, woody warmth and soft, meditative character that lingers gracefully throughout the day.",
                             ImageUrl = "/images/products/S.P.Sandal.jpeg",
                             Intensity = "Subtle",
@@ -526,7 +532,7 @@ namespace AADYA_HouseOfFragrance.Migrations
                         {
                             ProductId = 32,
                             CategoryId = 1,
-                            CreatedAt = new DateTime(2026, 8, 24, 14, 19, 12, 753, DateTimeKind.Local).AddTicks(7971),
+                            CreatedAt = new DateTime(2026, 8, 26, 20, 3, 45, 686, DateTimeKind.Local).AddTicks(2437),
                             Description = "Some fragrances don't simply accompany an occasion—they define it. Royal 96 carries a rich, distinguished character that reflects quiet confidence and timeless refinement, creating a presence that feels composed from the moment it is worn.",
                             ImageUrl = "/images/products/Royal 96.jpeg",
                             Intensity = "Bold",
@@ -538,7 +544,7 @@ namespace AADYA_HouseOfFragrance.Migrations
                         {
                             ProductId = 5,
                             CategoryId = 3,
-                            CreatedAt = new DateTime(2026, 8, 24, 14, 19, 12, 753, DateTimeKind.Local).AddTicks(7974),
+                            CreatedAt = new DateTime(2026, 8, 26, 20, 3, 45, 686, DateTimeKind.Local).AddTicks(2439),
                             Description = "Cool, crisp, and effortlessly refined, Midnight Ice opens with refreshing citrus and aromatic notes, unfolding into a clean, invigorating fragrance that feels modern and sophisticated.",
                             ImageUrl = "/images/products/Midnight Ice.jpeg",
                             Intensity = "Subtle",
@@ -550,7 +556,7 @@ namespace AADYA_HouseOfFragrance.Migrations
                         {
                             ProductId = 6,
                             CategoryId = 3,
-                            CreatedAt = new DateTime(2026, 8, 24, 14, 19, 12, 753, DateTimeKind.Local).AddTicks(7979),
+                            CreatedAt = new DateTime(2026, 8, 26, 20, 3, 45, 686, DateTimeKind.Local).AddTicks(2442),
                             Description = "Step into every moment with confidence. Maverick is a vibrant blend of zesty citrus and juicy fruity notes, creating a fragrance that's fresh, energetic, and effortlessly modern.",
                             ImageUrl = "/images/products/Maverick.jpeg",
                             Intensity = "Subtle",
@@ -562,7 +568,7 @@ namespace AADYA_HouseOfFragrance.Migrations
                         {
                             ProductId = 10,
                             CategoryId = 3,
-                            CreatedAt = new DateTime(2026, 8, 24, 14, 19, 12, 753, DateTimeKind.Local).AddTicks(7984),
+                            CreatedAt = new DateTime(2026, 8, 26, 20, 3, 45, 686, DateTimeKind.Local).AddTicks(2443),
                             Description = "Freshness that feels like stepping into a cool ocean breeze on a clear summer morning. Cool Water carries a crisp, aquatic character that feels clean, refreshing, and effortlessly confident.",
                             ImageUrl = "/images/products/Cool Water.jpeg",
                             Intensity = "Subtle",
@@ -574,7 +580,7 @@ namespace AADYA_HouseOfFragrance.Migrations
                         {
                             ProductId = 11,
                             CategoryId = 3,
-                            CreatedAt = new DateTime(2026, 8, 24, 14, 19, 12, 753, DateTimeKind.Local).AddTicks(7987),
+                            CreatedAt = new DateTime(2026, 8, 26, 20, 3, 45, 686, DateTimeKind.Local).AddTicks(2444),
                             Description = "Radiate confidence with Red Crystal, a fragrance that blends vibrant freshness with refined elegance. Its smooth and captivating character creates a scent that feels modern, sophisticated, and effortlessly memorable.",
                             ImageUrl = "/images/products/Red Crystal.jpeg",
                             Intensity = "Subtle",
@@ -586,7 +592,7 @@ namespace AADYA_HouseOfFragrance.Migrations
                         {
                             ProductId = 16,
                             CategoryId = 3,
-                            CreatedAt = new DateTime(2026, 8, 24, 14, 19, 12, 753, DateTimeKind.Local).AddTicks(7990),
+                            CreatedAt = new DateTime(2026, 8, 26, 20, 3, 45, 686, DateTimeKind.Local).AddTicks(2446),
                             Description = "Fresh, refined, and effortlessly sophisticated. Velmont opens with a clean, uplifting freshness before settling into a smooth, elegant character that feels polished without becoming overpowering.",
                             ImageUrl = "/images/products/Velmont.jpeg",
                             Intensity = "Subtle",
@@ -598,7 +604,7 @@ namespace AADYA_HouseOfFragrance.Migrations
                         {
                             ProductId = 17,
                             CategoryId = 3,
-                            CreatedAt = new DateTime(2026, 8, 24, 14, 19, 12, 753, DateTimeKind.Local).AddTicks(7993),
+                            CreatedAt = new DateTime(2026, 8, 26, 20, 3, 45, 686, DateTimeKind.Local).AddTicks(2448),
                             Description = "Freshness with an unmistakable edge of confidence. Hawas carries a crisp, aquatic character that feels energetic, modern, and effortlessly attractive.",
                             ImageUrl = "/images/products/Hawas.jpeg",
                             Intensity = "Subtle",
@@ -610,7 +616,7 @@ namespace AADYA_HouseOfFragrance.Migrations
                         {
                             ProductId = 19,
                             CategoryId = 3,
-                            CreatedAt = new DateTime(2026, 8, 24, 14, 19, 12, 753, DateTimeKind.Local).AddTicks(7997),
+                            CreatedAt = new DateTime(2026, 8, 26, 20, 3, 45, 686, DateTimeKind.Local).AddTicks(2449),
                             Description = "Stay fresh, confident, and ready for every moment with Polo Sport. This energetic fragrance combines crisp citrus, refreshing aquatic accords, and clean aromatic notes to create a vibrant scent that's both modern and effortlessly masculine.",
                             ImageUrl = "/images/products/Polo Sport.jpeg",
                             Intensity = "Subtle",
@@ -622,7 +628,7 @@ namespace AADYA_HouseOfFragrance.Migrations
                         {
                             ProductId = 25,
                             CategoryId = 3,
-                            CreatedAt = new DateTime(2026, 8, 24, 14, 19, 12, 753, DateTimeKind.Local).AddTicks(7999),
+                            CreatedAt = new DateTime(2026, 8, 26, 20, 3, 45, 686, DateTimeKind.Local).AddTicks(2451),
                             Description = "Bursting with the irresistible sweetness of ripe berries, Berry Blast is a vibrant fragrance that feels playful, refreshing, and full of life. Its fruity character is perfectly balanced to create a scent that's uplifting, smooth, and effortlessly charming.",
                             ImageUrl = "/images/products/Berry Blast.jpeg",
                             Intensity = "Subtle",
@@ -634,7 +640,7 @@ namespace AADYA_HouseOfFragrance.Migrations
                         {
                             ProductId = 26,
                             CategoryId = 3,
-                            CreatedAt = new DateTime(2026, 8, 24, 14, 19, 12, 753, DateTimeKind.Local).AddTicks(8002),
+                            CreatedAt = new DateTime(2026, 8, 26, 20, 3, 45, 686, DateTimeKind.Local).AddTicks(2452),
                             Description = "Feel the refreshing essence of the ocean with Marine Haze. This invigorating fragrance combines crisp citrus, fresh aquatic accords, and clean aromatic notes to create a light, uplifting scent that keeps you feeling fresh all day.",
                             ImageUrl = "/images/products/Marine Haze.jpeg",
                             Intensity = "Subtle",
@@ -646,7 +652,7 @@ namespace AADYA_HouseOfFragrance.Migrations
                         {
                             ProductId = 28,
                             CategoryId = 3,
-                            CreatedAt = new DateTime(2026, 8, 24, 14, 19, 12, 753, DateTimeKind.Local).AddTicks(8005),
+                            CreatedAt = new DateTime(2026, 8, 26, 20, 3, 45, 686, DateTimeKind.Local).AddTicks(2454),
                             Description = "Clean, elegant, and effortlessly luxurious. White Onyx carries a smooth, sophisticated aroma with a fresh refined character that feels polished from the first impression to the final lingering trail.",
                             ImageUrl = "/images/products/White Onyx.jpeg",
                             Intensity = "Subtle",

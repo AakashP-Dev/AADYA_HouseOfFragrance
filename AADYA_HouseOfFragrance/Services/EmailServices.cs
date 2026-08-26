@@ -43,7 +43,7 @@ namespace AADYA_HouseOfFragrance.Services
             await smtpClient.SendMailAsync(mailMessage);
         }
 
-        // ---- OTP EMAIL (Existing) ----
+        // ---- OTP EMAIL ----
         public string GetOtpEmailBody(string otp, string userName)
         {
             return $@"
@@ -101,24 +101,45 @@ namespace AADYA_HouseOfFragrance.Services
 
         private string GetOrderConfirmationBody(Order order, List<OrderItem> items, string userName)
         {
+            // ✅ FIX: Properly get product name with null checks
             var itemsHtml = string.Join("", items.Select(item =>
-                $"<tr><td>{item.ProductVariant?.Product?.Name ?? "Product"}</td><td>{item.ProductVariant?.Size ?? "N/A"}</td><td>{item.Quantity}</td><td style='text-align:right;'>₹{item.UnitPriceAtSale:F2}</td><td style='text-align:right;'>₹{(item.UnitPriceAtSale * item.Quantity):F2}</td></tr>"
-            ));
+            {
+                // Get product name from the ProductVariant -> Product navigation
+                var productName = item.ProductVariant?.Product?.Name ?? "Unknown Product";
+                var size = item.ProductVariant?.Size ?? "N/A";
+                var unitPrice = item.UnitPriceAtSale;
+                var total = unitPrice * item.Quantity;
+
+                return $@"
+                    <tr>
+                        <td>{productName}</td>
+                        <td>{size}</td>
+                        <td>{item.Quantity}</td>
+                        <td style='text-align:right;'>₹{unitPrice:F2}</td>
+                        <td style='text-align:right;'>₹{total:F2}</td>
+                    </tr>";
+            }));
+
+            // Get base URL for links
+            var baseUrl = "https://localhost:5000"; // Change to your domain in production
 
             return $@"
             <html>
-            <head><style>
-                body {{ font-family: 'Montserrat', sans-serif; color: #222; }}
-                .container {{ max-width: 600px; margin: 0 auto; padding: 2rem; background: #FAF6EF; border: 1px solid #D3C5B2; border-radius: 4px; }}
-                .header {{ text-align: center; border-bottom: 2px solid #CBA463; padding-bottom: 1rem; margin-bottom: 1.5rem; }}
-                .header h1 {{ font-family: 'Playfair Display', serif; color: #3B0E14; margin: 0; }}
-                .order-id {{ font-size: 1.2rem; font-weight: 700; color: #3B0E14; }}
-                table {{ width: 100%; border-collapse: collapse; margin: 1rem 0; }}
-                th {{ background: #E8DFCF; padding: 0.6rem; text-align: left; font-size: 0.8rem; text-transform: uppercase; }}
-                td {{ padding: 0.6rem; border-bottom: 1px solid #D3C5B2; }}
-                .total {{ font-size: 1.2rem; font-weight: 700; text-align: right; }}
-                .footer {{ margin-top: 2rem; padding-top: 1rem; border-top: 1px solid #D3C5B2; font-size: 0.75rem; color: #666; text-align: center; }}
-            </style></head>
+            <head>
+                <style>
+                    body {{ font-family: 'Montserrat', sans-serif; color: #222; }}
+                    .container {{ max-width: 600px; margin: 0 auto; padding: 2rem; background: #FAF6EF; border: 1px solid #D3C5B2; border-radius: 4px; }}
+                    .header {{ text-align: center; border-bottom: 2px solid #CBA463; padding-bottom: 1rem; margin-bottom: 1.5rem; }}
+                    .header h1 {{ font-family: 'Playfair Display', serif; color: #3B0E14; margin: 0; }}
+                    .order-id {{ font-size: 1.2rem; font-weight: 700; color: #3B0E14; }}
+                    table {{ width: 100%; border-collapse: collapse; margin: 1rem 0; }}
+                    th {{ background: #E8DFCF; padding: 0.6rem; text-align: left; font-size: 0.8rem; text-transform: uppercase; }}
+                    td {{ padding: 0.6rem; border-bottom: 1px solid #D3C5B2; }}
+                    .total {{ font-size: 1.2rem; font-weight: 700; text-align: right; }}
+                    .footer {{ margin-top: 2rem; padding-top: 1rem; border-top: 1px solid #D3C5B2; font-size: 0.75rem; color: #666; text-align: center; }}
+                    .btn {{ background: #3B0E14; color: #FAF6EF; padding: 0.4rem 1.2rem; text-decoration: none; border-radius: 2px; font-weight: 600; display: inline-block; }}
+                </style>
+            </head>
             <body>
                 <div class='container'>
                     <div class='header'>
@@ -131,11 +152,22 @@ namespace AADYA_HouseOfFragrance.Services
                     <p><strong>Shipping Address:</strong> {order.ShippingAddress}</p>
                     <p><strong>Order Status:</strong> {order.OrderStatus}</p>
                     <table>
-                        <thead><tr><th>Product</th><th>Size</th><th>Qty</th><th style='text-align:right;'>Unit</th><th style='text-align:right;'>Total</th></tr></thead>
+                        <thead>
+                            <tr>
+                                <th>Product</th>
+                                <th>Size</th>
+                                <th>Qty</th>
+                                <th style='text-align:right;'>Unit</th>
+                                <th style='text-align:right;'>Total</th>
+                            </tr>
+                        </thead>
                         <tbody>{itemsHtml}</tbody>
                     </table>
                     <div class='total'>Grand Total: ₹{order.TotalAmount:F2}</div>
                     <p style='margin-top:1.5rem;'>Your order is being processed with care. You will receive updates as it ships.</p>
+                    <p style='margin-top:0.5rem;'>
+                        <a href='{baseUrl}/Account/Orders' class='btn'>View Your Orders</a>
+                    </p>
                     <div class='footer'>&copy; 2026 AADYA: The House of Fragrance. All Rights Reserved.</div>
                 </div>
             </body>
@@ -164,14 +196,16 @@ namespace AADYA_HouseOfFragrance.Services
 
             return $@"
             <html>
-            <head><style>
-                body {{ font-family: 'Montserrat', sans-serif; color: #222; }}
-                .container {{ max-width: 600px; margin: 0 auto; padding: 2rem; background: #FAF6EF; border: 1px solid #D3C5B2; border-radius: 4px; }}
-                .header {{ text-align: center; border-bottom: 2px solid #CBA463; padding-bottom: 1rem; margin-bottom: 1.5rem; }}
-                .header h1 {{ font-family: 'Playfair Display', serif; color: #3B0E14; margin: 0; }}
-                .status {{ font-size: 1.5rem; font-weight: 700; color: {statusColor}; }}
-                .footer {{ margin-top: 2rem; padding-top: 1rem; border-top: 1px solid #D3C5B2; font-size: 0.75rem; color: #666; text-align: center; }}
-            </style></head>
+            <head>
+                <style>
+                    body {{ font-family: 'Montserrat', sans-serif; color: #222; }}
+                    .container {{ max-width: 600px; margin: 0 auto; padding: 2rem; background: #FAF6EF; border: 1px solid #D3C5B2; border-radius: 4px; }}
+                    .header {{ text-align: center; border-bottom: 2px solid #CBA463; padding-bottom: 1rem; margin-bottom: 1.5rem; }}
+                    .header h1 {{ font-family: 'Playfair Display', serif; color: #3B0E14; margin: 0; }}
+                    .status {{ font-size: 1.5rem; font-weight: 700; color: {statusColor}; }}
+                    .footer {{ margin-top: 2rem; padding-top: 1rem; border-top: 1px solid #D3C5B2; font-size: 0.75rem; color: #666; text-align: center; }}
+                </style>
+            </head>
             <body>
                 <div class='container'>
                     <div class='header'>
@@ -201,14 +235,16 @@ namespace AADYA_HouseOfFragrance.Services
         {
             return $@"
             <html>
-            <head><style>
-                body {{ font-family: 'Montserrat', sans-serif; color: #222; }}
-                .container {{ max-width: 600px; margin: 0 auto; padding: 2rem; background: #FAF6EF; border: 1px solid #D3C5B2; border-radius: 4px; }}
-                .header {{ text-align: center; border-bottom: 2px solid #CBA463; padding-bottom: 1rem; margin-bottom: 1.5rem; }}
-                .header h1 {{ font-family: 'Playfair Display', serif; color: #3B0E14; margin: 0; }}
-                .alert-box {{ background: #fff3cd; border-left: 4px solid #ffc107; padding: 1rem; margin: 1rem 0; }}
-                .footer {{ margin-top: 2rem; padding-top: 1rem; border-top: 1px solid #D3C5B2; font-size: 0.75rem; color: #666; text-align: center; }}
-            </style></head>
+            <head>
+                <style>
+                    body {{ font-family: 'Montserrat', sans-serif; color: #222; }}
+                    .container {{ max-width: 600px; margin: 0 auto; padding: 2rem; background: #FAF6EF; border: 1px solid #D3C5B2; border-radius: 4px; }}
+                    .header {{ text-align: center; border-bottom: 2px solid #CBA463; padding-bottom: 1rem; margin-bottom: 1.5rem; }}
+                    .header h1 {{ font-family: 'Playfair Display', serif; color: #3B0E14; margin: 0; }}
+                    .alert-box {{ background: #fff3cd; border-left: 4px solid #ffc107; padding: 1rem; margin: 1rem 0; }}
+                    .footer {{ margin-top: 2rem; padding-top: 1rem; border-top: 1px solid #D3C5B2; font-size: 0.75rem; color: #666; text-align: center; }}
+                </style>
+            </head>
             <body>
                 <div class='container'>
                     <div class='header'><h1>Password Changed</h1></div>
@@ -233,15 +269,17 @@ namespace AADYA_HouseOfFragrance.Services
         {
             return $@"
             <html>
-            <head><style>
-                body {{ font-family: 'Montserrat', sans-serif; color: #222; }}
-                .container {{ max-width: 600px; margin: 0 auto; padding: 2rem; background: #FAF6EF; border: 1px solid #D3C5B2; border-radius: 4px; }}
-                .header {{ text-align: center; border-bottom: 2px solid #CBA463; padding-bottom: 1rem; margin-bottom: 1.5rem; }}
-                .header h1 {{ font-family: 'Playfair Display', serif; color: #3B0E14; margin: 0; }}
-                .cta {{ text-align: center; margin: 1.5rem 0; }}
-                .btn {{ background: #3B0E14; color: #FAF6EF; padding: 0.6rem 1.5rem; text-decoration: none; border-radius: 2px; font-weight: 600; }}
-                .footer {{ margin-top: 2rem; padding-top: 1rem; border-top: 1px solid #D3C5B2; font-size: 0.75rem; color: #666; text-align: center; }}
-            </style></head>
+            <head>
+                <style>
+                    body {{ font-family: 'Montserrat', sans-serif; color: #222; }}
+                    .container {{ max-width: 600px; margin: 0 auto; padding: 2rem; background: #FAF6EF; border: 1px solid #D3C5B2; border-radius: 4px; }}
+                    .header {{ text-align: center; border-bottom: 2px solid #CBA463; padding-bottom: 1rem; margin-bottom: 1.5rem; }}
+                    .header h1 {{ font-family: 'Playfair Display', serif; color: #3B0E14; margin: 0; }}
+                    .cta {{ text-align: center; margin: 1.5rem 0; }}
+                    .btn {{ background: #3B0E14; color: #FAF6EF; padding: 0.6rem 1.5rem; text-decoration: none; border-radius: 2px; font-weight: 600; }}
+                    .footer {{ margin-top: 2rem; padding-top: 1rem; border-top: 1px solid #D3C5B2; font-size: 0.75rem; color: #666; text-align: center; }}
+                </style>
+            </head>
             <body>
                 <div class='container'>
                     <div class='header'>

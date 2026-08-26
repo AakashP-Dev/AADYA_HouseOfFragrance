@@ -24,4 +24,13 @@
         public decimal UnitPrice { get; set; }
         public decimal Total { get; set; }
     }
+
+    public class PaymentDto
+    {
+        public int OrderId { get; set; }
+        public string PaymentMethod { get; set; } = "Card"; // Card, UPI, COD
+        public string? CardNumber { get; set; }
+        public string? CardExpiry { get; set; }
+        public string? CardCvv { get; set; }
+    }
 }

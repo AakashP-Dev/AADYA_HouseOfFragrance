@@ -41,12 +41,16 @@ namespace AADYA_HouseOfFragrance.Controllers
             {
                 var userId = GetCurrentUserId();
                 var user = await _context.Users.FindAsync(userId);
-                var shippingAddress = string.IsNullOrEmpty(request.ShippingAddress) ? user.Address : request.ShippingAddress;
-                if (string.IsNullOrWhiteSpace(shippingAddress))
-                    return BadRequest(new { message = "Shipping address is required." });
+
+                HttpContext.Session.SetInt32("UserId", userId);
+                await HttpContext.Session.CommitAsync();
 
                 if (user == null)
                     return Unauthorized(new { message = "User not found." });
+
+                var shippingAddress = string.IsNullOrEmpty(request.ShippingAddress) ? user.Address : request.ShippingAddress;
+                if (string.IsNullOrWhiteSpace(shippingAddress))
+                    return BadRequest(new { message = "Shipping address is required." });
 
                 var cartItems = await _context.ShoppingCarts
                     .Include(c => c.ProductVariant)
@@ -85,10 +89,12 @@ namespace AADYA_HouseOfFragrance.Controllers
                 var order = new Order
                 {
                     UserId = userId,
-                    OrderStatus = "Processing",
-                    ShippingAddress = string.IsNullOrEmpty(request.ShippingAddress) ? user.Address : request.ShippingAddress,
+                    OrderStatus = "Pending Payment",
+                    ShippingAddress = shippingAddress,
                     TotalAmount = totalAmount,
                     CreatedAt = DateTime.Now,
+                    PaymentMethod = null,
+                    PaymentId = null,
                     OrderItems = orderItems
                 };
 
@@ -96,33 +102,11 @@ namespace AADYA_HouseOfFragrance.Controllers
                 _context.ShoppingCarts.RemoveRange(cartItems);
                 await _context.SaveChangesAsync();
 
-                // --- SEND CONFIRMATION EMAIL ---
-                try
-                {
-                    var savedOrder = await _context.Orders
-                        .Include(o => o.OrderItems)
-                            .ThenInclude(oi => oi.ProductVariant)
-                                .ThenInclude(v => v.Product)
-                        .FirstOrDefaultAsync(o => o.OrderId == order.OrderId);
-
-                    if (savedOrder != null && user != null)
-                    {
-                        await _emailService.SendOrderConfirmationAsync(
-                            user.Email,
-                            user.FullName,
-                            savedOrder,
-                            savedOrder.OrderItems.ToList()
-                        );
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"Failed to send order confirmation email: {ex.Message}");
-                }
+                // Don't send email here - will be sent after payment
 
                 return Ok(new
                 {
-                    message = "Order placed successfully!",
+                    message = "Order placed! Please complete payment.",
                     orderId = order.OrderId,
                     totalAmount = order.TotalAmount,
                     orderStatus = order.OrderStatus,
@@ -132,6 +116,191 @@ namespace AADYA_HouseOfFragrance.Controllers
             catch (UnauthorizedAccessException)
             {
                 return Unauthorized(new { message = "Please login to place an order." });
+            }
+        }
+
+
+        // POST: api/orders/process-payment
+        [HttpPost("process-payment")]
+        public async Task<IActionResult> ProcessPayment([FromBody] PaymentDto request)
+        {
+            try
+            {
+                var userId = GetCurrentUserId();
+
+                // Ensure session has user ID
+                HttpContext.Session.SetInt32("UserId", userId);
+                await HttpContext.Session.CommitAsync();
+
+                var order = await _context.Orders
+                    .Include(o => o.User)
+                    .Include(o => o.OrderItems)
+                        .ThenInclude(oi => oi.ProductVariant)
+                    .FirstOrDefaultAsync(o => o.OrderId == request.OrderId && o.UserId == userId);
+
+                if (order == null)
+                    return NotFound(new { message = "Order not found." });
+
+                if (order.OrderStatus != "Pending Payment")
+                    return BadRequest(new { message = "Payment already processed for this order." });
+
+                // ---------- COD: Keep status as Pending Payment ----------
+                if (request.PaymentMethod == "COD")
+                {
+                    order.PaymentMethod = "COD";
+                    order.PaymentId = "COD-" + DateTime.Now.Ticks.ToString();
+                    await _context.SaveChangesAsync();
+
+                    // Reload order with full navigation properties for email
+                    var savedOrder = await _context.Orders
+                        .Include(o => o.OrderItems)
+                            .ThenInclude(oi => oi.ProductVariant)
+                                .ThenInclude(v => v.Product)   // ✅ Important: Load Product
+                        .FirstOrDefaultAsync(o => o.OrderId == order.OrderId);
+
+                    // Send confirmation email
+                    try
+                    {
+                        if (savedOrder != null && order.User != null)
+                        {
+                            await _emailService.SendOrderConfirmationAsync(
+                                order.User.Email,
+                                order.User.FullName,
+                                savedOrder,
+                                savedOrder.OrderItems.ToList()
+                            );
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"Email error: {ex.Message}");
+                    }
+
+                    return Ok(new
+                    {
+                        message = "Order placed successfully! Payment will be collected on delivery.",
+                        orderId = order.OrderId,
+                        paymentId = order.PaymentId,
+                        orderStatus = "Pending Payment"
+                    });
+                }
+
+                // ---------- Card / UPI: Process payment ----------
+                var paymentSuccess = true; // Always succeeds in dummy mode
+
+                if (paymentSuccess)
+                {
+                    order.OrderStatus = "Processing";
+                    order.PaymentMethod = request.PaymentMethod;
+                    order.PaymentId = "PAY-DUMMY-" + DateTime.Now.Ticks.ToString();
+                    await _context.SaveChangesAsync();
+
+                    // Reload order with full navigation properties for email
+                    var savedOrder = await _context.Orders
+                        .Include(o => o.OrderItems)
+                            .ThenInclude(oi => oi.ProductVariant)
+                                .ThenInclude(v => v.Product)   // ✅ Important: Load Product
+                        .FirstOrDefaultAsync(o => o.OrderId == order.OrderId);
+
+                    // Send confirmation email
+                    try
+                    {
+                        if (savedOrder != null && order.User != null)
+                        {
+                            await _emailService.SendOrderConfirmationAsync(
+                                order.User.Email,
+                                order.User.FullName,
+                                savedOrder,
+                                savedOrder.OrderItems.ToList()
+                            );
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"Email error: {ex.Message}");
+                    }
+
+                    return Ok(new
+                    {
+                        message = "Payment successful! Order confirmed.",
+                        orderId = order.OrderId,
+                        paymentId = order.PaymentId,
+                        orderStatus = order.OrderStatus
+                    });
+                }
+                else
+                {
+                    return BadRequest(new { message = "Payment failed. Please try again." });
+                }
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return Unauthorized(new { message = "Please login to process payment." });
+            }
+        }
+
+        // POST: api/orders/cancel/{id}
+        [HttpPost("cancel/{id}")]
+        public async Task<IActionResult> CancelOrder(int id)
+        {
+            try
+            {
+                var userId = GetCurrentUserId();
+                var order = await _context.Orders
+                    .Include(o => o.User)
+                    .Include(o => o.OrderItems)
+                        .ThenInclude(oi => oi.ProductVariant)
+                    .FirstOrDefaultAsync(o => o.OrderId == id && o.UserId == userId);
+
+                if (order == null)
+                    return NotFound(new { message = "Order not found." });
+
+                // Check if order can be cancelled
+                if (order.OrderStatus == "Dispatched" || order.OrderStatus == "Delivered")
+                {
+                    return BadRequest(new { message = "Order cannot be cancelled as it has already been shipped or delivered." });
+                }
+
+                if (order.OrderStatus == "Cancelled")
+                {
+                    return BadRequest(new { message = "Order is already cancelled." });
+                }
+
+                // Restore stock
+                foreach (var item in order.OrderItems)
+                {
+                    if (item.ProductVariant != null)
+                    {
+                        item.ProductVariant.StockQuantity += item.Quantity;
+                    }
+                }
+
+                order.OrderStatus = "Cancelled";
+                await _context.SaveChangesAsync();
+
+                // Send cancellation confirmation email
+                try
+                {
+                    if (order.User != null)
+                    {
+                        await _emailService.SendOrderStatusUpdateAsync(
+                            order.User.Email,
+                            order.User.FullName,
+                            order,
+                            "Cancelled by customer"
+                        );
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Email error: {ex.Message}");
+                }
+
+                return Ok(new { message = "Order cancelled successfully." });
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return Unauthorized(new { message = "Please login to cancel orders." });
             }
         }
 

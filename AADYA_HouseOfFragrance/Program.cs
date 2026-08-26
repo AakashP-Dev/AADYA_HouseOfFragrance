@@ -85,6 +85,8 @@ builder.Services.AddControllersWithViews()
     .AddNewtonsoftJson(options =>
         options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
 
+builder.Services.AddHttpContextAccessor();
+
 // ============================================================
 // BUILD THE APP
 // ============================================================

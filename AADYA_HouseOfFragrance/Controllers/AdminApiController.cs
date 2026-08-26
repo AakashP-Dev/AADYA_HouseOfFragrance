@@ -49,6 +49,8 @@ namespace AADYA_HouseOfFragrance.Controllers
             var result = orders.Select(o => new {
                 id = "#AAD-" + o.OrderId.ToString("D4"),
                 customer = o.User?.FullName ?? "Unknown",
+                customerPhone = o.User?.PhoneNumber ?? "",
+                customerEmail = o.User?.Email ?? "",
                 items = string.Join(", ", o.OrderItems.Select(oi =>
                     $"{oi.ProductVariant?.Product?.Name} ({oi.ProductVariant?.Size})")),
                 total = o.TotalAmount,
@@ -70,10 +72,15 @@ namespace AADYA_HouseOfFragrance.Controllers
             if (order == null)
                 return NotFound(new { message = "Order not found." });
 
+            // Map status to valid values
+            var validStatuses = new[] { "Processing", "Dispatched", "Delivered", "Cancelled", "Pending Payment" };
+            if (!validStatuses.Contains(request.Status))
+                return BadRequest(new { message = "Invalid status." });
+
             order.OrderStatus = request.Status;
             await _context.SaveChangesAsync();
 
-            // --- SEND STATUS UPDATE EMAIL ---
+            // Send status update email
             try
             {
                 if (order.User != null && !string.IsNullOrEmpty(order.User.Email))
@@ -82,7 +89,7 @@ namespace AADYA_HouseOfFragrance.Controllers
                         order.User.Email,
                         order.User.FullName ?? "Customer",
                         order,
-                        request.Reason // Pass the reason (for cancellation etc.)
+                        request.Reason
                     );
                 }
             }
@@ -247,7 +254,6 @@ namespace AADYA_HouseOfFragrance.Controllers
             return Ok(result);
         }
 
-        // --- PROMOTE USER ---
         [HttpPut("users/{id}/promote")]
         public async Task<IActionResult> PromoteUser(int id)
         {
@@ -269,7 +275,6 @@ namespace AADYA_HouseOfFragrance.Controllers
             return Ok(new { message = $"User '{user.FullName}' promoted to admin successfully." });
         }
 
-        // --- DEMOTE USER ---
         [HttpPut("users/{id}/demote")]
         public async Task<IActionResult> DemoteUser(int id)
         {
@@ -292,14 +297,6 @@ namespace AADYA_HouseOfFragrance.Controllers
             await _context.SaveChangesAsync();
 
             return Ok(new { message = $"User '{user.FullName}' has been demoted to regular user." });
-        }
-
-        private int GetCurrentUserId()
-        {
-            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
-            if (userIdClaim == null)
-                throw new UnauthorizedAccessException("User not authenticated");
-            return int.Parse(userIdClaim.Value);
         }
 
         [HttpGet("customer-segments")]
@@ -325,6 +322,14 @@ namespace AADYA_HouseOfFragrance.Controllers
             };
 
             return Ok(segments);
+        }
+
+        private int GetCurrentUserId()
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+            if (userIdClaim == null)
+                throw new UnauthorizedAccessException("User not authenticated");
+            return int.Parse(userIdClaim.Value);
         }
     }
 }

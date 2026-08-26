@@ -117,6 +117,11 @@ namespace AADYA_HouseOfFragrance.Controllers
 
             var token = _jwtHelper.GenerateToken(user, request.RememberMe);
 
+            // Store in session
+            HttpContext.Session.SetInt32("UserId", user.UserId);
+            HttpContext.Session.SetString("UserEmail", user.Email);
+            HttpContext.Session.SetString("UserFullName", user.FullName);
+
             if (request.AdminLogin && user.IsAdmin)
             {
                 HttpContext.Session.SetString("AdminLoggedIn", "true");

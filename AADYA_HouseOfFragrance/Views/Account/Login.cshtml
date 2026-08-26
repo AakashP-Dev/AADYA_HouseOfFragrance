@@ -1,5 +1,5 @@
-﻿@{
-    ViewData["Title"] = "Sign In - AADYA: The House of Fragrance";
+﻿﻿@{
+ViewData["Title"] = "Sign In - AADYA: The House of Fragrance";
 }
 
 <section class="auth-wrapper">
@@ -20,7 +20,6 @@
                 <div class="password-wrapper">
                     <input type="password" id="Password" name="Password" class="custom-input" placeholder="••••••••" />
                     <button type="button" class="toggle-password-btn" onclick="togglePasswordVisibility('Password', this)" aria-label="Toggle password visibility">
-                        <!-- SVG icons -->
                         <svg class="eye-icon eye-off" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
                             <line x1="1" y1="1" x2="23" y2="23"></line>
@@ -45,7 +44,19 @@
                     </svg>
                     <span>Admin Login</span>
                 </label>
-                <a href="/Account/ForgotPassword" class="forgot-link">Forgot Password?</a>
+                <div style="display:flex; gap:1rem; align-items:center;">
+                    <label class="checkbox-container">
+                        <input type="checkbox" id="RememberMe" name="RememberMe" />
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 2v4M8 6h8M8 14h8M4 18h16M4 22h16" />
+                            <path d="M4 6h16v4H4z" />
+                            <circle cx="12" cy="12" r="2" />
+                            <path d="M12 14v2" />
+                        </svg>
+                        <span>Remember Me</span>
+                    </label>
+                    <a href="/Account/ForgotPassword" class="forgot-link">Forgot Password?</a>
+                </div>
             </div>
 
             <button type="submit" class="btn-gold auth-btn-submit">SIGN IN</button>
@@ -76,7 +87,7 @@
         }
 
         document.querySelectorAll('#loginForm input').forEach(el => {
-            el.addEventListener('input', function () {
+            el.addEventListener('input', function() {
                 const errorId = this.id + 'Error';
                 const errorSpan = document.getElementById(errorId);
                 if (errorSpan) {
@@ -86,7 +97,7 @@
             });
         });
 
-        document.getElementById('loginForm').addEventListener('submit', async function (e) {
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
             e.preventDefault();
 
             document.querySelectorAll('.validation-error').forEach(el => {
@@ -97,6 +108,7 @@
             const email = document.getElementById('Email').value.trim();
             const password = document.getElementById('Password').value;
             const adminLogin = document.getElementById('AdminLogin').checked;
+            const rememberMe = document.getElementById('RememberMe').checked;
 
             let isValid = true;
 
@@ -125,7 +137,7 @@
                 const response = await fetch('/Account/Login', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email, password, rememberMe: false, adminLogin })
+                    body: JSON.stringify({ email, password, rememberMe, adminLogin })
                 });
 
                 const data = await response.json();

@@ -370,7 +370,7 @@
 
                 if (res.ok) {
                     showToast('Order placed successfully!', 'success');
-                    window.location.href = `/Home/OrderConfirmation?orderId=${data.orderId}&totalAmount=${data.totalAmount}`;
+                    window.location.href = `/Home/Payment?orderId=${data.orderId}&total=${data.totalAmount}`;
                 } else {
                     showToast(data.message || 'Checkout failed. Please try again.', 'error');
                 }
