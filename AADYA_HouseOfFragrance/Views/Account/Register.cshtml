@@ -1,4 +1,4 @@
-﻿@{
+﻿﻿@{
     ViewData["Title"] = "Create Account - AADYA: The House of Fragrance";
 }
 
@@ -9,30 +9,35 @@
         <p class="auth-subtitle">Register to discover tailored fragrance recommendations and manage your deliveries seamlessly.</p>
 
         <form id="registerForm" class="auth-form">
+            <!-- Full Name -->
             <div class="form-group">
                 <label for="FullName">Full Name</label>
                 <input type="text" id="FullName" name="FullName" class="custom-input" placeholder="Enter your full name" />
                 <span id="nameError" class="validation-error"></span>
             </div>
 
+            <!-- Email -->
             <div class="form-group">
                 <label for="Email">Email Address</label>
                 <input type="email" id="Email" name="Email" class="custom-input" placeholder="name@example.com" />
                 <span id="emailError" class="validation-error"></span>
             </div>
 
+            <!-- Phone -->
             <div class="form-group">
                 <label for="PhoneNumber">Phone Number</label>
                 <input type="tel" id="PhoneNumber" name="PhoneNumber" class="custom-input" placeholder="9876543210" />
                 <span id="phoneError" class="validation-error"></span>
             </div>
 
+            <!-- Address -->
             <div class="form-group">
                 <label for="Address">Default Delivery Address</label>
                 <textarea id="Address" name="Address" class="custom-input custom-textarea" rows="3" placeholder="Enter your full street address, landmark, and pincode..."></textarea>
                 <span id="addressError" class="validation-error"></span>
             </div>
 
+            <!-- Password -->
             <div class="form-group">
                 <label for="Password">Password</label>
                 <div class="password-wrapper">
@@ -51,6 +56,7 @@
                 <span id="passwordError" class="validation-error"></span>
             </div>
 
+            <!-- Confirm Password -->
             <div class="form-group">
                 <label for="ConfirmPassword">Confirm Password</label>
                 <div class="password-wrapper">
@@ -80,6 +86,15 @@
 
 @section Scripts {
     <script>
+        // ================================================================
+        // REGISTER PAGE – VALIDATION & REGISTRATION
+        // ================================================================
+
+        /**
+         * Toggles password visibility for the specified input.
+         * @@param {string} inputId - The ID of the input element.
+         * @@param {HTMLElement} btn - The toggle button containing eye icons.
+         */
         function togglePasswordVisibility(inputId, btn) {
             const input = document.getElementById(inputId);
             const eyeOff = btn.querySelector('.eye-off');
@@ -96,6 +111,7 @@
             }
         }
 
+        // ---- CLEAR ERRORS ON INPUT ----
         document.querySelectorAll('#registerForm input, #registerForm textarea').forEach(el => {
             el.addEventListener('input', function () {
                 const errorId = this.id + 'Error';
@@ -107,14 +123,17 @@
             });
         });
 
+        // ---- REGISTER FORM SUBMISSION ----
         document.getElementById('registerForm').addEventListener('submit', async function (e) {
             e.preventDefault();
 
+            // Clear previous errors
             document.querySelectorAll('.validation-error').forEach(el => {
                 el.textContent = '';
                 el.style.display = 'none';
             });
 
+            // Get form values
             const fullName = document.getElementById('FullName').value.trim();
             const email = document.getElementById('Email').value.trim();
             const phone = document.getElementById('PhoneNumber').value.trim();
@@ -124,6 +143,7 @@
 
             let isValid = true;
 
+            // Validate full name (letters and spaces only)
             const nameRegex = /^[a-zA-Z\s]+$/;
             if (!nameRegex.test(fullName)) {
                 document.getElementById('nameError').textContent = 'Full name can only contain letters and spaces.';
@@ -131,6 +151,7 @@
                 isValid = false;
             }
 
+            // Validate email format
             const emailRegex = /^[^\s@@]+@@[^\s@@]+\.[^\s@@]+$/;
             if (!emailRegex.test(email)) {
                 document.getElementById('emailError').textContent = 'Please enter a valid email address.';
@@ -138,6 +159,7 @@
                 isValid = false;
             }
 
+            // Validate phone (Indian 10-digit starting with 6-9)
             const phoneRegex = /^[6-9]\d{9}$/;
             if (!phoneRegex.test(phone)) {
                 document.getElementById('phoneError').textContent = 'Enter a valid 10-digit Indian mobile number starting with 6, 7, 8, or 9.';
@@ -145,6 +167,7 @@
                 isValid = false;
             }
 
+            // Validate password complexity
             const passRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\da-zA-Z]).{8,}$/;
             if (!passRegex.test(password)) {
                 document.getElementById('passwordError').textContent = 'Password must be at least 8 characters, include one uppercase, one lowercase, one number, and one special character.';
@@ -152,12 +175,14 @@
                 isValid = false;
             }
 
+            // Validate password confirmation
             if (password !== confirmPassword) {
                 document.getElementById('confirmError').textContent = 'Passwords do not match.';
                 document.getElementById('confirmError').style.display = 'block';
                 isValid = false;
             }
 
+            // Validate address
             if (address.length === 0) {
                 document.getElementById('addressError').textContent = 'Address is required.';
                 document.getElementById('addressError').style.display = 'block';
@@ -176,7 +201,13 @@
                 const response = await fetch('/Account/Register', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ fullName, email, phoneNumber: phone, password, address })
+                    body: JSON.stringify({
+                        fullName,
+                        email,
+                        phoneNumber: phone,
+                        password,
+                        address
+                    })
                 });
 
                 const data = await response.json();
@@ -189,7 +220,7 @@
                     document.getElementById('emailError').style.display = 'block';
                 }
             } catch (error) {
-                console.error('Error:', error);
+                console.error('Registration error:', error);
                 document.getElementById('emailError').textContent = 'Network error. Please try again.';
                 document.getElementById('emailError').style.display = 'block';
             }

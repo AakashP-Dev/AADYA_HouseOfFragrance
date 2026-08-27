@@ -1,5 +1,5 @@
-﻿@{
-    ViewData["Title"] = "Shopping Cart - AADYA: The House of Fragrance";
+﻿﻿@{
+ViewData["Title"] = "Shopping Cart - AADYA: The House of Fragrance";
 }
 
 <section class="section-padding" style="padding-top: 2rem; min-height: 70vh;">
@@ -9,7 +9,10 @@
     </div>
 
     <div class="cart-grid">
-        <!-- ITEM LIST CONTAINER -->
+
+        <!-- ============================================================ -->
+        <!-- ITEM LIST CONTAINER                                           -->
+        <!-- ============================================================ -->
         <div class="cart-items-container">
             <div class="cart-table-header">
                 <span>Product</span>
@@ -23,7 +26,7 @@
             <!-- Items will be injected here by JavaScript -->
             <div id="cartItemsContainer"></div>
 
-            <!-- CART ACTIONS BAR - Hidden when empty -->
+            <!-- Cart Actions Bar (hidden when empty) -->
             <div id="cartActionsBar" class="cart-actions-bar">
                 <div style="display: flex; gap: 1rem; flex-wrap: wrap; align-items: center; justify-content: space-between;">
                     <a href="/Home/Catalog" class="btn-outline">&larr; CONTINUE SHOPPING</a>
@@ -43,7 +46,9 @@
             </div>
         </div>
 
-        <!-- ORDER SUMMARY SIDEBAR -->
+        <!-- ============================================================ -->
+        <!-- ORDER SUMMARY SIDEBAR                                         -->
+        <!-- ============================================================ -->
         <div class="cart-summary-card">
             <h3 class="summary-title">Order Summary</h3>
 
@@ -70,7 +75,9 @@
     </div>
 </section>
 
-<!-- CHECKOUT CONFIRMATION MODAL -->
+<!-- ============================================================ -->
+<!-- CHECKOUT CONFIRMATION MODAL                                   -->
+<!-- ============================================================ -->
 <div id="checkoutModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:9999; align-items:center; justify-content:center;">
     <div style="background:white; padding:2rem; border-radius:8px; max-width:400px; text-align:center; box-shadow:0 4px 20px rgba(0,0,0,0.3);">
         <h3 style="font-family:var(--font-heading); color:var(--deep-burgundy);">Confirm Order</h3>
@@ -82,7 +89,9 @@
     </div>
 </div>
 
-<!-- REMOVE ITEM CONFIRMATION MODAL -->
+<!-- ============================================================ -->
+<!-- REMOVE ITEM CONFIRMATION MODAL                                -->
+<!-- ============================================================ -->
 <div id="removeModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:9998; align-items:center; justify-content:center;">
     <div style="background:white; padding:2rem; border-radius:8px; max-width:400px; text-align:center; box-shadow:0 4px 20px rgba(0,0,0,0.3);">
         <h3 style="font-family:var(--font-heading); color:var(--deep-burgundy);">Remove Item</h3>
@@ -96,10 +105,18 @@
 
 @section Scripts {
     <script>
+        // ================================================================
+        // SHOPPING CART PAGE – LOAD, RENDER, UPDATE, CHECKOUT
+        // ================================================================
+
         let removeItemId = null;
         let removeItemName = '';
 
-        // --- 1. LOAD CART ---
+        // ---- 1. LOAD CART ----
+        /**
+         * Fetches the current user's cart from the API and renders it.
+         * Handles not-logged-in, empty, and error states.
+         */
         async function loadCart() {
             const token = localStorage.getItem('token');
             if (!token) {
@@ -130,7 +147,12 @@
             }
         }
 
-        // --- 2. RENDER CART ---
+                // ---- 2. RENDER CART ----
+                /**
+                 * Renders cart items into the DOM and updates the summary.
+                 * @@param { Array } items - The list of cart items.
+                 * @@param { number } totalAmount - The total amount of all items.
+                 */
         function renderCart(items, totalAmount) {
             const container = document.getElementById('cartItemsContainer');
             const actionsBar = document.getElementById('cartActionsBar');
@@ -178,7 +200,7 @@
                 container.appendChild(row);
             });
 
-            // Update summary (no GST)
+            // Update summary
             document.getElementById('summarySubtotal').innerText = '₹' + totalAmount.toFixed(2);
             document.getElementById('summaryGrandTotal').innerText = '₹' + totalAmount.toFixed(2);
 
@@ -186,13 +208,20 @@
             updateCartBadge();
         }
 
-        // --- UPDATE SUMMARY WHEN EMPTY ---
+        /**
+         * Resets the order summary to ₹0.00 when the cart is empty.
+         */
         function updateEmptySummary() {
             document.getElementById('summarySubtotal').innerText = '₹0.00';
             document.getElementById('summaryGrandTotal').innerText = '₹0.00';
         }
 
-        // --- 3. UPDATE CART QUANTITY ---
+                // ---- 3. UPDATE CART QUANTITY ----
+                /**
+                 * Updates the quantity of a cart item.
+                 * @@param { number } cartItemId - The ID of the cart item.
+                 * @@param { number } change - The amount to change by(+1 or - 1).
+                 */
         async function updateCartQty(cartItemId, change) {
             const input = document.getElementById('qty-' + cartItemId);
             let newQty = parseInt(input.value) + change;
@@ -215,14 +244,19 @@
                     showToast(err.message || 'Failed to update quantity', 'error');
                     return;
                 }
-                loadCart();
+                loadCart(); // Refresh the cart
             } catch (error) {
                 console.error('Error updating cart:', error);
                 showToast('Network error. Please try again.', 'error');
             }
         }
 
-        // --- 4. REMOVE ITEM WITH THEMED MODAL ---
+                // ---- 4. REMOVE ITEM ----
+                /**
+                 * Opens the remove confirmation modal for a specific item.
+                 * @@param { string } itemName - The name of the item to remove.
+                 * @@param { number } cartItemId - The ID of the cart item.
+                 */
         function confirmRemoveItem(itemName, cartItemId) {
             removeItemId = cartItemId;
             removeItemName = itemName;
@@ -252,6 +286,10 @@
             }
         });
 
+                /**
+                 * Removes an item from the cart via API.
+                 * @@param { number } cartItemId - The ID of the cart item to remove.
+                 */
         async function removeCartItem(cartItemId) {
             const token = localStorage.getItem('token');
             if (!token) return;
@@ -277,7 +315,11 @@
             }
         }
 
-        // --- 5. VALIDATE 6ML QUANTITY ---
+        // ---- 5. VALIDATE 6ML QUANTITY ----
+        /**
+         * Validates that the user has at least 3 bottles of 6ml in the cart.
+         * Disables the checkout button if the requirement is not met.
+         */
         function validate6mlQuantity() {
             let total6ml = 0;
             document.querySelectorAll('.cart-item-row').forEach(row => {
@@ -327,7 +369,10 @@
             }
         }
 
-        // --- 6. CHECKOUT ---
+        // ---- 6. CHECKOUT ----
+        /**
+         * Opens the checkout confirmation modal.
+         */
         function checkout() {
             const token = localStorage.getItem('token');
             if (!token) {
@@ -354,7 +399,10 @@
             }
         });
 
-        // --- 7. PLACE ORDER ---
+        // ---- 7. PLACE ORDER ----
+        /**
+         * Sends the order request and redirects to the payment page.
+         */
         async function placeOrder() {
             const token = localStorage.getItem('token');
             try {
@@ -380,7 +428,10 @@
             }
         }
 
-        // --- 8. CART BADGE ---
+        // ---- 8. CART BADGE ----
+        /**
+         * Updates the cart badge in the navbar with the current item count.
+         */
         async function updateCartBadge() {
             const token = localStorage.getItem('token');
             if (!token) {
@@ -401,33 +452,35 @@
             }
         }
 
-        // --- 9. INIT ---
-        document.addEventListener('DOMContentLoaded', loadCart);
-
-        // --- CONFIRM CLEAR CART (uses global modal from _Layout) ---
+        // ---- 9. CLEAR CART (Global Modal) ----
+        /**
+         * Confirms and clears the entire cart using the global confirmation modal.
+         */
         function confirmClearCart() {
             const trashIcon = `
-                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom:0.5rem;">
-                    <polyline points="3 6 5 6 21 6" />
-                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
-                    <line x1="10" y1="11" x2="10" y2="17" />
-                    <line x1="14" y1="11" x2="14" y2="17" />
-                </svg>
-            `;
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom:0.5rem;">
+                            <polyline points="3 6 5 6 21 6" />
+                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                            <line x1="10" y1="11" x2="10" y2="17" />
+                            <line x1="14" y1="11" x2="14" y2="17" />
+                        </svg>
+                    `;
             showGlobalConfirmModal(
                 trashIcon,
                 'Clear Cart',
                 'Are you sure you want to <strong>remove all items</strong> from your cart? This action cannot be undone.',
-                function() {
+                function () {
                     clearCart();
                 },
-                function() {
+                function () {
                     // User cancelled – do nothing
                 }
             );
         }
 
-        // --- CLEAR CART API CALL ---
+        /**
+         * Clears the cart via API and refreshes the UI.
+         */
         async function clearCart() {
             const token = localStorage.getItem('token');
             if (!token) {
@@ -447,22 +500,19 @@
                     return;
                 }
 
-                // Reload cart UI
                 await loadCart();
-
-                // Update sticky tracker (if on catalog page)
                 if (typeof window.updateStickyTracker === 'function') {
                     await window.updateStickyTracker();
                 }
-
-                // Update cart badge
                 await updateCartBadge();
-
                 showToast('Cart cleared successfully.', 'success');
             } catch (error) {
                 console.error('Error clearing cart:', error);
                 showToast('Network error. Please try again.', 'error');
             }
         }
+
+        // ---- 10. INIT ----
+        document.addEventListener('DOMContentLoaded', loadCart);
     </script>
 }

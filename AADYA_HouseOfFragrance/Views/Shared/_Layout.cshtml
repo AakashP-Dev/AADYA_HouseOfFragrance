@@ -1,22 +1,33 @@
-﻿<!DOCTYPE html>
+﻿﻿
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - AADYA: The House of Fragrance</title>
+
+    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+
+    <!-- Main Stylesheet -->
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
 </head>
 <body>
 
+    <!-- ============================================================ -->
+    <!-- NAVIGATION BAR                                               -->
+    <!-- ============================================================ -->
     <nav class="navbar">
         <div class="nav-container">
+
+            <!-- Logo -->
             <a asp-controller="Home" asp-action="Index">
                 <img src="~/images/AADYA-removedbg.png" alt="AADYA Logo" class="nav-logo-img" onerror="this.style.display='none'" />
             </a>
 
+            <!-- Navigation Links -->
             <ul class="nav-links">
                 <li><a asp-controller="Home" asp-action="Index">HOME</a></li>
                 <li><a asp-controller="Home" asp-action="Catalog">OUR FRAGRANCES</a></li>
@@ -25,7 +36,9 @@
                 <li><a asp-controller="Home" asp-action="Wizard">FRAGRANCE WIZARD</a></li>
             </ul>
 
+            <!-- Right Side Actions -->
             <div class="nav-actions">
+
                 <!-- Cart Button -->
                 <a href="/Home/Cart" class="btn-outline nav-btn">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
@@ -72,7 +85,8 @@
                             <polyline points="6 9 12 15 18 9"></polyline>
                         </svg>
                     </button>
-                    <!-- DROPDOWN -->
+
+                    <!-- User Dropdown -->
                     <div id="userDropdown" class="user-dropdown" style="display:none;">
                         <a href="/Account/Profile" class="dropdown-item">
                             <span class="dropdown-icon">
@@ -94,7 +108,7 @@
                             </span>
                             <span>My Orders</span>
                         </a>
-                        <!-- Admin Dashboard link -->
+                        <!-- Admin Dashboard link (visible only to admins) -->
                         <a href="/Admin/Dashboard" class="dropdown-item" id="adminDashboardLink" style="display:none;">
                             <span class="dropdown-icon">
                                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
@@ -106,7 +120,7 @@
                             </span>
                             <span>Admin Dashboard</span>
                         </a>
-                        <hr class="dropdown-divider">
+                        <hr class="dropdown-divider" />
                         <a href="#" class="dropdown-item dropdown-signout" onclick="logoutUser()">
                             <span class="dropdown-icon">
                                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
@@ -119,21 +133,31 @@
                         </a>
                     </div>
                 </div>
+
             </div>
         </div>
     </nav>
 
+    <!-- ============================================================ -->
+    <!-- MAIN CONTENT                                                -->
+    <!-- ============================================================ -->
     <main role="main">
         @RenderBody()
     </main>
 
+    <!-- ============================================================ -->
+    <!-- FOOTER                                                       -->
+    <!-- ============================================================ -->
     <footer>
         <div class="footer-grid">
+
+            <!-- Brand -->
             <div>
                 <img src="~/images/AADYA-removedbg.png" alt="AADYA Logo" class="footer-logo" onerror="this.style.display='none'" />
                 <p>Pure • Luxury • Timeless. Handcrafted artisanal attars and modern EDP fragrances.</p>
             </div>
 
+            <!-- Collections -->
             <div>
                 <h4>Collections</h4>
                 <p><a href="/Home/Catalog?category=oud">Attars & Heritage Oud</a></p>
@@ -143,12 +167,14 @@
                 <p><a href="/Home/Catalog">All Fragrances</a></p>
             </div>
 
+            <!-- Account -->
             <div>
                 <h4>Account</h4>
                 <p><a href="/Account/Login">Sign In</a></p>
                 <p><a href="/Account/Register">Create Account</a></p>
             </div>
 
+            <!-- Contact -->
             <div>
                 <h4>Contact Care</h4>
                 <p>
@@ -165,8 +191,10 @@
                     houseofaadya.in@gmail.com
                 </p>
             </div>
+
         </div>
 
+        <!-- Footer Bottom -->
         <div class="footer-bottom">
             &copy; 2026 AADYA: The House of Fragrance. All Rights Reserved.
         </div>
@@ -187,6 +215,9 @@
         </div>
     </div>
 
+    <!-- ============================================================ -->
+    <!-- SCRIPTS                                                      -->
+    <!-- ============================================================ -->
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>

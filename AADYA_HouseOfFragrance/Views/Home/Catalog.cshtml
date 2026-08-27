@@ -2,7 +2,9 @@
 ViewData["Title"] = "All Fragrances - The Olfactory Collection";
 }
 
-<!-- 1. CATALOG HERO BANNER -->
+<!-- ============================================================ -->
+<!-- 1. CATALOG HERO BANNER                                        -->
+<!-- ============================================================ -->
 <section class="catalog-hero-banner">
     <div class="catalog-hero-content">
         <span class="catalog-tagline">PURE • LUXURY • TIMELESS</span>
@@ -13,10 +15,12 @@ ViewData["Title"] = "All Fragrances - The Olfactory Collection";
     </div>
 </section>
 
-<!-- 2. MAIN CATALOG SECTION -->
+<!-- ============================================================ -->
+<!-- 2. MAIN CATALOG SECTION                                       -->
+<!-- ============================================================ -->
 <section class="section-padding" style="padding-top: 2rem;">
 
-    <!-- FILTER & SEARCH BAR -->
+    <!-- Filter & Search Bar -->
     <div class="filter-bar-container">
         <div class="filter-pills" id="filterPills">
             <button class="filter-btn active" data-filter="all">All Scents</button>
@@ -36,15 +40,15 @@ ViewData["Title"] = "All Fragrances - The Olfactory Collection";
         </div>
     </div>
 
-    <!-- PRODUCT COUNT -->
+    <!-- Product Count -->
     <div class="catalog-count-label" id="productCountLabel">Loading Fragrances...</div>
 
-    <!-- DYNAMIC PRODUCT GRID -->
+    <!-- Dynamic Product Grid -->
     <div class="product-grid" id="productGrid">
         <!-- Cards will be injected here by JavaScript -->
     </div>
 
-    <!-- NO FRAGRANCES FOUND -->
+    <!-- No Fragrances Found -->
     <div id="noResultsContainer" class="no-results-box" style="display: none;">
         <div class="no-results-icon">✨</div>
         <h3 class="no-results-title">No Fragrances Found</h3>
@@ -53,7 +57,9 @@ ViewData["Title"] = "All Fragrances - The Olfactory Collection";
     </div>
 </section>
 
-<!-- 3. SLIDE-OVER QUICK VIEW DRAWER -->
+<!-- ============================================================ -->
+<!-- 3. SLIDE-OVER QUICK VIEW DRAWER                              -->
+<!-- ============================================================ -->
 <div class="drawer-overlay" id="drawerOverlay" onclick="closeProductDrawer()"></div>
 <div class="product-drawer" id="productDrawer">
     <button class="drawer-close-btn" onclick="closeProductDrawer()">&times;</button>
@@ -67,7 +73,7 @@ ViewData["Title"] = "All Fragrances - The Olfactory Collection";
             <div class="drawer-scent-tag" id="drawerScentTag">Scent Family</div>
             <p class="drawer-desc" id="drawerDesc">Fragrance description.</p>
 
-            <!-- DUAL SIZE SELECTION -->
+            <!-- Dual Size Selection -->
             <div class="dual-size-section">
                 <label class="size-section-label">Select Quantities for Desired Bottle Sizes:</label>
                 <div id="variantSelectorContainer">
@@ -75,13 +81,13 @@ ViewData["Title"] = "All Fragrances - The Olfactory Collection";
                 </div>
             </div>
 
-            <!-- TOTAL PRICE DISPLAY -->
+            <!-- Total Price Display -->
             <div class="drawer-price-box">
                 <span class="price-label">Total Amount:</span>
                 <span class="price-value" id="drawerTotal">₹0.00</span>
             </div>
 
-            <!-- FREQUENTLY BOUGHT TOGETHER -->
+            <!-- Frequently Bought Together -->
             <div id="drawerFrequentlyBought" style="margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid var(--border-color); display: none;">
                 <p style="font-size: 0.8rem; font-weight: 600; color: var(--deep-burgundy); margin-bottom: 0.8rem;">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle; margin-right:6px;">
@@ -106,7 +112,9 @@ ViewData["Title"] = "All Fragrances - The Olfactory Collection";
     <button type="button" class="btn-gold drawer-add-btn" onclick="handleAddToCart()">ADD SELECTED TO CART</button>
 </div>
 
-<!-- 4. STICKY 6ML TRACKER -->
+<!-- ============================================================ -->
+<!-- 4. STICKY 6ML TRACKER                                        -->
+<!-- ============================================================ -->
 <div id="sticky6mlTracker" style="display:none; position:fixed; bottom:0; left:0; right:0; background:var(--warm-ivory); border-top:2px solid var(--champagne-gold); padding:0.8rem 2rem; box-shadow:0 -4px 20px rgba(0,0,0,0.1); z-index:999; transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1); transform: translateY(100%);">
     <div style="max-width:1200px; margin:0 auto; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.8rem;">
         <div style="display:flex; align-items:center; gap:1rem; flex-wrap:wrap;">
@@ -118,7 +126,9 @@ ViewData["Title"] = "All Fragrances - The Olfactory Collection";
     </div>
 </div>
 
-<!-- REMOVE CONFIRMATION MODAL -->
+<!-- ============================================================ -->
+<!-- REMOVE CONFIRMATION MODAL                                    -->
+<!-- ============================================================ -->
 <div id="removeModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:9998; align-items:center; justify-content:center;">
     <div style="background:white; padding:2rem; border-radius:8px; max-width:400px; text-align:center; box-shadow:0 4px 20px rgba(0,0,0,0.3);">
         <h3 style="font-family:var(--font-heading); color:var(--deep-burgundy);">Remove Item</h3>
@@ -132,13 +142,21 @@ ViewData["Title"] = "All Fragrances - The Olfactory Collection";
 
 @section Scripts {
     <script>
-        // --- GLOBAL STATE ---
+        // ================================================================
+        // CATALOG PAGE – LOAD, FILTER, SORT, DRAWER, CART
+        // ================================================================
+
+        // ---- GLOBAL STATE ----
         let allProducts = [];
         let activeFilter = 'all';
         let currentDrawerVariants = [];
         let removeItemCallback = null;
 
-        // --- 1. FETCH PRODUCTS ---
+        // ---- 1. FETCH PRODUCTS ----
+        /**
+         * Fetches all products from the API and renders the catalog.
+         * Handles API errors with fallback data.
+         */
         async function loadProducts() {
             const grid = document.getElementById('productGrid');
             const countLabel = document.getElementById('productCountLabel');
@@ -166,7 +184,12 @@ ViewData["Title"] = "All Fragrances - The Olfactory Collection";
             }
         }
 
-        // --- 2. FILTER GROUP MAPPING ---
+                // ---- 2. FILTER GROUP MAPPING ----
+                /**
+                 * Maps scent families to filter group names.
+                 * @@param { Object } product - The product object.
+                 * @@returns { string } The filter group('oud', 'fresh', 'floral', 'gourmand', 'all').
+                 */
         function getFilterGroup(product) {
             const scent = (product.scentFamily || '').toLowerCase();
             switch (scent) {
@@ -179,7 +202,12 @@ ViewData["Title"] = "All Fragrances - The Olfactory Collection";
             }
         }
 
-        // --- 3. RENDER PRODUCT GRID ---
+                // ---- 3. RENDER PRODUCT GRID ----
+                /**
+                 * Renders the product grid with cards.
+                 * Shows "OUT OF STOCK" badge and disables button if stock is 0.
+                 * @@param { Array } products - The list of products to render.
+                 */
         function renderCatalog(products) {
             const grid = document.getElementById('productGrid');
             const countLabel = document.getElementById('productCountLabel');
@@ -234,7 +262,10 @@ ViewData["Title"] = "All Fragrances - The Olfactory Collection";
             applyFiltersAndSort();
         }
 
-        // --- 4. FILTER, SORT, SEARCH ---
+        // ---- 4. FILTER, SORT, SEARCH ----
+        /**
+         * Applies active filters, search query, and sorting to the product grid.
+         */
         function applyFiltersAndSort() {
             const query = document.getElementById('searchInput').value.toLowerCase().trim();
             const sortVal = document.getElementById('sortSelect').value;
@@ -274,7 +305,12 @@ ViewData["Title"] = "All Fragrances - The Olfactory Collection";
             visibleCards.forEach(card => document.getElementById('productGrid').appendChild(card));
         }
 
-        // --- 5. DRAWER FUNCTIONS ---
+                // ---- 5. DRAWER FUNCTIONS ----
+                /**
+                 * Opens the quick view drawer for a product.
+                 * Loads variants, stock info, and frequently bought items.
+                 * @@param { number } productId - The ID of the product to display.
+                 */
         async function openProductDrawer(productId) {
             const product = allProducts.find(p => p.productId === productId);
             if (!product) return;
@@ -342,12 +378,20 @@ ViewData["Title"] = "All Fragrances - The Olfactory Collection";
             }
         }
 
+        /**
+         * Closes the quick view drawer.
+         */
         function closeProductDrawer() {
             document.getElementById('drawerOverlay').classList.remove('open');
             document.getElementById('productDrawer').classList.remove('open');
             document.body.style.overflow = 'auto';
         }
 
+                /**
+                 * Updates the quantity of a variant in the drawer.
+                 * @@param { number } index - The index of the variant in the list.
+                 * @@param { number } change - The amount to change by(+1 or - 1).
+                 */
         function updateDrawerQty(index, change) {
             const input = document.getElementById('drawerQty_' + index);
             let val = parseInt(input.value) + change;
@@ -361,6 +405,9 @@ ViewData["Title"] = "All Fragrances - The Olfactory Collection";
             recalculateDrawerTotal();
         }
 
+        /**
+         * Recalculates the total price based on selected quantities.
+         */
         function recalculateDrawerTotal() {
             let total = 0;
             const rows = document.querySelectorAll('#variantSelectorContainer .size-qty-row');
@@ -372,7 +419,11 @@ ViewData["Title"] = "All Fragrances - The Olfactory Collection";
             document.getElementById('drawerTotal').innerText = '₹' + total.toLocaleString('en-IN') + '.00';
         }
 
-        // --- 6. ADD TO CART ---
+        // ---- 6. ADD TO CART ----
+        /**
+         * Handles adding selected items to the cart.
+         * Validates stock and sends individual API requests per variant.
+         */
         async function handleAddToCart() {
             let items = [];
             const rows = document.querySelectorAll('#variantSelectorContainer .size-qty-row');
@@ -445,42 +496,46 @@ ViewData["Title"] = "All Fragrances - The Olfactory Collection";
             }
         }
 
-        // --- 7. FREQUENTLY BOUGHT ---
-        async function loadFrequentlyBoughtInDrawer(variantId) {
-            const loading = document.getElementById('drawerFreqBoughtLoading');
-            const content = document.getElementById('drawerFreqBoughtContent');
-            const empty = document.getElementById('drawerFreqBoughtEmpty');
-            const container = document.getElementById('drawerFrequentlyBought');
+                // ---- 7. FREQUENTLY BOUGHT ----
+                /**
+                 * Loads and displays frequently bought items in the drawer.
+                 * @@param { number } variantId - The variant ID to find related items for.
+                 */
+                async function loadFrequentlyBoughtInDrawer(variantId) {
+                const loading = document.getElementById('drawerFreqBoughtLoading');
+                const content = document.getElementById('drawerFreqBoughtContent');
+                const empty = document.getElementById('drawerFreqBoughtEmpty');
+                const container = document.getElementById('drawerFrequentlyBought');
 
-            container.style.display = 'block';
-            loading.style.display = 'block';
-            content.style.display = 'none';
-            empty.style.display = 'none';
+                container.style.display = 'block';
+                loading.style.display = 'block';
+                content.style.display = 'none';
+                empty.style.display = 'none';
 
-            try {
-                const response = await fetch(`/api/products/${variantId}/frequently-bought-with`);
-                if (!response.ok) throw new Error('Failed to fetch recommendations');
-                const recommendations = await response.json();
+                try {
+                    const response = await fetch(`/api/products/${variantId}/frequently-bought-with`);
+                    if (!response.ok) throw new Error('Failed to fetch recommendations');
+                    const recommendations = await response.json();
 
-                loading.style.display = 'none';
+                    loading.style.display = 'none';
 
-                if (!recommendations || recommendations.length === 0) {
-                    empty.style.display = 'block';
-                    return;
-                }
+                    if (!recommendations || recommendations.length === 0) {
+                        empty.style.display = 'block';
+                        return;
+                    }
 
-                content.style.display = 'flex';
-                content.innerHTML = '';
+                    content.style.display = 'flex';
+                    content.innerHTML = '';
 
-                recommendations.slice(0, 3).forEach(rec => {
-                    const imgSrc = rec.imageUrl || 'https://via.placeholder.com/60x60?text=' + encodeURIComponent(rec.name);
-                    const prices = rec.variants?.map(v => v.price) || [];
-                    const min = prices.length ? Math.min(...prices) : 0;
-                    const priceDisplay = `₹${min}`;
+                    recommendations.slice(0, 3).forEach(rec => {
+                        const imgSrc = rec.imageUrl || 'https://via.placeholder.com/60x60?text=' + encodeURIComponent(rec.name);
+                        const prices = rec.variants?.map(v => v.price) || [];
+                        const min = prices.length ? Math.min(...prices) : 0;
+                        const priceDisplay = `₹${min}`;
 
-                    const item = document.createElement('div');
-                    item.style.cssText = 'display: flex; align-items: center; gap: 0.6rem; background: var(--warm-ivory); border: 1px solid var(--border-color); border-radius: 4px; padding: 0.4rem 0.8rem 0.4rem 0.4rem; flex: 1; min-width: 140px;';
-                    item.innerHTML = `
+                        const item = document.createElement('div');
+                        item.style.cssText = 'display: flex; align-items: center; gap: 0.6rem; background: var(--warm-ivory); border: 1px solid var(--border-color); border-radius: 4px; padding: 0.4rem 0.8rem 0.4rem 0.4rem; flex: 1; min-width: 140px;';
+                        item.innerHTML = `
                                 <img src="${imgSrc}" alt="${rec.name}" style="width: 40px; height: 40px; object-fit: cover; border-radius: 3px; border: 1px solid var(--border-color);" onerror="this.src='https://via.placeholder.com/40x40?text=${encodeURIComponent(rec.name.charAt(0))}'" />
                                 <div style="flex: 1;">
                                     <div style="font-size: 0.78rem; font-weight: 600; color: var(--deep-burgundy);">${rec.name}</div>
@@ -488,56 +543,60 @@ ViewData["Title"] = "All Fragrances - The Olfactory Collection";
                                 </div>
                                 <a href="/Home/Catalog?highlight=${encodeURIComponent(rec.name)}" style="font-size: 0.65rem; padding: 0.2rem 0.6rem; background: var(--deep-burgundy); color: var(--warm-ivory); border-radius: 2px; text-decoration: none; white-space: nowrap;">VIEW</a>
                             `;
-                    content.appendChild(item);
-                });
+                        content.appendChild(item);
+                    });
 
-            } catch (error) {
-                console.error('Error loading frequently bought:', error);
-                loading.style.display = 'none';
-                empty.style.display = 'block';
-                empty.innerHTML = '<span style="font-size: 0.8rem; color: var(--text-muted);">Could not load recommendations.</span>';
-            }
-        }
-
-        // --- 8. STICKY TRACKER ---
-        async function updateStickyTracker() {
-            const token = localStorage.getItem('token');
-            if (!token) {
-                document.getElementById('sticky6mlTracker').style.display = 'none';
-                return;
+                } catch (error) {
+                    console.error('Error loading frequently bought:', error);
+                    loading.style.display = 'none';
+                    empty.style.display = 'block';
+                    empty.innerHTML = '<span style="font-size: 0.8rem; color: var(--text-muted);">Could not load recommendations.</span>';
+                }
             }
 
-            try {
-                const res = await fetch('/api/cart', {
-                    headers: { 'Authorization': 'Bearer ' + token }
-                });
-                if (!res.ok) throw new Error('Failed to fetch cart');
-                const data = await res.json();
-                const items = data.items || [];
-
-                const sixMlItems = items.filter(item => item.size === '6ml');
-                const total6ml = sixMlItems.reduce((sum, item) => sum + item.quantity, 0);
-
-                const tracker = document.getElementById('sticky6mlTracker');
-                const listContainer = document.getElementById('trackerItemList');
-                const message = document.getElementById('trackerMessage');
-
-                if (total6ml === 0 || sixMlItems.length === 0) {
-                    tracker.style.display = 'none';
-                    tracker.style.transform = 'translateY(100%)';
+                // ---- 8. STICKY TRACKER ----
+                /**
+                 * Updates the sticky 6ml tracker at the bottom of the page.
+                 * Shows 6ml items in the cart and their quantities.
+                 */
+                async function updateStickyTracker() {
+                const token = localStorage.getItem('token');
+                if (!token) {
+                    document.getElementById('sticky6mlTracker').style.display = 'none';
                     return;
                 }
 
-                tracker.style.display = 'block';
-                setTimeout(() => {
-                    tracker.style.transform = 'translateY(0)';
-                }, 50);
+                try {
+                    const res = await fetch('/api/cart', {
+                        headers: { 'Authorization': 'Bearer ' + token }
+                    });
+                    if (!res.ok) throw new Error('Failed to fetch cart');
+                    const data = await res.json();
+                    const items = data.items || [];
 
-                listContainer.innerHTML = '';
-                sixMlItems.forEach(item => {
-                    const imgSrc = item.productImage || 'https://via.placeholder.com/32?text=' + (item.productName?.charAt(0) || '?');
-                    const div = document.createElement('div');
-                    div.style.cssText = `
+                    const sixMlItems = items.filter(item => item.size === '6ml');
+                    const total6ml = sixMlItems.reduce((sum, item) => sum + item.quantity, 0);
+
+                    const tracker = document.getElementById('sticky6mlTracker');
+                    const listContainer = document.getElementById('trackerItemList');
+                    const message = document.getElementById('trackerMessage');
+
+                    if (total6ml === 0 || sixMlItems.length === 0) {
+                        tracker.style.display = 'none';
+                        tracker.style.transform = 'translateY(100%)';
+                        return;
+                    }
+
+                    tracker.style.display = 'block';
+                    setTimeout(() => {
+                        tracker.style.transform = 'translateY(0)';
+                    }, 50);
+
+                    listContainer.innerHTML = '';
+                    sixMlItems.forEach(item => {
+                        const imgSrc = item.productImage || 'https://via.placeholder.com/32?text=' + (item.productName?.charAt(0) || '?');
+                        const div = document.createElement('div');
+                        div.style.cssText = `
                                 background: var(--warm-beige);
                                 border: 1px solid var(--border-color);
                                 border-radius: 20px;
@@ -549,32 +608,41 @@ ViewData["Title"] = "All Fragrances - The Olfactory Collection";
                                 transition: all 0.2s ease;
                                 white-space: nowrap;
                             `;
-                    div.innerHTML = `
+                        div.innerHTML = `
                                 <img src="${imgSrc}" alt="${item.productName}" style="width:28px; height:28px; border-radius:50%; object-fit:cover; border:1px solid var(--border-color); background:white;" onerror="this.src='https://via.placeholder.com/28?text=${(item.productName?.charAt(0) || '?')}'" />
                                 <span style="font-weight:500; font-size:0.8rem;">${item.productName}</span>
                                 <span style="color:var(--text-muted); font-size:0.7rem;">×${item.quantity}</span>
                                 <button onclick="confirmRemoveSixMlItem('${item.productName}', ${item.cartItemId})" style="background:none; border:none; color:#d32f2f; cursor:pointer; font-size:1rem; line-height:1; padding:0 2px; transition:transform 0.2s;" onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform='scale(1)'" title="Remove from cart">✕</button>
                             `;
-                    listContainer.appendChild(div);
-                });
+                        listContainer.appendChild(div);
+                    });
 
-                if (total6ml < 3) {
-                    message.innerText = `Add ${3 - total6ml} more 6ml bottle(s) to place order.`;
-                } else {
-                    message.innerText = '✅ You have enough 6ml bottles!';
+                    if (total6ml < 3) {
+                        message.innerText = `Add ${3 - total6ml} more 6ml bottle(s) to place order.`;
+                    } else {
+                        message.innerText = '✅ You have enough 6ml bottles!';
+                    }
+
+                } catch (error) {
+                    console.error('Failed to load cart for tracker:', error);
                 }
-
-            } catch (error) {
-                console.error('Failed to load cart for tracker:', error);
             }
-        }
 
+                /**
+                 * Confirms removal of a 6ml item from the cart.
+                 * @@param { string } itemName - The name of the item.
+                 * @@param { number } cartItemId - The ID of the cart item.
+                 */
         function confirmRemoveSixMlItem(itemName, cartItemId) {
-            showRemoveModal(itemName, function() {
+            showRemoveModal(itemName, function () {
                 removeSixMlItem(cartItemId);
             });
         }
 
+                /**
+                 * Removes a 6ml item from the cart via API.
+                 * @@param { number } cartItemId - The ID of the cart item to remove.
+                 */
         async function removeSixMlItem(cartItemId) {
             const token = localStorage.getItem('token');
             if (!token) {
@@ -601,7 +669,10 @@ ViewData["Title"] = "All Fragrances - The Olfactory Collection";
             }
         }
 
-        // --- 9. CART BADGE ---
+        // ---- 9. CART BADGE ----
+        /**
+         * Updates the cart badge in the navbar with the current item count.
+         */
         async function updateCartBadge() {
             const token = localStorage.getItem('token');
             if (!token) {
@@ -623,7 +694,12 @@ ViewData["Title"] = "All Fragrances - The Olfactory Collection";
             }
         }
 
-        // --- 10. REMOVE MODAL ---
+                // ---- 10. REMOVE MODAL ----
+                /**
+                 * Opens the remove confirmation modal.
+                 * @@param { string } itemName - The name of the item to remove.
+                 * @@param { Function } callback - The function to call on confirmation.
+                 */
         function showRemoveModal(itemName, callback) {
             document.getElementById('removeModalMessage').innerHTML =
                 `Are you sure you want to remove <strong>${itemName}</strong> from your cart?`;
@@ -631,7 +707,7 @@ ViewData["Title"] = "All Fragrances - The Olfactory Collection";
             document.getElementById('removeModal').style.display = 'flex';
         }
 
-        document.getElementById('removeConfirmYes').addEventListener('click', function() {
+        document.getElementById('removeConfirmYes').addEventListener('click', function () {
             document.getElementById('removeModal').style.display = 'none';
             if (removeItemCallback) {
                 removeItemCallback();
@@ -639,19 +715,19 @@ ViewData["Title"] = "All Fragrances - The Olfactory Collection";
             }
         });
 
-        document.getElementById('removeConfirmNo').addEventListener('click', function() {
+        document.getElementById('removeConfirmNo').addEventListener('click', function () {
             document.getElementById('removeModal').style.display = 'none';
             removeItemCallback = null;
         });
 
-        document.getElementById('removeModal').addEventListener('click', function(e) {
+        document.getElementById('removeModal').addEventListener('click', function (e) {
             if (e.target === this) {
                 this.style.display = 'none';
                 removeItemCallback = null;
             }
         });
 
-        // --- 11. EVENT LISTENERS ---
+        // ---- 11. EVENT LISTENERS ----
         document.getElementById('searchInput').addEventListener('input', applyFiltersAndSort);
         document.getElementById('sortSelect').addEventListener('change', applyFiltersAndSort);
 
@@ -664,7 +740,10 @@ ViewData["Title"] = "All Fragrances - The Olfactory Collection";
             }
         });
 
-        window.resetCatalogFilters = function() {
+        /**
+         * Resets all catalog filters and sorting to default.
+         */
+        window.resetCatalogFilters = function () {
             document.getElementById('searchInput').value = '';
             document.getElementById('sortSelect').value = 'popular';
             document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
@@ -673,7 +752,11 @@ ViewData["Title"] = "All Fragrances - The Olfactory Collection";
             applyFiltersAndSort();
         };
 
-        // --- 12. FALLBACK PRODUCTS ---
+                // ---- 12. FALLBACK PRODUCTS ----
+                /**
+                 * Returns fallback product data if the API fails.
+                 * @@returns { Array } A small list of sample products.
+                 */
         function getFallbackProducts() {
             return [
                 { productId: 1, name: "Kesar Chandan", scentFamily: "Spicy", categoryName: "Signature Blends", description: "Luxurious warmth of saffron...", imageUrl: "/images/products/Kesar Chandan.jpeg", variants: [{ variantId: 101, size: "6ml", price: 240, stockQuantity: 50 }, { variantId: 102, size: "12ml", price: 450, stockQuantity: 30 }] },
@@ -683,7 +766,11 @@ ViewData["Title"] = "All Fragrances - The Olfactory Collection";
             ];
         }
 
-        // --- 13. URL CATEGORY FILTER ---
+        // ---- 13. URL CATEGORY FILTER ----
+        /**
+         * Applies a category filter from the URL query parameter.
+         * Used when navigating from other pages with ?category=... parameter.
+         */
         function applyCategoryFromUrl() {
             const urlParams = new URLSearchParams(window.location.search);
             const categoryParam = urlParams.get('category');
@@ -698,7 +785,11 @@ ViewData["Title"] = "All Fragrances - The Olfactory Collection";
             }
         }
 
-        // --- 14. INIT ---
+        // ---- 14. INIT ----
+        /**
+         * Initializes the catalog page.
+         * Loads products, applies URL filters, and sets up the sticky tracker.
+         */
         loadProducts();
 
         window.addEventListener('DOMContentLoaded', () => {
@@ -706,6 +797,7 @@ ViewData["Title"] = "All Fragrances - The Olfactory Collection";
             updateCartBadge();
             updateStickyTracker();
 
+            // Handle ?highlight=... parameter for product highlighting
             const urlParams = new URLSearchParams(window.location.search);
             const highlightParam = urlParams.get('highlight');
             if (highlightParam) {

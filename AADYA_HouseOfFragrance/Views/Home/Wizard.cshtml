@@ -1,7 +1,10 @@
-﻿@{
-    ViewData["Title"] = "Fragrance Wizard - AADYA: The House of Fragrance";
+﻿﻿@{
+ViewData["Title"] = "Fragrance Wizard - AADYA: The House of Fragrance";
 }
 
+<!-- ============================================================ -->
+<!-- 1. WIZARD HERO BANNER                                        -->
+<!-- ============================================================ -->
 <section class="wizard-hero-banner">
     <div class="wizard-hero-content">
         <h1 class="wizard-title">The Personal Olfactory Wizard</h1>
@@ -11,10 +14,13 @@
     </div>
 </section>
 
+<!-- ============================================================ -->
+<!-- 2. WIZARD CARD                                              -->
+<!-- ============================================================ -->
 <section class="section-padding" style="padding-top: 2.5rem; min-height: 65vh;">
     <div class="wizard-card">
 
-        <!-- STEP INDICATOR -->
+        <!-- Step Indicator -->
         <div class="wizard-steps-indicator">
             <div class="step-dot active" id="stepDot1">1</div>
             <div class="step-line" id="stepLine1"></div>
@@ -23,12 +29,15 @@
             <div class="step-dot" id="stepDot3">3</div>
         </div>
 
-        <!-- STEP 1: SCENT FAMILY -->
+        <!-- ============================================================ -->
+        <!-- STEP 1: SCENT FAMILY                                        -->
+        <!-- ============================================================ -->
         <div class="wizard-step-content" id="quizStep1">
             <h2 class="quiz-question-title">1. Which scent atmosphere do you gravitate towards?</h2>
             <p class="quiz-question-sub">Select the primary profile that matches your taste:</p>
             <div class="quiz-options-grid">
-                <label class="quiz-option-card">
+
+                <div class="quiz-option-card" onclick="selectRadio(this)">
                     <input type="radio" name="vibe" value="Woody" checked />
                     <div class="option-inner">
                         <span class="option-icon">
@@ -41,8 +50,9 @@
                         <h3>Rich & Regal Oud</h3>
                         <p>Smoky woods, deep amber, oriental heritage.</p>
                     </div>
-                </label>
-                <label class="quiz-option-card">
+                </div>
+
+                <div class="quiz-option-card" onclick="selectRadio(this)">
                     <input type="radio" name="vibe" value="Citrus" />
                     <div class="option-inner">
                         <span class="option-icon">
@@ -56,8 +66,9 @@
                         <h3>Crisp & Aquatic Fresh</h3>
                         <p>Cool ocean breeze, energetic citrus.</p>
                     </div>
-                </label>
-                <label class="quiz-option-card">
+                </div>
+
+                <div class="quiz-option-card" onclick="selectRadio(this)">
                     <input type="radio" name="vibe" value="Floral" />
                     <div class="option-inner">
                         <span class="option-icon">
@@ -71,8 +82,9 @@
                         <h3>Graceful & Romantic Floral</h3>
                         <p>Blooming rose, white jasmine.</p>
                     </div>
-                </label>
-                <label class="quiz-option-card">
+                </div>
+
+                <div class="quiz-option-card" onclick="selectRadio(this)">
                     <input type="radio" name="vibe" value="Spicy" />
                     <div class="option-inner">
                         <span class="option-icon">
@@ -88,7 +100,8 @@
                         <h3>Warm & Spicy Gourmand</h3>
                         <p>Golden honey, creamy sandalwood.</p>
                     </div>
-                </label>
+                </div>
+
             </div>
             <div class="quiz-actions">
                 <div></div>
@@ -101,12 +114,15 @@
             </div>
         </div>
 
-        <!-- STEP 2: OCCASION -->
+        <!-- ============================================================ -->
+        <!-- STEP 2: OCCASION                                            -->
+        <!-- ============================================================ -->
         <div class="wizard-step-content" id="quizStep2" style="display: none;">
             <h2 class="quiz-question-title">2. When do you plan on wearing this fragrance?</h2>
             <p class="quiz-question-sub">We tailor longevity and projection based on your routine:</p>
             <div class="quiz-options-grid">
-                <label class="quiz-option-card">
+
+                <div class="quiz-option-card" onclick="selectRadio(this)">
                     <input type="radio" name="occasion" value="Daily" checked />
                     <div class="option-inner">
                         <span class="option-icon">
@@ -125,8 +141,9 @@
                         <h3>Daily Wear & Office</h3>
                         <p>Subtle, clean, and refreshing.</p>
                     </div>
-                </label>
-                <label class="quiz-option-card">
+                </div>
+
+                <div class="quiz-option-card" onclick="selectRadio(this)">
                     <input type="radio" name="occasion" value="Evening" />
                     <div class="option-inner">
                         <span class="option-icon">
@@ -137,8 +154,9 @@
                         <h3>Evening & Special Events</h3>
                         <p>Deep, alluring projection.</p>
                     </div>
-                </label>
-                <label class="quiz-option-card">
+                </div>
+
+                <div class="quiz-option-card" onclick="selectRadio(this)">
                     <input type="radio" name="occasion" value="Spiritual" />
                     <div class="option-inner">
                         <span class="option-icon">
@@ -152,7 +170,8 @@
                         <h3>Spiritual & Peaceful Rituals</h3>
                         <p>Calming sandalwood, meditative saffron.</p>
                     </div>
-                </label>
+                </div>
+
             </div>
             <div class="quiz-actions">
                 <button type="button" class="btn-outline" onclick="prevQuizStep(1)">
@@ -170,12 +189,15 @@
             </div>
         </div>
 
-        <!-- STEP 3: INTENSITY -->
+        <!-- ============================================================ -->
+        <!-- STEP 3: INTENSITY                                           -->
+        <!-- ============================================================ -->
         <div class="wizard-step-content" id="quizStep3" style="display: none;">
             <h2 class="quiz-question-title">3. What is your desired scent intensity & projection?</h2>
             <p class="quiz-question-sub">Choose how bold you want your presence to feel:</p>
             <div class="quiz-options-grid">
-                <label class="quiz-option-card">
+
+                <div class="quiz-option-card" onclick="selectRadio(this)">
                     <input type="radio" name="intensity" value="Subtle" checked />
                     <div class="option-inner">
                         <span class="option-icon">
@@ -187,8 +209,9 @@
                         <h3>Subtle & Intimate</h3>
                         <p>Sits close to the skin.</p>
                     </div>
-                </label>
-                <label class="quiz-option-card">
+                </div>
+
+                <div class="quiz-option-card" onclick="selectRadio(this)">
                     <input type="radio" name="intensity" value="Bold" />
                     <div class="option-inner">
                         <span class="option-icon">
@@ -204,7 +227,8 @@
                         <h3>Bold & Long-Lasting</h3>
                         <p>Rich concentration, leaves a memorable trail.</p>
                     </div>
-                </label>
+                </div>
+
             </div>
             <div class="quiz-actions">
                 <button type="button" class="btn-outline" onclick="prevQuizStep(2)">
@@ -222,7 +246,9 @@
             </div>
         </div>
 
-        <!-- RESULTS CONTAINER -->
+        <!-- ============================================================ -->
+        <!-- RESULTS CONTAINER                                           -->
+        <!-- ============================================================ -->
         <div id="wizardResultsContainer" style="display: none;" class="wizard-results-box">
             <span class="results-tagline">YOUR MATCHED OLFACTORY RECOMMENDATIONS</span>
             <h2 class="results-title">Tailored Just For You</h2>
@@ -245,28 +271,59 @@
 
 @section Scripts {
     <script>
-        // (Keep all existing JavaScript exactly as you have – no emoji changes needed)
-        // Your existing script remains unchanged.
-        // I'll paste it here for completeness (the same as your original).
+        // ================================================================
+        // FRAGRANCE WIZARD – STEP NAVIGATION & RESULTS
+        // ================================================================
+
         let currentStep = 1;
 
+                /**
+                 * Helper function to select the radio button inside a clicked card.
+                 * @@param { HTMLElement } card - The parent div of the option card.
+                 */
+        function selectRadio(card) {
+            const radio = card.querySelector('input[type="radio"]');
+            if (radio) radio.checked = true;
+        }
+
+                /**
+                 * Navigates to the next step of the wizard.
+                 * @@param { number } step - The step number to navigate to(2 or 3).
+                 */
         function nextQuizStep(step) {
             document.getElementById('quizStep' + currentStep).style.display = 'none';
             document.getElementById('quizStep' + step).style.display = 'block';
+
             document.getElementById('stepDot' + step).classList.add('active');
             if (step === 2) document.getElementById('stepLine1').classList.add('active');
             if (step === 3) document.getElementById('stepLine2').classList.add('active');
+
             currentStep = step;
         }
 
+                /**
+                 * Navigates to the previous step of the wizard.
+                 * @@param { number } step - The step number to go back to(1 or 2).
+                 */
         function prevQuizStep(step) {
             document.getElementById('quizStep' + currentStep).style.display = 'none';
             document.getElementById('quizStep' + step).style.display = 'block';
-            if (currentStep === 3) { document.getElementById('stepDot3').classList.remove('active'); document.getElementById('stepLine2').classList.remove('active'); }
-            if (currentStep === 2) { document.getElementById('stepDot2').classList.remove('active'); document.getElementById('stepLine1').classList.remove('active'); }
+
+            if (currentStep === 3) {
+                document.getElementById('stepDot3').classList.remove('active');
+                document.getElementById('stepLine2').classList.remove('active');
+            }
+            if (currentStep === 2) {
+                document.getElementById('stepDot2').classList.remove('active');
+                document.getElementById('stepLine1').classList.remove('active');
+            }
+
             currentStep = step;
         }
 
+        /**
+         * Submits the wizard selections to the API and displays recommendations.
+         */
         async function generateWizardResults() {
             const vibe = document.querySelector('input[name="vibe"]:checked').value;
             const occasion = document.querySelector('input[name="occasion"]:checked').value;
@@ -275,7 +332,11 @@
             document.getElementById('quizStep3').style.display = 'none';
             document.querySelector('.wizard-steps-indicator').style.display = 'none';
 
-            const payload = { scentFamily: vibe, occasion: occasion, intensity: intensity };
+            const payload = {
+                scentFamily: vibe,
+                occasion: occasion,
+                intensity: intensity
+            };
 
             try {
                 const response = await fetch('/api/products/recommend', {
@@ -303,6 +364,10 @@
             }
         }
 
+                /**
+                 * Renders product recommendations in the results grid.
+                 * @@param { Array } products - The list of recommended products.
+                 */
         function renderRecommendations(products) {
             const grid = document.getElementById('recommendedProductGrid');
             grid.innerHTML = '';
@@ -324,28 +389,38 @@
                 const imgSrc = prod.imageUrl || 'https://via.placeholder.com/300x220?text=' + encodeURIComponent(prod.name);
 
                 grid.innerHTML += `
-                                    <div class="product-card">
-                                        <img src="${imgSrc}" alt="${prod.name}" onerror="this.src='https://via.placeholder.com/300x220?text=${encodeURIComponent(prod.name)}'" />
-                                        <h3>${prod.name}</h3>
-                                        <span class="scent-tag">${prod.scentFamily || 'Fragrance'}</span>
-                                        <div class="product-price">${priceDisplay}</div>
-                                        <a href="/Home/Catalog?highlight=${encodeURIComponent(prod.name)}" class="btn-gold">VIEW IN CATALOG</a>
-                                    </div>
-                                `;
+                            <div class="product-card">
+                                <img src="${imgSrc}" alt="${prod.name}" onerror="this.src='https://via.placeholder.com/300x220?text=${encodeURIComponent(prod.name)}'" />
+                                <h3>${prod.name}</h3>
+                                <span class="scent-tag">${prod.scentFamily || 'Fragrance'}</span>
+                                <div class="product-price">${priceDisplay}</div>
+                                <a href="/Home/Catalog?highlight=${encodeURIComponent(prod.name)}" class="btn-gold">VIEW IN CATALOG</a>
+                            </div>
+                        `;
             });
         }
 
+        /**
+         * Resets the wizard to Step 1 and hides the results.
+         */
         function restartWizard() {
             document.getElementById('wizardResultsContainer').style.display = 'none';
             document.querySelector('.wizard-steps-indicator').style.display = 'flex';
+
             document.getElementById('stepDot2').classList.remove('active');
             document.getElementById('stepDot3').classList.remove('active');
             document.getElementById('stepLine1').classList.remove('active');
             document.getElementById('stepLine2').classList.remove('active');
+
             currentStep = 1;
             document.getElementById('quizStep1').style.display = 'block';
         }
 
+                /**
+                 * Returns fallback product recommendations when the API fails or returns no results.
+                 * @@param { string } vibe - The selected scent family.
+                 * @@returns { Array } A list of fallback products.
+                 */
         function getFallbackRecommendations(vibe) {
             const map = {
                 'Woody': [{ productId: 2, name: "Black OUD", scentFamily: "Oud • Woody", variants: [{ price: 600 }, { price: 1100 }], imageUrl: "/images/products/Black OUD.jpeg" }],

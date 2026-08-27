@@ -4,7 +4,10 @@
 
 <section class="section-padding" style="min-height: 70vh; padding-top: 2rem;">
     <div style="max-width: 700px; margin: 0 auto;">
-        <!-- HEADER -->
+
+        <!-- ============================================================ -->
+        <!-- HEADER                                                       -->
+        <!-- ============================================================ -->
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:2rem;">
             <div>
                 <h1 style="font-family:var(--font-heading); color:var(--deep-burgundy); margin:0;">My Profile</h1>
@@ -21,13 +24,19 @@
             </div>
         </div>
 
-        <!-- PROFILE CARD -->
+        <!-- ============================================================ -->
+        <!-- PROFILE CARD                                                 -->
+        <!-- ============================================================ -->
         <div id="profileContainer" style="background: #FAF6EF; border:1px solid var(--border-color); border-radius:4px; padding:2rem;">
+
+            <!-- Loading State -->
             <div id="profileLoading" style="text-align:center; padding:2rem;">
                 <p>Loading profile...</p>
             </div>
 
+            <!-- Profile Content -->
             <div id="profileContent" style="display:none;">
+
                 <!-- AVATAR SECTION -->
                 <div style="display:flex; align-items:center; gap:1.5rem; margin-bottom:1.5rem; flex-wrap:wrap;">
                     <div id="avatarContainer" style="position:relative; width:80px; height:80px; border-radius:50%; overflow:hidden; border:2px solid var(--border-color); background:#FAF6EF;">
@@ -48,7 +57,7 @@
                     </div>
                 </div>
 
-                <!-- Profile Form -->
+                <!-- PROFILE FORM -->
                 <form id="profileForm" style="max-width:500px; margin:0 auto;">
                     <div class="form-group">
                         <label for="profileFullName">Full Name</label>
@@ -71,6 +80,7 @@
                         <p id="profileCreatedAt" style="margin:0; color:var(--text-muted); font-size:0.85rem;"></p>
                     </div>
 
+                    <!-- Edit Actions -->
                     <div id="editActions" style="display:none; margin-top:1.5rem; padding-top:1.5rem; border-top:1px solid var(--border-color); text-align:center;">
                         <button type="submit" class="btn-gold" style="font-size:0.8rem; padding:0.6rem 2rem;">
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right:4px;">
@@ -107,7 +117,9 @@
             </div>
         </div>
 
-        <!-- DELETE ACCOUNT SECTION -->
+        <!-- ============================================================ -->
+        <!-- DELETE ACCOUNT SECTION                                        -->
+        <!-- ============================================================ -->
         <div style="margin-top:2rem; padding:1.5rem; background: #fff5f5; border:1px solid #f8d7da; border-radius:4px;">
             <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem;">
                 <div>
@@ -130,7 +142,9 @@
     </div>
 </section>
 
-<!-- CHANGE PASSWORD MODAL -->
+<!-- ============================================================ -->
+<!-- CHANGE PASSWORD MODAL                                         -->
+<!-- ============================================================ -->
 <div id="changePasswordModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:9998; align-items:center; justify-content:center;">
     <div style="background:white; padding:2rem; border-radius:8px; max-width:450px; box-shadow:0 4px 20px rgba(0,0,0,0.3); width:90%;">
         <h3 style="font-family:var(--font-heading); color:var(--deep-burgundy); margin:0 0 1.5rem 0; text-align:center;">Change Password</h3>
@@ -199,7 +213,9 @@
     </div>
 </div>
 
-<!-- ADDRESS BOOK MODAL -->
+<!-- ============================================================ -->
+<!-- ADDRESS BOOK MODAL                                            -->
+<!-- ============================================================ -->
 <div id="addressBookModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:9997; align-items:center; justify-content:center; overflow-y:auto;">
     <div style="background:white; padding:2rem 2.5rem; border-radius:8px; max-width:560px; box-shadow:0 4px 20px rgba(0,0,0,0.3); width:90%; max-height:90vh; overflow-y:auto;">
         <h3 style="font-family:var(--font-heading); color:var(--deep-burgundy); margin:0 0 1.5rem 0; text-align:center; font-size:1.5rem;">
@@ -303,7 +319,9 @@
     </div>
 </div>
 
-<!-- CONFIRMATION MODAL (used for delete actions) -->
+<!-- ============================================================ -->
+<!-- CONFIRMATION MODAL (used for delete actions)                  -->
+<!-- ============================================================ -->
 <div id="confirmModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:9999; align-items:center; justify-content:center;">
     <div style="background:white; padding:2rem; border-radius:8px; max-width:420px; text-align:center; box-shadow:0 4px 20px rgba(0,0,0,0.3); width:90%;">
         <div id="modalIcon" style="font-size:3rem; margin-bottom:0.5rem;">⚠️</div>
@@ -318,10 +336,18 @@
 
 @section Scripts {
     <script>
+        // ================================================================
+        // PROFILE PAGE – LOAD, EDIT, SAVE, AVATAR, ADDRESS BOOK
+        // ================================================================
+
         let currentUserId = null;
         let isEditMode = false;
 
-        // --- 1. LOAD PROFILE ---
+        // ---- 1. LOAD PROFILE ----
+        /**
+         * Fetches and displays the current user's profile data.
+         * Handles loading, error, and not-logged-in states.
+         */
         async function loadProfile() {
             const loadingEl = document.getElementById('profileLoading');
             const contentEl = document.getElementById('profileContent');
@@ -362,7 +388,9 @@
                 document.getElementById('profileEmail').value = data.email || '';
                 document.getElementById('profilePhone').value = data.phoneNumber || '';
                 document.getElementById('profileAddress').value = data.address || '';
-                document.getElementById('profileCreatedAt').textContent = data.createdAt ? new Date(data.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' }) : 'N/A';
+                document.getElementById('profileCreatedAt').textContent = data.createdAt ?
+                    new Date(data.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' }) :
+                    'N/A';
 
                 // Avatar
                 const avatarUrl = data.avatarUrl || '';
@@ -392,6 +420,10 @@
             }
         }
 
+        /**
+         * Sets all profile form fields to readonly or editable.
+         * @@param {boolean} isReadonly - Whether fields should be readonly.
+         */
         function setReadonly(isReadonly) {
             const inputs = document.querySelectorAll('#profileForm input, #profileForm textarea');
             inputs.forEach(input => {
@@ -404,6 +436,9 @@
             });
         }
 
+        /**
+         * Enables edit mode for the profile form.
+         */
         function enableEdit() {
             isEditMode = true;
             setReadonly(false);
@@ -411,6 +446,9 @@
             document.getElementById('editProfileBtn').style.display = 'none';
         }
 
+        /**
+         * Cancels edit mode and reloads the profile.
+         */
         function cancelEdit() {
             isEditMode = false;
             loadProfile();
@@ -418,13 +456,16 @@
             document.getElementById('editProfileBtn').style.display = 'inline-block';
         }
 
-        // --- 2. SAVE PROFILE ---
-        document.getElementById('profileForm').addEventListener('submit', function(e) {
+        // ---- 2. SAVE PROFILE ----
+        document.getElementById('profileForm').addEventListener('submit', function (e) {
             e.preventDefault();
             if (!isEditMode) return;
             showModal('💾', 'Save Changes', 'Are you sure you want to save your profile changes?', performSave);
         });
 
+        /**
+         * Saves the updated profile data to the server.
+         */
         async function performSave() {
             const token = localStorage.getItem('token');
             if (!token) { showToast('Please login.', 'error'); return; }
@@ -436,6 +477,7 @@
                 address: document.getElementById('profileAddress').value.trim()
             };
 
+            // Validation
             if (!payload.fullName || !payload.email || !payload.phoneNumber || !payload.address) {
                 showToast('All fields are required.', 'error');
                 return;
@@ -469,15 +511,22 @@
             }
         }
 
-        // --- 3. AVATAR UPLOAD ---
+        // ---- 3. AVATAR UPLOAD ----
+        /**
+         * Handles avatar file upload and sends it as Base64 to the server.
+         * @@param {Event} event - The file input change event.
+         */
         async function handleAvatarUpload(event) {
             const file = event.target.files[0];
             if (!file) return;
 
+            // Validate file size (max 2MB)
             if (file.size > 2 * 1024 * 1024) {
                 showToast('Image size must be less than 2MB.', 'error');
                 return;
             }
+
+            // Validate file type
             const allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
             if (!allowedTypes.includes(file.type)) {
                 showToast('Only JPG, PNG, and GIF images are allowed.', 'error');
@@ -485,7 +534,7 @@
             }
 
             const reader = new FileReader();
-            reader.onload = async function(e) {
+            reader.onload = async function (e) {
                 const base64 = e.target.result;
                 const avatarImg = document.getElementById('avatarPreview');
                 const placeholder = document.getElementById('avatarPlaceholder');
@@ -513,28 +562,36 @@
             reader.readAsDataURL(file);
         }
 
-        // --- 4. CHANGE PASSWORD ---
+        // ---- 4. CHANGE PASSWORD ----
+        /**
+         * Opens the Change Password modal.
+         */
         function openChangePassword() {
             document.getElementById('changePasswordModal').style.display = 'flex';
             document.getElementById('changePasswordForm').reset();
         }
 
+        /**
+         * Closes the Change Password modal.
+         */
         function closeChangePassword() {
             document.getElementById('changePasswordModal').style.display = 'none';
         }
 
-        document.getElementById('changePasswordForm').addEventListener('submit', async function(e) {
+        document.getElementById('changePasswordForm').addEventListener('submit', async function (e) {
             e.preventDefault();
 
             const oldPassword = document.getElementById('oldPassword').value;
             const newPassword = document.getElementById('newPassword').value;
             const confirmPassword = document.getElementById('confirmNewPassword').value;
 
+            // Validate password match
             if (newPassword !== confirmPassword) {
                 showToast('New passwords do not match.', 'error');
                 return;
             }
 
+            // Validate password complexity
             const passRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\da-zA-Z]).{8,}$/;
             if (!passRegex.test(newPassword)) {
                 showToast('Password must be 8+ chars with uppercase, lowercase, number, and special character.', 'error');
@@ -546,7 +603,11 @@
                 const response = await fetch('/Account/ChangePassword', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
-                    body: JSON.stringify({ OldPassword: oldPassword, NewPassword: newPassword, ConfirmPassword: confirmPassword })
+                    body: JSON.stringify({
+                        OldPassword: oldPassword,
+                        NewPassword: newPassword,
+                        ConfirmPassword: confirmPassword
+                    })
                 });
                 const data = await response.json();
                 if (response.ok) {
@@ -556,22 +617,31 @@
                     showToast(data.message || 'Failed to change password.', 'error');
                 }
             } catch (error) {
-                console.error('Error:', error);
+                console.error('Error changing password:', error);
                 showToast('Network error. Please try again.', 'error');
             }
         });
 
-        // --- 5. ADDRESS BOOK ---
+        // ---- 5. ADDRESS BOOK ----
+        /**
+         * Opens the Address Book modal and loads existing addresses.
+         */
         async function openAddressBook() {
             document.getElementById('addressBookModal').style.display = 'flex';
             resetAddressForm();
             await loadAddresses();
         }
 
+        /**
+         * Closes the Address Book modal.
+         */
         function closeAddressBook() {
             document.getElementById('addressBookModal').style.display = 'none';
         }
 
+        /**
+         * Resets the address form to its initial state (add mode).
+         */
         function resetAddressForm() {
             document.getElementById('editAddressId').value = '0';
             document.getElementById('addressFormLabel').textContent = 'Add New Address';
@@ -583,10 +653,13 @@
         }
 
         // Cancel Edit button click
-        document.getElementById('cancelEditAddress').addEventListener('click', function() {
+        document.getElementById('cancelEditAddress').addEventListener('click', function () {
             resetAddressForm();
         });
 
+        /**
+         * Loads all addresses for the current user from the server.
+         */
         async function loadAddresses() {
             const token = localStorage.getItem('token');
             const listContainer = document.getElementById('addressList');
@@ -632,12 +705,17 @@
             }
         }
 
+        /**
+         * Renders a list of addresses into the address book modal.
+         * @@param {Array} addresses - The list of addresses to render.
+         */
         function renderAddresses(addresses) {
             const container = document.getElementById('addressList');
             if (!addresses || addresses.length === 0) {
                 container.innerHTML = '<p style="color:var(--text-muted); text-align:center; padding:1rem 0;">No addresses saved yet.</p>';
                 return;
             }
+
             let html = '';
             addresses.forEach(addr => {
                 html += `
@@ -658,7 +736,11 @@
             container.innerHTML = html;
         }
 
-        // --- EDIT ADDRESS ---
+        // ---- EDIT ADDRESS ----
+        /**
+         * Loads an address into the form for editing.
+         * @@param {number} addressId - The ID of the address to edit.
+         */
         async function editAddress(addressId) {
             const token = localStorage.getItem('token');
             try {
@@ -695,8 +777,8 @@
             }
         }
 
-        // --- ADDRESS FORM SUBMIT (Add or Update) ---
-        document.getElementById('addressForm').addEventListener('submit', async function(e) {
+        // ---- ADDRESS FORM SUBMIT ----
+        document.getElementById('addressForm').addEventListener('submit', async function (e) {
             e.preventDefault();
             const token = localStorage.getItem('token');
             if (!token) {
@@ -716,6 +798,7 @@
                 isDefault: document.getElementById('addrIsDefault').checked
             };
 
+            // Validation
             if (!payload.addressLine1 || !payload.city || !payload.state || !payload.pincode || !payload.phoneNumber) {
                 showToast('Please fill in all required fields.', 'error');
                 return;
@@ -770,9 +853,13 @@
             }
         });
 
-        // --- DELETE ADDRESS ---
+        // ---- DELETE ADDRESS ----
+        /**
+         * Deletes an address after confirmation.
+         * @@param {number} addressId - The ID of the address to delete.
+         */
         async function deleteAddress(addressId) {
-            showModal('🗑️', 'Delete Address', 'Are you sure you want to remove this address?', async function() {
+            showModal('🗑️', 'Delete Address', 'Are you sure you want to remove this address?', async function () {
                 const token = localStorage.getItem('token');
                 try {
                     const response = await fetch(`/Account/DeleteAddress/${addressId}`, {
@@ -800,9 +887,12 @@
             });
         }
 
-        // --- 6. DELETE ACCOUNT ---
+        // ---- 6. DELETE ACCOUNT ----
+        /**
+         * Confirms and deletes the user's account.
+         */
         function confirmDeleteAccount() {
-            showModal('⚠️', 'Delete Account', 'Are you sure you want to delete your account? <br><br> <strong>This action cannot be undone.</strong>', async function() {
+            showModal('⚠️', 'Delete Account', 'Are you sure you want to delete your account? <br><br> <strong>This action cannot be undone.</strong>', async function () {
                 const token = localStorage.getItem('token');
                 try {
                     const response = await fetch('/Account/DeleteAccount', {
@@ -825,7 +915,14 @@
             });
         }
 
-        // --- 7. MODAL ---
+        // ---- 7. CONFIRMATION MODAL ----
+        /**
+         * Shows a confirmation modal with the specified icon, title, and message.
+         * @@param {string} icon - HTML content for the modal icon.
+         * @@param {string} title - Modal title.
+         * @@param {string} message - Modal message (HTML allowed).
+         * @@param {Function} onConfirm - Callback when confirm is clicked.
+         */
         function showModal(icon, title, message, onConfirm) {
             document.getElementById('modalIcon').innerHTML = icon;
             document.getElementById('modalTitle').textContent = title;
@@ -834,23 +931,23 @@
             const modal = document.getElementById('confirmModal');
             modal.style.display = 'flex';
 
-            document.getElementById('modalConfirmBtn').onclick = function() {
+            document.getElementById('modalConfirmBtn').onclick = function () {
                 modal.style.display = 'none';
                 if (onConfirm) onConfirm();
             };
-            document.getElementById('modalCancelBtn').onclick = function() {
+            document.getElementById('modalCancelBtn').onclick = function () {
                 modal.style.display = 'none';
             };
-            modal.onclick = function(e) {
+            modal.onclick = function (e) {
                 if (e.target === modal) modal.style.display = 'none';
             };
         }
 
-        // --- 8. INIT ---
+        // ---- 8. INIT ----
         document.addEventListener('DOMContentLoaded', loadProfile);
 
-        // Close modals on Escape key
-        document.addEventListener('keydown', function(e) {
+        // ---- 9. CLOSE MODALS ON ESCAPE KEY ----
+        document.addEventListener('keydown', function (e) {
             if (e.key === 'Escape') {
                 document.getElementById('changePasswordModal').style.display = 'none';
                 document.getElementById('addressBookModal').style.display = 'none';

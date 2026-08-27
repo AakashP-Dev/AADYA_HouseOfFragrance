@@ -2,7 +2,9 @@
 ViewData["Title"] = "Home - Pure Luxury Timeless";
 }
 
-<!-- 1. HERO BANNER -->
+<!-- ============================================================ -->
+<!-- 1. HERO BANNER                                               -->
+<!-- ============================================================ -->
 <section class="hero-banner">
     <div class="hero-content">
         <h1 class="hero-title">
@@ -18,7 +20,7 @@ ViewData["Title"] = "Home - Pure Luxury Timeless";
 </section>
 
 <!-- ============================================================ -->
-<!-- RECOMMENDED FOR YOU - CAROUSEL -->
+<!-- 2. RECOMMENDED FOR YOU - CAROUSEL                            -->
 <!-- ============================================================ -->
 <section class="section-padding" style="padding-top: 1rem;">
     <div class="section-header">
@@ -50,7 +52,9 @@ ViewData["Title"] = "Home - Pure Luxury Timeless";
     <div class="carousel-dots" id="carouselDots"></div>
 </section>
 
-<!-- 2. FEATURED COLLECTION -->
+<!-- ============================================================ -->
+<!-- 3. FEATURED COLLECTION (static)                              -->
+<!-- ============================================================ -->
 <section class="section-padding">
     <div class="section-header">
         <h2 class="section-title">FEATURED COLLECTION</h2>
@@ -58,7 +62,7 @@ ViewData["Title"] = "Home - Pure Luxury Timeless";
     </div>
 
     <div class="product-grid">
-        <!-- CARD 1 -->
+        <!-- Card 1 -->
         <div class="product-card">
             <img src="~/images/products/Kesar Chandan.jpeg" alt="Kesar Chandan" onerror="this.src='https://via.placeholder.com/300x220?text=Kesar+Chandan'" />
             <h3><a href="/Home/Catalog?highlight=Kesar%20Chandan">Kesar Chandan</a></h3>
@@ -67,7 +71,7 @@ ViewData["Title"] = "Home - Pure Luxury Timeless";
             <a href="/Home/Catalog?highlight=Kesar%20Chandan" class="btn-gold">VIEW DETAILS</a>
         </div>
 
-        <!-- CARD 2 -->
+        <!-- Card 2 -->
         <div class="product-card">
             <img src="~/images/products/Black OUD.jpeg" alt="Black OUD" onerror="this.src='https://via.placeholder.com/300x220?text=Black+Oud'" />
             <h3><a href="/Home/Catalog?highlight=Black%20Oud">Black OUD</a></h3>
@@ -76,7 +80,7 @@ ViewData["Title"] = "Home - Pure Luxury Timeless";
             <a href="/Home/Catalog?highlight=Black%20Oud" class="btn-gold">VIEW DETAILS</a>
         </div>
 
-        <!-- CARD 3 -->
+        <!-- Card 3 -->
         <div class="product-card">
             <img src="~/images/products/Cairo Evening.jpeg" alt="Cairo Evening" onerror="this.src='https://via.placeholder.com/300x220?text=Cairo+Evening'" />
             <h3><a href="/Home/Catalog?highlight=Cairo%20Evening">Cairo Evening</a></h3>
@@ -85,7 +89,7 @@ ViewData["Title"] = "Home - Pure Luxury Timeless";
             <a href="/Home/Catalog?highlight=Cairo%20Evening" class="btn-gold">VIEW DETAILS</a>
         </div>
 
-        <!-- CARD 4 -->
+        <!-- Card 4 -->
         <div class="product-card">
             <img src="~/images/products/Turkish Rose.jpeg" alt="Turkish Rose" onerror="this.src='https://via.placeholder.com/300x220?text=Turkish+Rose'" />
             <h3><a href="/Home/Catalog?highlight=Turkish%20Rose">Turkish Rose</a></h3>
@@ -96,7 +100,9 @@ ViewData["Title"] = "Home - Pure Luxury Timeless";
     </div>
 </section>
 
-<!-- 3. OUR ESSENCE -->
+<!-- ============================================================ -->
+<!-- 4. OUR ESSENCE                                               -->
+<!-- ============================================================ -->
 <section class="essence-section" id="essence">
     <div class="essence-container">
         <h2 class="section-title">OUR ESSENCE</h2>
@@ -136,7 +142,9 @@ ViewData["Title"] = "Home - Pure Luxury Timeless";
     </div>
 </section>
 
-<!-- 4. ABOUT AADYA -->
+<!-- ============================================================ -->
+<!-- 5. ABOUT AADYA                                              -->
+<!-- ============================================================ -->
 <section class="section-padding" id="about">
     <div class="about-grid">
         <div class="about-image-box">
@@ -155,16 +163,26 @@ ViewData["Title"] = "Home - Pure Luxury Timeless";
 
 @section Scripts {
     <script>
+        // ================================================================
+        // HOME PAGE – RECOMMENDATIONS CAROUSEL
+        // ================================================================
+
         let recProducts = [];
         let currentSlide = 0;
         let itemsPerView = 4;
         let autoSlideInterval = null;
+
         const TRACK = document.getElementById('recommendedTrack');
         const PREV_BTN = document.getElementById('carouselPrev');
         const NEXT_BTN = document.getElementById('carouselNext');
         const DOTS_CONTAINER = document.getElementById('carouselDots');
-        const CLONE_COUNT = 4;
+        const CLONE_COUNT = 4; // Number of clones for seamless looping
 
+                // ---- GET ITEMS PER VIEW BASED ON SCREEN WIDTH ----
+                /**
+                 * Determines how many product cards should be visible at once based on window width.
+                 * @@returns { number } Number of items per view(1–4).
+                 */
         function getItemsPerView() {
             const w = window.innerWidth;
             if (w >= 1024) return 4;
@@ -173,16 +191,49 @@ ViewData["Title"] = "Home - Pure Luxury Timeless";
             return 1;
         }
 
+        // ---- UPDATE ARROWS & DOTS VISIBILITY ----
+        /**
+         * Hides arrows and dots if the number of products is less than or equal to items per view.
+         */
         function updateArrowsAndDotsVisibility() {
             const totalProducts = recProducts.length;
             const hide = totalProducts <= itemsPerView;
-            // Hide arrows
             PREV_BTN.style.display = hide ? 'none' : 'flex';
             NEXT_BTN.style.display = hide ? 'none' : 'flex';
-            // Hide dots container if no need for pagination
             DOTS_CONTAINER.style.display = hide ? 'none' : 'flex';
         }
 
+                // ---- CREATE PRODUCT CARD ----
+                /**
+                 * Creates a product card DOM element for the carousel.
+                 * @@param { Object } product - The product data.
+                 * @@returns { HTMLElement } The card element.
+                 */
+        function createProductCard(product) {
+            const prices = product.variants.map(v => v.price);
+            const minPrice = Math.min(...prices);
+            const maxPrice = Math.max(...prices);
+            const priceDisplay = minPrice === maxPrice ? `₹${minPrice}.00` : `₹${minPrice}.00 – ₹${maxPrice}.00`;
+            const imgSrc = product.imageUrl || 'https://via.placeholder.com/300x220?text=' + encodeURIComponent(product.name);
+
+            const card = document.createElement('div');
+            card.className = 'product-card';
+            card.dataset.productId = product.productId;
+            card.innerHTML = `
+                        <img src="${imgSrc}" alt="${product.name}" onerror="this.src='https://via.placeholder.com/300x220?text=${encodeURIComponent(product.name)}'" />
+                        <h3><a href="/Home/Catalog?highlight=${encodeURIComponent(product.name)}">${product.name}</a></h3>
+                        <span class="scent-tag">${product.scentFamily || 'Fragrance'}</span>
+                        <div class="product-price">${priceDisplay}</div>
+                        <a href="/Home/Catalog?highlight=${encodeURIComponent(product.name)}" class="btn-gold" style="font-size:0.7rem;">VIEW DETAILS</a>
+                    `;
+            return card;
+        }
+
+                // ---- RENDER CAROUSEL ----
+                /**
+                 * Renders the carousel with the given products and sets up the carousel state.
+                 * @@param { Array } products - The list of products to display.
+                 */
         function renderCarousel(products) {
             recProducts = products;
             const track = TRACK;
@@ -219,26 +270,10 @@ ViewData["Title"] = "Home - Pure Luxury Timeless";
             startAutoSlide();
         }
 
-        function createProductCard(product) {
-            const prices = product.variants.map(v => v.price);
-            const minPrice = Math.min(...prices);
-            const maxPrice = Math.max(...prices);
-            const priceDisplay = minPrice === maxPrice ? `₹${minPrice}.00` : `₹${minPrice}.00 – ₹${maxPrice}.00`;
-            const imgSrc = product.imageUrl || 'https://via.placeholder.com/300x220?text=' + encodeURIComponent(product.name);
-
-            const card = document.createElement('div');
-            card.className = 'product-card';
-            card.dataset.productId = product.productId;
-            card.innerHTML = `
-                                <img src="${imgSrc}" alt="${product.name}" onerror="this.src='https://via.placeholder.com/300x220?text=${encodeURIComponent(product.name)}'" />
-                                <h3><a href="/Home/Catalog?highlight=${encodeURIComponent(product.name)}">${product.name}</a></h3>
-                                <span class="scent-tag">${product.scentFamily || 'Fragrance'}</span>
-                                <div class="product-price">${priceDisplay}</div>
-                                <a href="/Home/Catalog?highlight=${encodeURIComponent(product.name)}" class="btn-gold" style="font-size:0.7rem;">VIEW DETAILS</a>
-                            `;
-            return card;
-        }
-
+        // ---- BUILD DOTS ----
+        /**
+         * Creates dot indicators for the carousel based on the number of slides.
+         */
         function buildDots() {
             const totalSlides = Math.ceil(recProducts.length / itemsPerView);
             DOTS_CONTAINER.innerHTML = '';
@@ -257,13 +292,18 @@ ViewData["Title"] = "Home - Pure Luxury Timeless";
             updateArrowsAndDotsVisibility();
         }
 
+                // ---- UPDATE CAROUSEL ----
+                /**
+                 * Updates the carousel transform and active dot based on the current slide.
+                 * @@param { boolean } animate - Whether to animate the transition.
+                 */
         function updateCarousel(animate = true) {
             const track = TRACK;
             const firstCard = track.querySelector('.product-card');
             if (!firstCard) return;
 
             const cardWidth = firstCard.offsetWidth;
-            const gap = 1.2 * 16;
+            const gap = 1.2 * 16; // 1.2rem in pixels
             const slideWidth = cardWidth + gap;
             const offset = currentSlide * slideWidth;
 
@@ -285,12 +325,17 @@ ViewData["Title"] = "Home - Pure Luxury Timeless";
                     currentSlide = newIndex;
                     const newOffset = currentSlide * slideWidth;
                     track.style.transform = `translateX(-${newOffset}px)`;
-                    void track.offsetHeight;
+                    void track.offsetHeight; // Force reflow
                     track.style.transition = 'transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
                 }, 400);
             }
         }
 
+                // ---- GO TO SLIDE ----
+                /**
+                 * Moves the carousel to a specific slide index.
+                 * @@param { number } index - The slide index(0 - based).
+                 */
         function goToSlide(index) {
             const totalItems = recProducts.length;
             if (totalItems <= itemsPerView) return;
@@ -302,6 +347,7 @@ ViewData["Title"] = "Home - Pure Luxury Timeless";
             resetAutoSlide();
         }
 
+        // ---- NEXT SLIDE ----
         function nextSlide() {
             const totalItems = recProducts.length;
             if (totalItems <= itemsPerView) return;
@@ -313,6 +359,7 @@ ViewData["Title"] = "Home - Pure Luxury Timeless";
             }
         }
 
+        // ---- PREV SLIDE ----
         function prevSlide() {
             const totalItems = recProducts.length;
             if (totalItems <= itemsPerView) return;
@@ -324,6 +371,7 @@ ViewData["Title"] = "Home - Pure Luxury Timeless";
             }
         }
 
+        // ---- AUTO SLIDE ----
         function startAutoSlide() {
             if (autoSlideInterval) clearInterval(autoSlideInterval);
             if (recProducts.length <= itemsPerView) return;
@@ -337,7 +385,7 @@ ViewData["Title"] = "Home - Pure Luxury Timeless";
             }
         }
 
-        // Event listeners
+        // ---- EVENT LISTENERS ----
         PREV_BTN.addEventListener('click', prevSlide);
         NEXT_BTN.addEventListener('click', nextSlide);
 
@@ -365,6 +413,11 @@ ViewData["Title"] = "Home - Pure Luxury Timeless";
             }, 200);
         });
 
+        // ---- LOAD RECOMMENDATIONS ----
+        /**
+         * Fetches personalized recommendations from the API and renders the carousel.
+         * Updates the title and subtitle based on login status and trigger product.
+         */
         async function loadRecommendations() {
             const title = document.getElementById('recTitle');
             const subtitle = document.getElementById('recSubtitle');
@@ -395,6 +448,7 @@ ViewData["Title"] = "Home - Pure Luxury Timeless";
                     return;
                 }
 
+                // Update title based on login status and trigger product
                 if (token && triggerName) {
                     title.textContent = `Because you liked “${triggerName}”…`;
                     subtitle.textContent = 'We picked these based on your scent preferences.';
@@ -422,6 +476,7 @@ ViewData["Title"] = "Home - Pure Luxury Timeless";
             }
         }
 
+        // ---- INIT ----
         document.addEventListener('DOMContentLoaded', loadRecommendations);
     </script>
 }

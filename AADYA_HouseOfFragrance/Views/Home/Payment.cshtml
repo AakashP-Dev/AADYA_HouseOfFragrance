@@ -7,7 +7,9 @@ var totalAmount = Context.Request.Query["total"].ToString();
 <section class="section-padding" style="padding-top: 2rem; min-height: 70vh;">
     <div style="max-width: 600px; margin: 0 auto;">
 
-        <!-- Header -->
+        <!-- ============================================================ -->
+        <!-- HEADER                                                       -->
+        <!-- ============================================================ -->
         <div style="text-align:center; margin-bottom:2rem;">
             <span class="auth-tagline">SECURE CHECKOUT</span>
             <h1 style="font-family:var(--font-heading); color:var(--deep-burgundy); margin:0.2rem 0;">Complete Your Payment</h1>
@@ -16,7 +18,9 @@ var totalAmount = Context.Request.Query["total"].ToString();
             </p>
         </div>
 
-        <!-- Payment Card -->
+        <!-- ============================================================ -->
+        <!-- PAYMENT CARD                                                 -->
+        <!-- ============================================================ -->
         <div style="background: #FAF6EF; border:1px solid var(--border-color); border-radius:4px; padding:2rem;">
 
             <form id="paymentForm">
@@ -111,6 +115,7 @@ var totalAmount = Context.Request.Query["total"].ToString();
                     <a href="/Home/Cart" class="btn-outline" style="padding:0.8rem 1.5rem; text-decoration:none;">BACK</a>
                 </div>
 
+                <!-- Dummy Payment Notice -->
                 <p style="text-align:center; font-size:0.75rem; color:var(--text-muted); margin-top:0.8rem;">
                     🔒 This is a <strong>dummy payment portal</strong> for demonstration purposes. No real money is charged.
                 </p>
@@ -121,7 +126,14 @@ var totalAmount = Context.Request.Query["total"].ToString();
 
 @section Scripts {
     <script>
-        // --- Toggle Payment Fields ---
+        // ================================================================
+        // PAYMENT PAGE – TOGGLE FIELDS & SUBMIT PAYMENT
+        // ================================================================
+
+        /**
+         * Toggles the visibility of payment method-specific fields.
+         * Shows/hides Card, UPI, and COD sections based on the selected radio button.
+         */
         function togglePaymentFields() {
             const method = document.querySelector('input[name="paymentMethod"]:checked').value;
             document.getElementById('cardFields').style.display = method === 'Card' ? 'block' : 'none';
@@ -129,15 +141,15 @@ var totalAmount = Context.Request.Query["total"].ToString();
             document.getElementById('codFields').style.display = method === 'COD' ? 'block' : 'none';
         }
 
-        // --- Payment Form Submission ---
-        document.getElementById('paymentForm').addEventListener('submit', async function(e) {
+        // ---- PAYMENT FORM SUBMISSION ----
+        document.getElementById('paymentForm').addEventListener('submit', async function (e) {
             e.preventDefault();
 
-            // ✅ FIX: Properly parse orderId as integer
+            // Parse the order ID from the URL query string.
             const orderId = parseInt('@orderId', 10);
             const method = document.querySelector('input[name="paymentMethod"]:checked').value;
 
-            // Show loading state
+            // Show loading spinner on the submit button.
             const submitBtn = this.querySelector('button[type="submit"]');
             const originalText = submitBtn.innerHTML;
             submitBtn.innerHTML = '⏳ PROCESSING...';

@@ -3,7 +3,10 @@ ViewData["Title"] = "Admin Operations Dashboard - House of AADYA";
 }
 
 <section class="section-padding" style="padding-top: 2rem;">
-    <!-- ADMIN HEADER -->
+
+    <!-- ============================================================ -->
+    <!-- ADMIN HEADER                                                  -->
+    <!-- ============================================================ -->
     <div class="admin-header">
         <div>
             <h1 class="admin-title">Real-Time Management Dashboard</h1>
@@ -18,7 +21,9 @@ ViewData["Title"] = "Admin Operations Dashboard - House of AADYA";
         </button>
     </div>
 
-    <!-- STATS CARDS -->
+    <!-- ============================================================ -->
+    <!-- STATS CARDS                                                   -->
+    <!-- ============================================================ -->
     <div class="admin-stats-grid" id="adminStatsGrid">
         <div class="stat-card"><span class="stat-label">Total Sales Revenue</span><div class="stat-value" id="statRevenue">₹0</div><span class="stat-sub text-green">Loading...</span></div>
         <div class="stat-card"><span class="stat-label">Catalog Products</span><div class="stat-value" id="statProducts">0</div><span class="stat-sub">100% Alcohol-Free</span></div>
@@ -26,7 +31,9 @@ ViewData["Title"] = "Admin Operations Dashboard - House of AADYA";
         <div class="stat-card"><span class="stat-label">Registered Clients</span><div class="stat-value" id="statClients">0</div><span class="stat-sub">Secure User Database</span></div>
     </div>
 
-    <!-- CUSTOMER SEGMENTS -->
+    <!-- ============================================================ -->
+    <!-- CUSTOMER SEGMENTS                                             -->
+    <!-- ============================================================ -->
     <div style="margin-bottom: 2rem; margin-top: 1.5rem;">
         <h3 style="font-family: var(--font-heading); color: var(--deep-burgundy); margin-bottom: 1rem;">Customer Segments</h3>
         <div class="admin-stats-grid" id="customerSegmentsGrid">
@@ -53,7 +60,9 @@ ViewData["Title"] = "Admin Operations Dashboard - House of AADYA";
         </div>
     </div>
 
-    <!-- TAB NAVIGATION -->
+    <!-- ============================================================ -->
+    <!-- TAB NAVIGATION                                                -->
+    <!-- ============================================================ -->
     <div style="display:flex; gap:1rem; margin-bottom:2rem; border-bottom:1px solid var(--border-color); padding-bottom:0.5rem; flex-wrap:wrap;">
         <button class="filter-btn active" data-tab="orders" onclick="switchTab('orders')">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle; margin-right:6px;">
@@ -83,7 +92,7 @@ ViewData["Title"] = "Admin Operations Dashboard - House of AADYA";
     </div>
 
     <!-- ============================================================ -->
-    <!-- TAB 1: ORDERS -->
+    <!-- TAB 1: ORDERS                                                 -->
     <!-- ============================================================ -->
     <div id="tabOrders" class="admin-table-card">
         <div class="admin-table-header-row">
@@ -110,7 +119,7 @@ ViewData["Title"] = "Admin Operations Dashboard - House of AADYA";
     </div>
 
     <!-- ============================================================ -->
-    <!-- TAB 2: PRODUCTS -->
+    <!-- TAB 2: PRODUCTS                                               -->
     <!-- ============================================================ -->
     <div id="tabProducts" style="display:none;" class="admin-table-card">
         <div class="admin-table-header-row">
@@ -137,7 +146,7 @@ ViewData["Title"] = "Admin Operations Dashboard - House of AADYA";
     </div>
 
     <!-- ============================================================ -->
-    <!-- TAB 3: USERS -->
+    <!-- TAB 3: USERS                                                  -->
     <!-- ============================================================ -->
     <div id="tabUsers" style="display:none;" class="admin-table-card">
         <div class="admin-table-header-row">
@@ -157,7 +166,7 @@ ViewData["Title"] = "Admin Operations Dashboard - House of AADYA";
 </section>
 
 <!-- ============================================================ -->
-<!-- ADD PRODUCT SLIDING DRAWER -->
+<!-- ADD PRODUCT SLIDING DRAWER                                    -->
 <!-- ============================================================ -->
 <div class="drawer-overlay" id="addProductOverlay" onclick="closeAddProductDrawer()"></div>
 <div class="product-drawer" id="addProductDrawer">
@@ -216,7 +225,9 @@ ViewData["Title"] = "Admin Operations Dashboard - House of AADYA";
     </div>
 </div>
 
-<!-- STOCK UPDATE MODAL -->
+<!-- ============================================================ -->
+<!-- STOCK UPDATE MODAL                                            -->
+<!-- ============================================================ -->
 <div id="stockModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:9998; align-items:center; justify-content:center;">
     <div style="background:white; padding:2rem; border-radius:8px; max-width:420px; text-align:center; box-shadow:0 4px 20px rgba(0,0,0,0.3); width:90%;">
         <h3 style="font-family:var(--font-heading); color:var(--deep-burgundy); margin:0 0 0.5rem 0;">Update Stock</h3>
@@ -238,7 +249,9 @@ ViewData["Title"] = "Admin Operations Dashboard - House of AADYA";
     </div>
 </div>
 
-<!-- REJECT ORDER REASON MODAL -->
+<!-- ============================================================ -->
+<!-- REJECT ORDER REASON MODAL                                     -->
+<!-- ============================================================ -->
 <div id="reasonModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); backdrop-filter:blur(2px); z-index:9998; align-items:center; justify-content:center;">
     <div style="background:#FFFFFF; padding:2rem 2.5rem; border-radius:8px; max-width:480px; width:90%; box-shadow:0 8px 32px rgba(0,0,0,0.2); margin:auto; position:relative;">
 
@@ -284,7 +297,7 @@ ViewData["Title"] = "Admin Operations Dashboard - House of AADYA";
 </div>
 
 <!-- ============================================================ -->
-<!-- CONFIRMATION MODAL -->
+<!-- CONFIRMATION MODAL                                            -->
 <!-- ============================================================ -->
 <div id="confirmModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:9999; align-items:center; justify-content:center;">
     <div style="background:white; padding:2rem; border-radius:8px; max-width:420px; text-align:center; box-shadow:0 4px 20px rgba(0,0,0,0.3); width:90%;">
@@ -299,7 +312,7 @@ ViewData["Title"] = "Admin Operations Dashboard - House of AADYA";
 </div>
 
 <!-- ============================================================ -->
-<!-- USER ORDERS MODAL -->
+<!-- USER ORDERS MODAL                                             -->
 <!-- ============================================================ -->
 <div id="userOrdersModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:9998; align-items:center; justify-content:center; overflow-y:auto;">
     <div style="background:white; padding:2rem; border-radius:8px; max-width:600px; width:90%; max-height:80vh; overflow-y:auto; box-shadow:0 4px 20px rgba(0,0,0,0.3);">
@@ -313,10 +326,18 @@ ViewData["Title"] = "Admin Operations Dashboard - House of AADYA";
 
 @section Scripts {
     <script>
+        // ================================================================
+        // ADMIN DASHBOARD – TAB MANAGEMENT, LOAD DATA, MODALS
+        // ================================================================
+
         let activeTab = 'orders';
         let currentProductId = null;
 
-        // --- 1. TAB SWITCHING ---
+                // ---- 1. TAB SWITCHING ----
+                /**
+                 * Switches the active tab and loads the corresponding data.
+                 * @@param { string } tab - The tab name('orders', 'products', 'users').
+                 */
         function switchTab(tab) {
             activeTab = tab;
             document.querySelectorAll('.filter-btn[data-tab]').forEach(b => b.classList.remove('active'));
@@ -331,7 +352,11 @@ ViewData["Title"] = "Admin Operations Dashboard - House of AADYA";
             if (tab === 'users') loadUsers();
         }
 
-        // --- 2. LOAD DASHBOARD STATS ---
+        // ---- 2. LOAD DASHBOARD STATS ----
+        /**
+         * Fetches and displays dashboard statistics.
+         * Revenue, product count, order count, and client count.
+         */
         async function loadStats() {
             const token = localStorage.getItem('token');
             if (!token) return;
@@ -349,7 +374,11 @@ ViewData["Title"] = "Admin Operations Dashboard - House of AADYA";
             }
         }
 
-        // --- 3. LOAD CUSTOMER SEGMENTS ---
+        // ---- 3. LOAD CUSTOMER SEGMENTS ----
+        /**
+         * Fetches and displays customer segmentation data.
+         * High Spenders, Regular, Occasional, Inactive.
+         */
         async function loadCustomerSegments() {
             const token = localStorage.getItem('token');
             if (!token) return;
@@ -369,7 +398,10 @@ ViewData["Title"] = "Admin Operations Dashboard - House of AADYA";
             }
         }
 
-        // --- 4. LOAD ORDERS ---
+        // ---- 4. LOAD ORDERS ----
+        /**
+         * Fetches and displays all orders in the admin table.
+         */
         async function loadOrders() {
             const token = localStorage.getItem('token');
             if (!token) return;
@@ -386,6 +418,10 @@ ViewData["Title"] = "Admin Operations Dashboard - House of AADYA";
             }
         }
 
+                /**
+                 * Renders orders into the admin table with action buttons.
+                 * @@param { Array } orders - The list of orders to render.
+                 */
         function renderOrders(orders) {
             const tbody = document.getElementById('adminOrdersTbody');
             tbody.innerHTML = '';
@@ -399,6 +435,8 @@ ViewData["Title"] = "Admin Operations Dashboard - House of AADYA";
                 tr.dataset.status = order.status;
                 const numericId = parseInt(order.id.replace('#AAD-', ''));
                 let actionsHtml = '';
+
+                // Show appropriate action buttons based on status
                 if (order.status === 'Pending Payment') {
                     actionsHtml = `
                                 <button class="btn-outline admin-sm-btn" onclick="updateOrderStatus(${numericId}, 'Processing')">Mark Processing</button>
@@ -417,6 +455,7 @@ ViewData["Title"] = "Admin Operations Dashboard - House of AADYA";
                 } else if (order.status === 'Delivered' || order.status === 'Cancelled') {
                     actionsHtml = `<span class="status-text-completed">Completed</span>`;
                 }
+
                 const whatsappIcon = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle; margin-right:4px;"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>`;
                 const emailIcon = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle; margin-right:4px;"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M22 6L12 13 2 6"/></svg>`;
 
@@ -440,9 +479,14 @@ ViewData["Title"] = "Admin Operations Dashboard - House of AADYA";
             });
         }
 
-        // --- 5. ORDER ACTIONS ---
+                // ---- 5. ORDER ACTIONS ----
+                /**
+                 * Updates the status of an order.
+                 * @@param { number } orderId - The ID of the order.
+                 * @@param { string } newStatus - The new status to set.
+                 */
         async function updateOrderStatus(orderId, newStatus) {
-            showModal('🔄', 'Update Status', `Are you sure you want to mark ${orderId} as ${newStatus}?`, async function() {
+            showModal('🔄', 'Update Status', `Are you sure you want to mark ${orderId} as ${newStatus}?`, async function () {
                 const token = localStorage.getItem('token');
                 try {
                     const res = await fetch(`/api/admin/orders/${orderId}/status`, {
@@ -464,9 +508,13 @@ ViewData["Title"] = "Admin Operations Dashboard - House of AADYA";
             });
         }
 
-        // --- 6. REJECT ORDER ---
+        // ---- 6. REJECT ORDER ----
         let rejectOrderId = null;
 
+                /**
+                 * Opens the reject order modal for the specified order.
+                 * @@param { number } orderId - The ID of the order to reject.
+                 */
         function rejectOrder(orderId) {
             rejectOrderId = orderId;
             document.getElementById('rejectOrderId').innerText = orderId;
@@ -475,7 +523,7 @@ ViewData["Title"] = "Admin Operations Dashboard - House of AADYA";
             document.getElementById('reasonInput').focus();
         }
 
-        document.getElementById('reasonConfirmBtn').addEventListener('click', async function() {
+        document.getElementById('reasonConfirmBtn').addEventListener('click', async function () {
             const reason = document.getElementById('reasonInput').value.trim();
             if (!reason) {
                 showToast('Please provide a reason for rejecting the order.', 'error');
@@ -503,19 +551,22 @@ ViewData["Title"] = "Admin Operations Dashboard - House of AADYA";
             rejectOrderId = null;
         });
 
-        document.getElementById('reasonCancelBtn').addEventListener('click', function() {
+        document.getElementById('reasonCancelBtn').addEventListener('click', function () {
             document.getElementById('reasonModal').style.display = 'none';
             rejectOrderId = null;
         });
 
-        document.getElementById('reasonModal').addEventListener('click', function(e) {
+        document.getElementById('reasonModal').addEventListener('click', function (e) {
             if (e.target === this) {
                 this.style.display = 'none';
                 rejectOrderId = null;
             }
         });
 
-        // --- 7. LOAD PRODUCTS ---
+        // ---- 7. LOAD PRODUCTS ----
+        /**
+         * Fetches and displays all products in the admin table.
+         */
         async function loadProducts() {
             const token = localStorage.getItem('token');
             if (!token) return;
@@ -532,6 +583,10 @@ ViewData["Title"] = "Admin Operations Dashboard - House of AADYA";
             }
         }
 
+                /**
+                 * Renders products into the admin table with stock and actions.
+                 * @@param { Array } products - The list of products to render.
+                 */
         function renderProducts(products) {
             const tbody = document.getElementById('adminProductsTbody');
             tbody.innerHTML = '';
@@ -562,9 +617,16 @@ ViewData["Title"] = "Admin Operations Dashboard - House of AADYA";
             });
         }
 
-        // --- 8. UPDATE STOCK ---
+        // ---- 8. UPDATE STOCK ----
         let stockProductId = null;
 
+                /**
+                 * Opens the stock update modal for a product.
+                 * @@param { number } productId - The ID of the product.
+                 * @@param { string } productName - The name of the product.
+                 * @@param { number } stock6 - Current 6ml stock quantity.
+                 * @@param { number } stock12 - Current 12ml stock quantity.
+                 */
         function updateStock(productId, productName, stock6 = 0, stock12 = 0) {
             stockProductId = productId;
             document.getElementById('stockProductName').innerText = productName;
@@ -575,7 +637,7 @@ ViewData["Title"] = "Admin Operations Dashboard - House of AADYA";
             document.getElementById('stockInput6ml').select();
         }
 
-        document.getElementById('stockConfirmBtn').addEventListener('click', async function() {
+        document.getElementById('stockConfirmBtn').addEventListener('click', async function () {
             const stock6ml = parseInt(document.getElementById('stockInput6ml').value);
             const stock12ml = parseInt(document.getElementById('stockInput12ml').value);
 
@@ -588,19 +650,15 @@ ViewData["Title"] = "Admin Operations Dashboard - House of AADYA";
             const token = localStorage.getItem('token');
 
             try {
-                // First, get the product's variant IDs (or we can update both via a single endpoint)
                 const res = await fetch(`/api/admin/products/${stockProductId}/stock`, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
-                    body: JSON.stringify({
-                        stock6ml: stock6ml,
-                        stock12ml: stock12ml
-                    })
+                    body: JSON.stringify({ stock6ml: stock6ml, stock12ml: stock12ml })
                 });
                 const data = await res.json();
                 if (res.ok) {
                     showToast(data.message, 'success');
-                    loadProducts(); // refresh product table
+                    loadProducts();
                 } else {
                     showToast(data.message || 'Failed to update stock.', 'error');
                 }
@@ -610,9 +668,26 @@ ViewData["Title"] = "Admin Operations Dashboard - House of AADYA";
             stockProductId = null;
         });
 
-        // --- 9. DELETE PRODUCT ---
+        document.getElementById('stockCancelBtn').addEventListener('click', function () {
+            document.getElementById('stockModal').style.display = 'none';
+            stockProductId = null;
+        });
+
+        document.getElementById('stockModal').addEventListener('click', function (e) {
+            if (e.target === this) {
+                this.style.display = 'none';
+                stockProductId = null;
+            }
+        });
+
+                // ---- 9. DELETE PRODUCT ----
+                /**
+                 * Deletes a product after confirmation.
+                 * @@param { number } productId - The ID of the product to delete.
+                 * @@param { string } productName - The name of the product.
+                 */
         async function deleteProduct(productId, productName) {
-            showModal('🗑️', 'Delete Product', `Are you sure you want to permanently delete <strong>${productName}</strong>? This action cannot be undone.`, async function() {
+            showModal('🗑️', 'Delete Product', `Are you sure you want to permanently delete <strong>${productName}</strong>? This action cannot be undone.`, async function () {
                 const token = localStorage.getItem('token');
                 try {
                     const res = await fetch(`/api/admin/products/${productId}`, {
@@ -633,12 +708,12 @@ ViewData["Title"] = "Admin Operations Dashboard - House of AADYA";
             });
         }
 
-        // --- 10. ADD PRODUCT ---
-        document.getElementById('prodImage').addEventListener('change', function(e) {
+        // ---- 10. ADD PRODUCT ----
+        document.getElementById('prodImage').addEventListener('change', function (e) {
             const file = e.target.files[0];
             if (file) {
                 const reader = new FileReader();
-                reader.onload = function(event) {
+                reader.onload = function (event) {
                     document.getElementById('previewImg').src = event.target.result;
                     document.getElementById('imagePreview').style.display = 'block';
                 };
@@ -646,7 +721,7 @@ ViewData["Title"] = "Admin Operations Dashboard - House of AADYA";
             }
         });
 
-        document.getElementById('addProductForm').addEventListener('submit', async function(e) {
+        document.getElementById('addProductForm').addEventListener('submit', async function (e) {
             e.preventDefault();
             const token = localStorage.getItem('token');
             if (!token) return;
@@ -694,7 +769,10 @@ ViewData["Title"] = "Admin Operations Dashboard - House of AADYA";
             }
         });
 
-        // --- 11. LOAD USERS ---
+        // ---- 11. LOAD USERS ----
+        /**
+         * Fetches and displays all users in the admin table.
+         */
         async function loadUsers() {
             const token = localStorage.getItem('token');
             if (!token) return;
@@ -717,6 +795,10 @@ ViewData["Title"] = "Admin Operations Dashboard - House of AADYA";
             }
         }
 
+                /**
+                 * Renders users into the admin table with role badges and actions.
+                 * @@param { Array } users - The list of users to render.
+                 */
         function renderUsers(users) {
             const tbody = document.getElementById('adminUsersTbody');
             tbody.innerHTML = '';
@@ -777,7 +859,12 @@ ViewData["Title"] = "Admin Operations Dashboard - House of AADYA";
             });
         }
 
-        // --- 12. VIEW USER ORDERS ---
+                // ---- 12. VIEW USER ORDERS ----
+                /**
+                 * Opens a modal displaying all orders for a specific user.
+                 * @@param { number } userId - The ID of the user.
+                 * @@param { string } userName - The name of the user.
+                 */
         async function viewUserOrders(userId, userName) {
             document.getElementById('userOrdersName').innerText = userName;
             document.getElementById('userOrdersList').innerHTML = 'Loading orders...';
@@ -796,6 +883,10 @@ ViewData["Title"] = "Admin Operations Dashboard - House of AADYA";
             }
         }
 
+                /**
+                 * Renders a user's orders into the user orders modal.
+                 * @@param { Array } orders - The list of orders to render.
+                 */
         function renderUserOrders(orders) {
             const container = document.getElementById('userOrdersList');
             if (!orders || orders.length === 0) {
@@ -825,43 +916,59 @@ ViewData["Title"] = "Admin Operations Dashboard - House of AADYA";
             container.innerHTML = html;
         }
 
+        /**
+         * Closes the user orders modal.
+         */
         function closeUserOrders() {
             document.getElementById('userOrdersModal').style.display = 'none';
         }
 
-        // --- 13. DRAWER CONTROLS ---
+        // ---- 13. DRAWER CONTROLS ----
+        /**
+         * Opens the "Add Product" sliding drawer.
+         */
         function openAddProductDrawer() {
             document.getElementById('addProductOverlay').classList.add('open');
             document.getElementById('addProductDrawer').classList.add('open');
             document.body.style.overflow = 'hidden';
         }
 
+        /**
+         * Closes the "Add Product" sliding drawer.
+         */
         function closeAddProductDrawer() {
             document.getElementById('addProductOverlay').classList.remove('open');
             document.getElementById('addProductDrawer').classList.remove('open');
             document.body.style.overflow = 'auto';
         }
 
-        // --- 14. CONFIRMATION MODAL ---
+                // ---- 14. CONFIRMATION MODAL ----
+                /**
+                 * Displays a confirmation modal with the specified content.
+                 * @@param { string } icon - HTML content for the modal icon.
+                 * @@param { string } title - Modal title text.
+                 * @@param { string } message - Modal message(HTML allowed).
+                 * @@param { Function } onConfirm - Callback when confirm is clicked.
+                 */
         function showModal(icon, title, message, onConfirm) {
             document.getElementById('modalIcon').innerHTML = icon;
             document.getElementById('modalTitle').textContent = title;
             document.getElementById('modalMessage').innerHTML = message;
             const modal = document.getElementById('confirmModal');
             modal.style.display = 'flex';
-            document.getElementById('modalConfirmBtn').onclick = function() {
+            document.getElementById('modalConfirmBtn').onclick = function () {
                 modal.style.display = 'none';
                 if (onConfirm) onConfirm();
             };
-            document.getElementById('modalCancelBtn').onclick = function() {
+            document.getElementById('modalCancelBtn').onclick = function () {
                 modal.style.display = 'none';
             };
-            modal.onclick = function(e) {
+            modal.onclick = function (e) {
                 if (e.target === modal) modal.style.display = 'none';
             };
         }
 
-        // --- 15. ORDER FILTER ---
+        // ---- 15. ORDER FILTER ----
         document.getElementById('orderFilterPills').addEventListener('click', (e) => {
             if (e.target.classList.contains('filter-btn')) {
                 document.querySelectorAll('#orderFilterPills .filter-btn').forEach(b => b.classList.remove('active'));
@@ -875,7 +982,12 @@ ViewData["Title"] = "Admin Operations Dashboard - House of AADYA";
             }
         });
 
-        // --- 16. PROMOTE / DEMOTE ---
+                // ---- 16. PROMOTE / DEMOTE ----
+                /**
+                 * Promotes a user to Admin (Super Admin only).
+                 * @@param { number } userId - The ID of the user to promote.
+                 * @@param { string } userName - The name of the user.
+                 */
         function promoteUser(userId, userName) {
             const crownIcon = `
                         <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom:0.5rem; color:var(--champagne-gold);">
@@ -887,7 +999,7 @@ ViewData["Title"] = "Admin Operations Dashboard - House of AADYA";
                             <path d="M9 4l3-2 3 2" />
                         </svg>
                     `;
-            showModal(crownIcon, 'Promote to Admin', `Are you sure you want to promote <strong>${userName}</strong> to admin?`, async function() {
+            showModal(crownIcon, 'Promote to Admin', `Are you sure you want to promote <strong>${userName}</strong> to admin?`, async function () {
                 const token = localStorage.getItem('token');
                 try {
                     const res = await fetch(`/api/admin/users/${userId}/promote`, {
@@ -908,6 +1020,11 @@ ViewData["Title"] = "Admin Operations Dashboard - House of AADYA";
             });
         }
 
+                /**
+                 * Demotes a user from Admin (Super Admin only).
+                 * @@param { number } userId - The ID of the user to demote.
+                 * @@param { string } userName - The name of the user.
+                 */
         function demoteUser(userId, userName) {
             const crownIcon = `
                         <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom:0.5rem; color:var(--deep-burgundy);">
@@ -919,7 +1036,7 @@ ViewData["Title"] = "Admin Operations Dashboard - House of AADYA";
                             <path d="M9 4l3-2 3 2" />
                         </svg>
                     `;
-            showModal(crownIcon, 'Demote from Admin', `Are you sure you want to remove admin privileges from <strong>${userName}</strong>?`, async function() {
+            showModal(crownIcon, 'Demote from Admin', `Are you sure you want to remove admin privileges from <strong>${userName}</strong>?`, async function () {
                 const token = localStorage.getItem('token');
                 try {
                     const res = await fetch(`/api/admin/users/${userId}/demote`, {
@@ -940,8 +1057,8 @@ ViewData["Title"] = "Admin Operations Dashboard - House of AADYA";
             });
         }
 
-        // --- 17. INIT ---
-        document.addEventListener('DOMContentLoaded', function() {
+        // ---- 17. INIT ----
+        document.addEventListener('DOMContentLoaded', function () {
             loadStats();
             loadOrders();
             loadCustomerSegments();

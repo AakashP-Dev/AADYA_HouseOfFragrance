@@ -5,7 +5,9 @@ ViewData["Title"] = "My Orders - AADYA";
 <section class="section-padding" style="padding-top: 2rem; min-height: 70vh;">
     <div style="max-width: 900px; margin: 0 auto;">
 
-        <!-- Header -->
+        <!-- ============================================================ -->
+        <!-- HEADER                                                       -->
+        <!-- ============================================================ -->
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;">
             <div>
                 <h1 style="font-family: var(--font-heading); color: var(--deep-burgundy); margin: 0;">
@@ -28,7 +30,9 @@ ViewData["Title"] = "My Orders - AADYA";
             </a>
         </div>
 
-        <!-- Orders Container -->
+        <!-- ============================================================ -->
+        <!-- ORDERS CONTAINER                                             -->
+        <!-- ============================================================ -->
         <div id="ordersContainer" style="background: #FAF6EF; border: 1px solid var(--border-color); border-radius: 4px; padding: 1.5rem;">
 
             <!-- Loading State -->
@@ -86,6 +90,14 @@ ViewData["Title"] = "My Orders - AADYA";
 
 @section Scripts {
     <script>
+        // ================================================================
+        // ORDERS PAGE – LOAD, RENDER, AND CANCEL ORDERS
+        // ================================================================
+
+        /**
+         * Loads the current user's orders from the API.
+         * Handles loading, empty, error, and not-logged-in states.
+         */
         async function loadOrders() {
             const loadingEl = document.getElementById('ordersLoading');
             const listEl = document.getElementById('ordersList');
@@ -100,6 +112,7 @@ ViewData["Title"] = "My Orders - AADYA";
             notLoggedInEl.style.display = 'none';
             errorEl.style.display = 'none';
 
+            // Check if user is logged in
             const token = localStorage.getItem('token');
             if (!token) {
                 notLoggedInEl.style.display = 'block';
@@ -109,27 +122,22 @@ ViewData["Title"] = "My Orders - AADYA";
             loadingEl.style.display = 'block';
 
             try {
-                console.log('Fetching orders...');
                 const response = await fetch('/api/orders', {
                     headers: { 'Authorization': 'Bearer ' + token }
                 });
 
-                console.log('Response status:', response.status);
-
-                // Check if response is OK before parsing JSON
+                // Handle HTTP errors
                 if (!response.ok) {
-                    // Try to get error message, fallback to status text
                     let errorMessage = '';
                     try {
                         const errorData = await response.json();
                         errorMessage = errorData.message || response.statusText;
-                    } catch (e) {
-                        // If response is empty or not JSON, use status text
+                    } catch {
                         errorMessage = response.statusText || 'Unknown error';
                     }
 
+                    // Handle expired/invalid token
                     if (response.status === 401) {
-                        // Token expired or invalid
                         localStorage.removeItem('token');
                         localStorage.removeItem('userName');
                         localStorage.removeItem('userId');
@@ -140,11 +148,11 @@ ViewData["Title"] = "My Orders - AADYA";
                     throw new Error(`HTTP ${response.status}: ${errorMessage}`);
                 }
 
-                // Now safe to parse JSON
+                // Parse JSON response
                 let orders;
                 try {
                     orders = await response.json();
-                } catch (jsonError) {
+                } catch {
                     throw new Error('Received invalid response from server.');
                 }
 
@@ -161,11 +169,18 @@ ViewData["Title"] = "My Orders - AADYA";
             } catch (error) {
                 console.error('Error loading orders:', error);
                 loadingEl.style.display = 'none';
-                document.getElementById('ordersErrorMessage').textContent = error.message || 'Failed to load your orders. Please try again.';
+                document.getElementById('ordersErrorMessage').textContent =
+                    error.message || 'Failed to load your orders. Please try again.';
                 errorEl.style.display = 'block';
             }
         }
 
+                // ---- RENDER ORDERS ----
+                /**
+                 * Renders a list of orders into the DOM.
+                 * Each order shows its ID, status, items, shipping address, total, and a cancel button if eligible.
+                 * @@param { Array } orders - The list of orders to render.
+                 */
         function renderOrders(orders) {
             const container = document.getElementById('ordersList');
             container.innerHTML = '';
@@ -179,6 +194,7 @@ ViewData["Title"] = "My Orders - AADYA";
                     hour: '2-digit', minute: '2-digit'
                 });
 
+                // Create order card
                 const orderCard = document.createElement('div');
                 orderCard.style.cssText = `
                             background: var(--warm-ivory);
@@ -191,7 +207,7 @@ ViewData["Title"] = "My Orders - AADYA";
                 orderCard.onmouseover = () => orderCard.style.boxShadow = '0 4px 12px rgba(59,14,20,0.06)';
                 orderCard.onmouseout = () => orderCard.style.boxShadow = 'none';
 
-                // Header
+                // ---- Header: Order ID + Status ----
                 const header = document.createElement('div');
                 header.style.cssText = `
                             display: flex;
@@ -212,9 +228,10 @@ ViewData["Title"] = "My Orders - AADYA";
                         `;
                 orderCard.appendChild(header);
 
-                // Items
+                // ---- Items List ----
                 const itemsContainer = document.createElement('div');
-                itemsContainer.style.cssText = `padding: 0.3rem 0;`;
+                itemsContainer.style.cssText = 'padding: 0.3rem 0;';
+
                 let itemsHtml = '';
                 order.items.forEach((item, index) => {
                     itemsHtml += `
@@ -231,56 +248,66 @@ ViewData["Title"] = "My Orders - AADYA";
                 itemsContainer.innerHTML = itemsHtml;
                 orderCard.appendChild(itemsContainer);
 
-                // Footer
+                // ---- Footer: Address + Total + Cancel Button ----
                 const footer = document.createElement('div');
                 footer.style.cssText = `
-                    display: flex;
-                    justify-content: space-between;
-                    align-items: center;
-                    flex-wrap: wrap;
-                    gap: 0.5rem;
-                    padding-top: 0.6rem;
-                    border-top: 1px solid var(--border-color);
-                    margin-top: 0.6rem;
-                    font-size: 0.85rem;
-                `;
+                            display: flex;
+                            justify-content: space-between;
+                            align-items: center;
+                            flex-wrap: wrap;
+                            gap: 0.5rem;
+                            padding-top: 0.6rem;
+                            border-top: 1px solid var(--border-color);
+                            margin-top: 0.6rem;
+                            font-size: 0.85rem;
+                        `;
 
+                // Determine if order can be cancelled
                 const canCancel = order.orderStatus === 'Pending Payment' || order.orderStatus === 'Processing';
 
                 footer.innerHTML = `
-                    <span style="color: var(--text-muted);">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle; margin-right:4px;">
-                            <rect x="2" y="4" width="20" height="16" rx="2" />
-                            <path d="M22 6L12 13 2 6" />
-                        </svg>
-                        ${order.shippingAddress}
-                    </span>
-                    <div style="display:flex; align-items:center; gap:1rem;">
-                        <span style="font-weight: 700; font-size: 1.05rem; color: var(--deep-burgundy);">
-                            Total: ₹${order.totalAmount.toFixed(2)}
-                        </span>
-                        ${canCancel ? `<button onclick="cancelOrder(${order.orderId})" style="background:transparent; border:1px solid #d32f2f; color:#d32f2f; padding:0.3rem 0.8rem; border-radius:4px; font-size:0.7rem; font-weight:600; cursor:pointer; transition:all 0.3s;" onmouseover="this.style.backgroundColor='#d32f2f';this.style.color='white';" onmouseout="this.style.backgroundColor='transparent';this.style.color='#d32f2f';">CANCEL</button>` : ''}
-                    </div>
-                `;
+                            <span style="color: var(--text-muted);">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle; margin-right:4px;">
+                                    <rect x="2" y="4" width="20" height="16" rx="2" />
+                                    <path d="M22 6L12 13 2 6" />
+                                </svg>
+                                ${order.shippingAddress}
+                            </span>
+                            <div style="display:flex; align-items:center; gap:1rem;">
+                                <span style="font-weight: 700; font-size: 1.05rem; color: var(--deep-burgundy);">
+                                    Total: ₹${order.totalAmount.toFixed(2)}
+                                </span>
+                                ${canCancel ? `
+                                    <button onclick="cancelOrder(${order.orderId})"
+                                            style="background:transparent; border:1px solid #d32f2f; color:#d32f2f; padding:0.3rem 0.8rem; border-radius:4px; font-size:0.7rem; font-weight:600; cursor:pointer; transition:all 0.3s;"
+                                            onmouseover="this.style.backgroundColor='#d32f2f';this.style.color='white';"
+                                            onmouseout="this.style.backgroundColor='transparent';this.style.color='#d32f2f';">
+                                        CANCEL
+                                    </button>
+                                ` : ''}
+                            </div>
+                        `;
                 orderCard.appendChild(footer);
                 container.appendChild(orderCard);
             });
         }
 
-        document.addEventListener('DOMContentLoaded', loadOrders);
-
-        // --- Cancel Order ---
+                // ---- CANCEL ORDER ----
+                /**
+                 * Cancels an order with a confirmation modal.
+                 * Only eligible for orders with status "Pending Payment" or "Processing".
+                 * @@param { number } orderId - The ID of the order to cancel.
+                 */
         async function cancelOrder(orderId) {
-            // Show confirmation modal
             showGlobalConfirmModal(
                 `<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#d32f2f" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="12" cy="12" r="10" />
-                    <line x1="12" y1="8" x2="12" y2="12" />
-                    <line x1="12" y1="16" x2="12.01" y2="16" />
-                </svg>`,
+                            <circle cx="12" cy="12" r="10" />
+                            <line x1="12" y1="8" x2="12" y2="12" />
+                            <line x1="12" y1="16" x2="12.01" y2="16" />
+                        </svg>`,
                 'Cancel Order',
                 'Are you sure you want to cancel this order? <br><br> This action cannot be undone.',
-                async function() {
+                async function () {
                     const token = localStorage.getItem('token');
                     try {
                         const response = await fetch(`/api/orders/cancel/${orderId}`, {
@@ -288,6 +315,7 @@ ViewData["Title"] = "My Orders - AADYA";
                             headers: { 'Authorization': 'Bearer ' + token }
                         });
                         const data = await response.json();
+
                         if (response.ok) {
                             showToast(data.message, 'success');
                             loadOrders(); // Refresh the orders list
@@ -301,5 +329,8 @@ ViewData["Title"] = "My Orders - AADYA";
                 }
             );
         }
+
+        // ---- INIT ----
+        document.addEventListener('DOMContentLoaded', loadOrders);
     </script>
 }
