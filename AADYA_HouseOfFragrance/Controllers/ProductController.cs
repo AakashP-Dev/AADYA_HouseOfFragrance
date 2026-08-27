@@ -9,6 +9,11 @@ using System.Security.Claims;
 
 namespace AADYA_HouseOfFragrance.Controllers
 {
+    /// <summary>
+    /// Provides product catalog operations, including listing, filtering, searching,
+    /// sorting, and recommendation generation.
+    /// Most endpoints are public (no authentication required) except for personalized recommendations.
+    /// </summary>
     [Route("api/[controller]")]
     [ApiController]
     public class ProductsController : ControllerBase
@@ -20,8 +25,16 @@ namespace AADYA_HouseOfFragrance.Controllers
             _context = context;
         }
 
-        // GET: api/products
-        // Optional query params: category, scentFamily, search, sort
+        // ===================== PRODUCT CATALOG =====================
+
+        /// <summary>
+        /// GET: api/products
+        /// Retrieves all products with optional filtering, searching, and sorting.
+        /// </summary>
+        /// <param name="category">Filter by category name (e.g., "Attars & Oud")</param>
+        /// <param name="scentFamily">Filter by scent family (e.g., "Woody", "Floral")</param>
+        /// <param name="search">Search by product name or description</param>
+        /// <param name="sort">Sort order: "popular", "low-high", "high-low"</param>
         [HttpGet]
         public async Task<IActionResult> GetProducts(
             [FromQuery] string category = null,
@@ -34,37 +47,38 @@ namespace AADYA_HouseOfFragrance.Controllers
                 .Include(p => p.Variants)
                 .AsQueryable();
 
-            // Filter by category (optional)
+            // Apply category filter
             if (!string.IsNullOrEmpty(category) && category != "all")
             {
                 query = query.Where(p => p.Category.CategoryName.ToLower() == category.ToLower());
             }
 
-            // Filter by scent family (optional)
+            // Apply scent family filter
             if (!string.IsNullOrEmpty(scentFamily))
             {
                 query = query.Where(p => p.ScentFamily.ToLower() == scentFamily.ToLower());
             }
 
-            // Search by name or description (optional)
+            // Apply search filter (name or description)
             if (!string.IsNullOrEmpty(search))
             {
                 var searchLower = search.ToLower();
-                query = query.Where(p => p.Name.ToLower().Contains(searchLower) ||
-                                         (p.Description != null && p.Description.ToLower().Contains(searchLower)));
+                query = query.Where(p =>
+                    p.Name.ToLower().Contains(searchLower) ||
+                    (p.Description != null && p.Description.ToLower().Contains(searchLower)));
             }
 
-            // Sorting
+            // Apply sorting
             query = sort?.ToLower() switch
             {
                 "low-high" => query.OrderBy(p => p.Variants.Min(v => v.Price)),
                 "high-low" => query.OrderByDescending(p => p.Variants.Max(v => v.Price)),
-                _ => query.OrderBy(p => p.ProductId) // Default: popular (we'll add popularity tracking later)
+                _ => query.OrderBy(p => p.ProductId) // Default: ID order
             };
 
             var products = await query.ToListAsync();
 
-            // Map to DTO (avoid circular references)
+            // Map to DTO
             var result = products.Select(p => new ProductResponseDto
             {
                 ProductId = p.ProductId,
@@ -87,7 +101,10 @@ namespace AADYA_HouseOfFragrance.Controllers
             return Ok(result);
         }
 
-        // GET: api/products/{id}
+        /// <summary>
+        /// GET: api/products/{id}
+        /// Retrieves a single product by its ID with all related data.
+        /// </summary>
         [HttpGet("{id}")]
         public async Task<IActionResult> GetProduct(int id)
         {
@@ -97,9 +114,7 @@ namespace AADYA_HouseOfFragrance.Controllers
                 .FirstOrDefaultAsync(p => p.ProductId == id);
 
             if (product == null)
-            {
                 return NotFound(new { message = "Product not found." });
-            }
 
             var result = new ProductResponseDto
             {
@@ -123,14 +138,20 @@ namespace AADYA_HouseOfFragrance.Controllers
             return Ok(result);
         }
 
-        // POST: api/products/recommend
+        // ===================== RECOMMENDATIONS (Wizard) =====================
+
+        /// <summary>
+        /// POST: api/products/recommend
+        /// Returns product recommendations based on user preferences
+        /// selected in the Fragrance Wizard (scent family, occasion, intensity).
+        /// </summary>
         [HttpPost("recommend")]
         public async Task<IActionResult> GetRecommendations([FromBody] WizardRequestDto request)
         {
             if (request == null || string.IsNullOrEmpty(request.ScentFamily))
                 return BadRequest(new { message = "Invalid preferences. ScentFamily is required." });
 
-            // Query products that match the user's preferences
+            // Query products matching all selected preferences
             var query = _context.Products
                 .Include(p => p.Variants)
                 .Where(p =>
@@ -138,19 +159,19 @@ namespace AADYA_HouseOfFragrance.Controllers
                     (string.IsNullOrEmpty(request.Occasion) ||
                      p.RecommendedOccasion.ToLower() == request.Occasion.ToLower()) &&
                     (string.IsNullOrEmpty(request.Intensity) ||
-                     p.Intensity.ToLower() == request.Intensity.ToLower())
-                )
-                .Take(6); // Limit to 6 recommendations
+                     p.Intensity.ToLower() == request.Intensity.ToLower()))
+                .Take(6);
 
             var products = await query.ToListAsync();
 
-            // If no exact match, fallback to just matching ScentFamily
+            // If no exact matches, fallback to scent family only
             if (!products.Any())
             {
                 query = _context.Products
                     .Include(p => p.Variants)
                     .Where(p => p.ScentFamily.ToLower() == request.ScentFamily.ToLower())
                     .Take(4);
+
                 products = await query.ToListAsync();
             }
 
@@ -177,23 +198,30 @@ namespace AADYA_HouseOfFragrance.Controllers
             return Ok(result);
         }
 
-        // GET: api/products/recommend/me
+        // ===================== PERSONALIZED & TRENDING RECOMMENDATIONS =====================
+
+        /// <summary>
+        /// GET: api/products/recommend/me
+        /// Returns personalized product recommendations based on the user's order history.
+        /// If the user is not logged in or has no orders, returns trending products.
+        /// </summary>
         [HttpGet("recommend/me")]
         public async Task<IActionResult> GetPersonalizedRecommendations()
         {
             try
             {
                 var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+
+                // Not logged in → return trending products
                 if (userIdClaim == null)
                 {
-                    // Not logged in → return trending only
                     var trending = await GetTrendingProducts(6);
-                    return Ok(new { triggerProductName = "", recommendations = trending });
+                    return Ok(new { triggerProductName = string.Empty, recommendations = trending });
                 }
 
                 var userId = int.Parse(userIdClaim.Value);
 
-                // 1. Get user's order history (last 10 orders)
+                // Get user's last 10 orders with their items
                 var userOrders = await _context.Orders
                     .Where(o => o.UserId == userId)
                     .OrderByDescending(o => o.CreatedAt)
@@ -203,19 +231,19 @@ namespace AADYA_HouseOfFragrance.Controllers
                             .ThenInclude(v => v.Product)
                     .ToListAsync();
 
-                // If user has no orders → fallback to trending
+                // If no orders → return trending
                 if (!userOrders.Any() || !userOrders.Any(o => o.OrderItems.Any()))
                 {
                     var trending = await GetTrendingProducts(6);
-                    return Ok(new { triggerProductName = "", recommendations = trending });
+                    return Ok(new { triggerProductName = string.Empty, recommendations = trending });
                 }
 
-                // 2. Extract the most recent purchased product name (first item of first order)
+                // Extract the most recent purchased product name
                 var mostRecentOrder = userOrders.First();
                 var firstItem = mostRecentOrder.OrderItems.FirstOrDefault();
-                string triggerProductName = firstItem?.ProductVariant?.Product?.Name ?? "";
+                var triggerProductName = firstItem?.ProductVariant?.Product?.Name ?? string.Empty;
 
-                // 3. Extract ScentFamily, Occasion, Intensity and bought Product IDs
+                // Collect purchased product IDs and their attributes
                 var purchasedProductIds = new HashSet<int>();
                 var scentFamilies = new List<string>();
                 var occasions = new List<string>();
@@ -239,23 +267,26 @@ namespace AADYA_HouseOfFragrance.Controllers
                     }
                 }
 
-                // 4. Find the most common scent family (or fallback)
-                var topScent = scentFamilies.GroupBy(s => s)
+                // Find the most common attributes
+                var topScent = scentFamilies
+                    .GroupBy(s => s)
                     .OrderByDescending(g => g.Count())
                     .Select(g => g.Key)
                     .FirstOrDefault();
 
-                var topOccasion = occasions.GroupBy(s => s)
+                var topOccasion = occasions
+                    .GroupBy(s => s)
                     .OrderByDescending(g => g.Count())
                     .Select(g => g.Key)
                     .FirstOrDefault();
 
-                var topIntensity = intensities.GroupBy(s => s)
+                var topIntensity = intensities
+                    .GroupBy(s => s)
                     .OrderByDescending(g => g.Count())
                     .Select(g => g.Key)
                     .FirstOrDefault();
 
-                // 5. Build recommendation query
+                // Build recommendation query (exclude already purchased products)
                 var query = _context.Products
                     .Include(p => p.Variants)
                     .Where(p => !purchasedProductIds.Contains(p.ProductId));
@@ -269,9 +300,9 @@ namespace AADYA_HouseOfFragrance.Controllers
 
                 var recommendations = await query.Take(6).ToListAsync();
 
+                // If no recommendations, fallback to trending
                 if (!recommendations.Any())
                 {
-                    // Fallback to trending
                     var trending = await GetTrendingProducts(6);
                     return Ok(new { triggerProductName, recommendations = trending });
                 }
@@ -300,20 +331,26 @@ namespace AADYA_HouseOfFragrance.Controllers
             }
             catch (Exception)
             {
-                // Fallback to trending on any error
+                // On any error, fallback to trending products
                 var trending = await GetTrendingProducts(6);
-                return Ok(new { triggerProductName = "", recommendations = trending });
+                return Ok(new { triggerProductName = string.Empty, recommendations = trending });
             }
         }
 
-        // Helper: Get trending products (most ordered)
+        // ===================== DATA MINING: TRENDING & FREQUENTLY BOUGHT =====================
+
+        /// <summary>
+        /// Gets trending products based on order frequency (most ordered).
+        /// If no orders exist in the system, returns the newest products.
+        /// </summary>
+        /// <param name="count">Number of products to return</param>
         private async Task<IEnumerable<ProductResponseDto>> GetTrendingProducts(int count)
         {
             var trendingProductIds = await _context.OrderItems
                 .GroupBy(oi => oi.VariantId)
                 .Select(g => new { VariantId = g.Key, Count = g.Sum(oi => oi.Quantity) })
                 .OrderByDescending(x => x.Count)
-                .Take(count * 2) // Get more to account for duplicate products
+                .Take(count * 2) // Get extra to account for duplicate products
                 .Join(_context.ProductVariants,
                     g => g.VariantId,
                     v => v.VariantId,
@@ -359,10 +396,16 @@ namespace AADYA_HouseOfFragrance.Controllers
             });
         }
 
+        /// <summary>
+        /// GET: api/products/{variantId}/frequently-bought-with
+        /// Implements Market Basket Mining – returns products that are frequently
+        /// purchased together with the specified product variant.
+        /// </summary>
+        /// <param name="id">The variant ID to find related products for</param>
         [HttpGet("{id}/frequently-bought-with")]
         public async Task<IActionResult> GetFrequentlyBoughtWith(int id)
         {
-            // Get all order items that contain this variant
+            // Get all order IDs that contain this variant
             var orderIds = await _context.OrderItems
                 .Where(oi => oi.VariantId == id)
                 .Select(oi => oi.OrderId)
@@ -372,7 +415,7 @@ namespace AADYA_HouseOfFragrance.Controllers
             if (!orderIds.Any())
                 return Ok(new List<ProductResponseDto>());
 
-            // Get other variants bought in the same orders (exclude current)
+            // Get other variants bought in the same orders (excluding the current one)
             var relatedVariantIds = await _context.OrderItems
                 .Where(oi => orderIds.Contains(oi.OrderId) && oi.VariantId != id)
                 .GroupBy(oi => oi.VariantId)
@@ -392,7 +435,7 @@ namespace AADYA_HouseOfFragrance.Controllers
                 .Where(p => p.Variants.Any(v => relatedVariantIds.Contains(v.VariantId)))
                 .ToListAsync();
 
-            // Map to complete DTO with all fields and variants
+            // Map to DTO
             var result = products.Select(p => new ProductResponseDto
             {
                 ProductId = p.ProductId,

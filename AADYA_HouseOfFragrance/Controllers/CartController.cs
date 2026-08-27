@@ -9,6 +9,9 @@ using AADYA_HouseOfFragrance.Models.Entities;
 
 namespace AADYA_HouseOfFragrance.Controllers
 {
+    /// <summary>
+    /// Provides shopping cart API endpoints for managing cart items.
+    /// </summary>
     [Route("api/[controller]")]
     [ApiController]
     public class CartController : ControllerBase
@@ -20,7 +23,12 @@ namespace AADYA_HouseOfFragrance.Controllers
             _context = context;
         }
 
-        // Helper method to get current user ID from JWT
+        // ===================== HELPERS =====================
+
+        /// <summary>
+        /// Gets the current user's ID from the JWT token claims.
+        /// </summary>
+        /// <exception cref="UnauthorizedAccessException">Thrown when the user is not authenticated.</exception>
         private int GetCurrentUserId()
         {
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
@@ -29,7 +37,12 @@ namespace AADYA_HouseOfFragrance.Controllers
             return int.Parse(userIdClaim.Value);
         }
 
-        // GET: api/cart
+        // ===================== CART OPERATIONS =====================
+
+        /// <summary>
+        /// GET: api/cart
+        /// Retrieves the current user's cart items with product details and totals.
+        /// </summary>
         [HttpGet]
         public async Task<IActionResult> GetCart()
         {
@@ -48,7 +61,7 @@ namespace AADYA_HouseOfFragrance.Controllers
                     CartItemId = item.CartItemId,
                     VariantId = item.VariantId,
                     ProductName = item.ProductVariant?.Product?.Name ?? "Unknown Product",
-                    ProductImage = item.ProductVariant?.Product?.ImageUrl ?? "",
+                    ProductImage = item.ProductVariant?.Product?.ImageUrl ?? string.Empty,
                     Size = item.ProductVariant?.Size ?? "N/A",
                     Price = item.ProductVariant?.Price ?? 0,
                     Quantity = item.Quantity,
@@ -65,7 +78,11 @@ namespace AADYA_HouseOfFragrance.Controllers
             }
         }
 
-        // POST: api/cart/add
+        /// <summary>
+        /// POST: api/cart/add
+        /// Adds a product variant to the user's cart. If the item already exists,
+        /// the quantity is increased. Validates stock availability before adding.
+        /// </summary>
         [HttpPost("add")]
         public async Task<IActionResult> AddToCart([FromBody] AddToCartDto request)
         {
@@ -73,19 +90,16 @@ namespace AADYA_HouseOfFragrance.Controllers
             {
                 var userId = GetCurrentUserId();
 
-                // Validate variant exists and has stock
+                // Validate variant exists
                 var variant = await _context.ProductVariants
                     .FirstOrDefaultAsync(v => v.VariantId == request.VariantId);
 
                 if (variant == null)
-                {
                     return BadRequest(new { message = "Product variant not found." });
-                }
 
+                // Validate stock availability
                 if (variant.StockQuantity < request.Quantity)
-                {
                     return BadRequest(new { message = $"Only {variant.StockQuantity} items available in stock." });
-                }
 
                 // Check if item already exists in cart
                 var existingItem = await _context.ShoppingCarts
@@ -93,7 +107,7 @@ namespace AADYA_HouseOfFragrance.Controllers
 
                 if (existingItem != null)
                 {
-                    // Update quantity
+                    // Update quantity of existing item
                     existingItem.Quantity += request.Quantity;
                     _context.ShoppingCarts.Update(existingItem);
                 }
@@ -105,7 +119,7 @@ namespace AADYA_HouseOfFragrance.Controllers
                         UserId = userId,
                         VariantId = request.VariantId,
                         Quantity = request.Quantity,
-                        AddedAt = DateTime.Now
+                        AddedAt = DateTime.UtcNow
                     };
                     await _context.ShoppingCarts.AddAsync(cartItem);
                 }
@@ -120,7 +134,11 @@ namespace AADYA_HouseOfFragrance.Controllers
             }
         }
 
-        // PUT: api/cart/update
+        /// <summary>
+        /// PUT: api/cart/update
+        /// Updates the quantity of a specific cart item. If quantity is 0 or less,
+        /// the item is removed from the cart. Validates stock availability.
+        /// </summary>
         [HttpPut("update")]
         public async Task<IActionResult> UpdateCartItem([FromBody] UpdateCartDto request)
         {
@@ -132,30 +150,26 @@ namespace AADYA_HouseOfFragrance.Controllers
                     .FirstOrDefaultAsync(c => c.CartItemId == request.CartItemId && c.UserId == userId);
 
                 if (cartItem == null)
-                {
                     return NotFound(new { message = "Cart item not found." });
-                }
 
+                // If quantity is 0 or negative, remove the item
                 if (request.Quantity <= 0)
                 {
-                    // Remove item if quantity is 0 or negative
                     _context.ShoppingCarts.Remove(cartItem);
-                }
-                else
-                {
-                    // Validate stock
-                    var variant = await _context.ProductVariants
-                        .FirstOrDefaultAsync(v => v.VariantId == cartItem.VariantId);
-
-                    if (variant != null && variant.StockQuantity < request.Quantity)
-                    {
-                        return BadRequest(new { message = $"Only {variant.StockQuantity} items available in stock." });
-                    }
-
-                    cartItem.Quantity = request.Quantity;
-                    _context.ShoppingCarts.Update(cartItem);
+                    await _context.SaveChangesAsync();
+                    return Ok(new { message = "Item removed from cart." });
                 }
 
+                // Validate stock availability
+                var variant = await _context.ProductVariants
+                    .FirstOrDefaultAsync(v => v.VariantId == cartItem.VariantId);
+
+                if (variant != null && variant.StockQuantity < request.Quantity)
+                    return BadRequest(new { message = $"Only {variant.StockQuantity} items available in stock." });
+
+                // Update quantity
+                cartItem.Quantity = request.Quantity;
+                _context.ShoppingCarts.Update(cartItem);
                 await _context.SaveChangesAsync();
 
                 return Ok(new { message = "Cart updated successfully!" });
@@ -166,7 +180,10 @@ namespace AADYA_HouseOfFragrance.Controllers
             }
         }
 
-        // DELETE: api/cart/remove/{id}
+        /// <summary>
+        /// DELETE: api/cart/remove/{id}
+        /// Removes a specific item from the user's cart.
+        /// </summary>
         [HttpDelete("remove/{id}")]
         public async Task<IActionResult> RemoveFromCart(int id)
         {
@@ -178,9 +195,7 @@ namespace AADYA_HouseOfFragrance.Controllers
                     .FirstOrDefaultAsync(c => c.CartItemId == id && c.UserId == userId);
 
                 if (cartItem == null)
-                {
                     return NotFound(new { message = "Cart item not found." });
-                }
 
                 _context.ShoppingCarts.Remove(cartItem);
                 await _context.SaveChangesAsync();
@@ -193,7 +208,10 @@ namespace AADYA_HouseOfFragrance.Controllers
             }
         }
 
-        // DELETE: api/cart/clear
+        /// <summary>
+        /// DELETE: api/cart/clear
+        /// Removes all items from the user's cart.
+        /// </summary>
         [HttpDelete("clear")]
         public async Task<IActionResult> ClearCart()
         {

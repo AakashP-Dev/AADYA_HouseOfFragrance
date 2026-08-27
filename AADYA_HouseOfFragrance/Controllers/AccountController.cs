@@ -10,6 +10,9 @@ using System.Security.Claims;
 
 namespace AADYA_HouseOfFragrance.Controllers
 {
+    /// <summary>
+    /// Handles user authentication, profile management, and account-related operations.
+    /// </summary>
     public class AccountController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -23,31 +26,34 @@ namespace AADYA_HouseOfFragrance.Controllers
             _emailService = emailService;
         }
 
-        // GET: /Account/Login
-        public IActionResult Login()
+        // ===================== VIEWS =====================
+
+        /// <summary>GET: /Account/Login</summary>
+        public IActionResult Login() => View();
+
+        /// <summary>GET: /Account/Register</summary>
+        public IActionResult Register() => View();
+
+        /// <summary>GET: /Account/Profile</summary>
+        public IActionResult Profile() => View();
+
+        /// <summary>GET: /Account/Orders</summary>
+        public IActionResult Orders() => View();
+
+        /// <summary>GET: /Account/ForgotPassword</summary>
+        public IActionResult ForgotPassword() => View();
+
+        /// <summary>GET: /Account/ResetPassword</summary>
+        public IActionResult ResetPassword(string token, string otp)
         {
+            ViewData["Token"] = token;
+            ViewData["Otp"] = otp;
             return View();
         }
 
-        // GET: /Account/Register
-        public IActionResult Register()
-        {
-            return View();
-        }
+        // ===================== AUTHENTICATION =====================
 
-        // GET: /Account/Profile
-        public IActionResult Profile()
-        {
-            return View();
-        }
-
-        // GET: /Account/Orders
-        public IActionResult Orders()
-        {
-            return View();
-        }
-
-        // POST: /Account/Register
+        /// <summary>POST: /Account/Register – Creates a new user account.</summary>
         [HttpPost]
         public async Task<IActionResult> Register([FromBody] RegisterDto request)
         {
@@ -60,35 +66,32 @@ namespace AADYA_HouseOfFragrance.Controllers
                 return BadRequest(new AuthResponseDto { Message = string.Join(" | ", errors) });
             }
 
+            // Check for duplicate email
             var existingUser = await _context.Users.FirstOrDefaultAsync(u => u.Email == request.Email);
             if (existingUser != null)
-            {
                 return BadRequest(new AuthResponseDto { Message = "Email already registered." });
-            }
-
-            string passwordHash = BCrypt.Net.BCrypt.HashPassword(request.Password);
 
             var user = new User
             {
                 FullName = request.FullName,
                 Email = request.Email,
                 PhoneNumber = request.PhoneNumber,
-                PasswordHash = passwordHash,
+                PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.Password),
                 Address = request.Address,
-                CreatedAt = DateTime.Now
+                CreatedAt = DateTime.UtcNow
             };
 
             await _context.Users.AddAsync(user);
             await _context.SaveChangesAsync();
 
-            // --- SEND WELCOME EMAIL ---
+            // Send welcome email (non-blocking)
             try
             {
                 await _emailService.SendWelcomeEmailAsync(user.Email, user.FullName);
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Welcome email failed: {ex.Message}");
+                Console.WriteLine($"[Email Error] Welcome email failed: {ex.Message}");
             }
 
             return Ok(new AuthResponseDto
@@ -100,24 +103,20 @@ namespace AADYA_HouseOfFragrance.Controllers
             });
         }
 
-        // POST: /Account/Login
+        /// <summary>POST: /Account/Login – Authenticates a user and returns a JWT token.</summary>
         [HttpPost]
         public async Task<IActionResult> Login([FromBody] LoginDto request)
         {
             var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == request.Email);
             if (user == null || !BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash))
-            {
                 return Unauthorized(new AuthResponseDto { Message = "Invalid email or password." });
-            }
 
             if (request.AdminLogin && !user.IsAdmin)
-            {
                 return Unauthorized(new AuthResponseDto { Message = "Access denied. You do not have admin privileges." });
-            }
 
             var token = _jwtHelper.GenerateToken(user, request.RememberMe);
 
-            // Store in session
+            // Store user details in session for server-side authentication
             HttpContext.Session.SetInt32("UserId", user.UserId);
             HttpContext.Session.SetString("UserEmail", user.Email);
             HttpContext.Session.SetString("UserFullName", user.FullName);
@@ -140,7 +139,17 @@ namespace AADYA_HouseOfFragrance.Controllers
             });
         }
 
-        // GET: /Account/GetProfile
+        /// <summary>POST: /Account/Logout – Clears the user session.</summary>
+        [HttpPost]
+        public IActionResult Logout()
+        {
+            HttpContext.Session.Clear();
+            return Ok(new { message = "Logged out" });
+        }
+
+        // ===================== PROFILE MANAGEMENT =====================
+
+        /// <summary>GET: /Account/GetProfile – Returns the current user's profile data.</summary>
         [HttpGet]
         public async Task<IActionResult> GetProfile()
         {
@@ -168,7 +177,7 @@ namespace AADYA_HouseOfFragrance.Controllers
             }
         }
 
-        // POST: /Account/UpdateProfile
+        /// <summary>POST: /Account/UpdateProfile – Updates the current user's profile.</summary>
         [HttpPost]
         public async Task<IActionResult> UpdateProfile([FromBody] UpdateProfileDto request)
         {
@@ -183,9 +192,11 @@ namespace AADYA_HouseOfFragrance.Controllers
                 user.PhoneNumber = request.PhoneNumber;
                 user.Address = request.Address;
 
+                // Update email with duplicate check
                 if (user.Email != request.Email)
                 {
-                    var existingUser = await _context.Users.FirstOrDefaultAsync(u => u.Email == request.Email && u.UserId != userId);
+                    var existingUser = await _context.Users
+                        .FirstOrDefaultAsync(u => u.Email == request.Email && u.UserId != userId);
                     if (existingUser != null)
                         return BadRequest(new { message = "Email already in use by another account." });
                     user.Email = request.Email;
@@ -200,7 +211,67 @@ namespace AADYA_HouseOfFragrance.Controllers
             }
         }
 
-        // DELETE: /Account/DeleteAccount
+        /// <summary>POST: /Account/UploadAvatar – Updates the user's avatar image.</summary>
+        [HttpPost]
+        public async Task<IActionResult> UploadAvatar([FromBody] AvatarUploadDto request)
+        {
+            try
+            {
+                var userId = GetCurrentUserId();
+                var user = await _context.Users.FindAsync(userId);
+                if (user == null)
+                    return NotFound(new { message = "User not found." });
+
+                user.AvatarUrl = request.AvatarBase64;
+                await _context.SaveChangesAsync();
+
+                return Ok(new { message = "Avatar updated successfully!", avatarUrl = request.AvatarBase64 });
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return Unauthorized(new { message = "Please login to update your avatar." });
+            }
+        }
+
+        /// <summary>POST: /Account/ChangePassword – Changes the user's password.</summary>
+        [HttpPost]
+        public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordDto request)
+        {
+            try
+            {
+                var userId = GetCurrentUserId();
+                var user = await _context.Users.FindAsync(userId);
+                if (user == null)
+                    return NotFound(new { message = "User not found." });
+
+                if (!BCrypt.Net.BCrypt.Verify(request.OldPassword, user.PasswordHash))
+                    return BadRequest(new { message = "Current password is incorrect." });
+
+                if (request.NewPassword != request.ConfirmPassword)
+                    return BadRequest(new { message = "New password and confirmation do not match." });
+
+                user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.NewPassword);
+                await _context.SaveChangesAsync();
+
+                // Send password change alert (non-blocking)
+                try
+                {
+                    await _emailService.SendPasswordChangedAlertAsync(user.Email, user.FullName);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"[Email Error] Password change alert failed: {ex.Message}");
+                }
+
+                return Ok(new { message = "Password changed successfully!" });
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return Unauthorized(new { message = "Please login to change your password." });
+            }
+        }
+
+        /// <summary>DELETE: /Account/DeleteAccount – Permanently deletes the user's account.</summary>
         [HttpDelete]
         public async Task<IActionResult> DeleteAccount()
         {
@@ -232,76 +303,9 @@ namespace AADYA_HouseOfFragrance.Controllers
             }
         }
 
-        private int GetCurrentUserId()
-        {
-            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
-            if (userIdClaim == null)
-                throw new UnauthorizedAccessException("User not authenticated");
-            return int.Parse(userIdClaim.Value);
-        }
+        // ===================== ADDRESS BOOK =====================
 
-        // POST: /Account/ChangePassword
-        [HttpPost]
-        public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordDto request)
-        {
-            try
-            {
-                var userId = GetCurrentUserId();
-                var user = await _context.Users.FindAsync(userId);
-                if (user == null)
-                    return NotFound(new { message = "User not found." });
-
-                bool isPasswordValid = BCrypt.Net.BCrypt.Verify(request.OldPassword, user.PasswordHash);
-                if (!isPasswordValid)
-                    return BadRequest(new { message = "Current password is incorrect." });
-
-                if (request.NewPassword != request.ConfirmPassword)
-                    return BadRequest(new { message = "New password and confirmation do not match." });
-
-                user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.NewPassword);
-                await _context.SaveChangesAsync();
-
-                // --- SEND PASSWORD CHANGED ALERT ---
-                try
-                {
-                    await _emailService.SendPasswordChangedAlertAsync(user.Email, user.FullName);
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"Password change alert email failed: {ex.Message}");
-                }
-
-                return Ok(new { message = "Password changed successfully!" });
-            }
-            catch (UnauthorizedAccessException)
-            {
-                return Unauthorized(new { message = "Please login to change your password." });
-            }
-        }
-
-        // POST: /Account/UploadAvatar
-        [HttpPost]
-        public async Task<IActionResult> UploadAvatar([FromBody] AvatarUploadDto request)
-        {
-            try
-            {
-                var userId = GetCurrentUserId();
-                var user = await _context.Users.FindAsync(userId);
-                if (user == null)
-                    return NotFound(new { message = "User not found." });
-
-                user.AvatarUrl = request.AvatarBase64;
-                await _context.SaveChangesAsync();
-
-                return Ok(new { message = "Avatar updated successfully!", avatarUrl = request.AvatarBase64 });
-            }
-            catch (UnauthorizedAccessException)
-            {
-                return Unauthorized(new { message = "Please login to update your avatar." });
-            }
-        }
-
-        // GET: /Account/GetAddresses
+        /// <summary>GET: /Account/GetAddresses – Returns all addresses for the current user.</summary>
         [HttpGet]
         public async Task<IActionResult> GetAddresses()
         {
@@ -320,7 +324,7 @@ namespace AADYA_HouseOfFragrance.Controllers
             }
         }
 
-        // POST: /Account/AddAddress
+        /// <summary>POST: /Account/AddAddress – Adds a new address for the current user.</summary>
         [HttpPost]
         public async Task<IActionResult> AddAddress([FromBody] AddressDto request)
         {
@@ -329,9 +333,12 @@ namespace AADYA_HouseOfFragrance.Controllers
                 var userId = GetCurrentUserId();
 
                 var existingAddresses = await _context.Addresses.Where(a => a.UserId == userId).ToListAsync();
+
+                // If no addresses exist, make this the default
                 if (!existingAddresses.Any())
                     request.IsDefault = true;
 
+                // If this address is default, unset all other defaults
                 if (request.IsDefault)
                 {
                     foreach (var addr in existingAddresses)
@@ -362,20 +369,25 @@ namespace AADYA_HouseOfFragrance.Controllers
             }
         }
 
-        // PUT: /Account/UpdateAddress/{id}
+        /// <summary>PUT: /Account/UpdateAddress/{id} – Updates an existing address.</summary>
         [HttpPut]
         public async Task<IActionResult> UpdateAddress(int id, [FromBody] AddressDto request)
         {
             try
             {
                 var userId = GetCurrentUserId();
-                var address = await _context.Addresses.FirstOrDefaultAsync(a => a.AddressId == id && a.UserId == userId);
+                var address = await _context.Addresses
+                    .FirstOrDefaultAsync(a => a.AddressId == id && a.UserId == userId);
+
                 if (address == null)
                     return NotFound(new { message = "Address not found." });
 
+                // If this address is becoming default, unset all other defaults
                 if (request.IsDefault && !address.IsDefault)
                 {
-                    var otherAddresses = await _context.Addresses.Where(a => a.UserId == userId && a.AddressId != id).ToListAsync();
+                    var otherAddresses = await _context.Addresses
+                        .Where(a => a.UserId == userId && a.AddressId != id)
+                        .ToListAsync();
                     foreach (var addr in otherAddresses)
                         addr.IsDefault = false;
                 }
@@ -399,23 +411,27 @@ namespace AADYA_HouseOfFragrance.Controllers
             }
         }
 
-        // DELETE: /Account/DeleteAddress/{id}
+        /// <summary>DELETE: /Account/DeleteAddress/{id} – Deletes an address.</summary>
         [HttpDelete]
         public async Task<IActionResult> DeleteAddress(int id)
         {
             try
             {
                 var userId = GetCurrentUserId();
-                var address = await _context.Addresses.FirstOrDefaultAsync(a => a.AddressId == id && a.UserId == userId);
+                var address = await _context.Addresses
+                    .FirstOrDefaultAsync(a => a.AddressId == id && a.UserId == userId);
+
                 if (address == null)
                     return NotFound(new { message = "Address not found." });
 
                 _context.Addresses.Remove(address);
                 await _context.SaveChangesAsync();
 
+                // If the deleted address was default, make another address default
                 if (address.IsDefault)
                 {
-                    var newDefault = await _context.Addresses.FirstOrDefaultAsync(a => a.UserId == userId);
+                    var newDefault = await _context.Addresses
+                        .FirstOrDefaultAsync(a => a.UserId == userId);
                     if (newDefault != null)
                     {
                         newDefault.IsDefault = true;
@@ -431,25 +447,18 @@ namespace AADYA_HouseOfFragrance.Controllers
             }
         }
 
-        [HttpPost]
-        public IActionResult Logout()
-        {
-            HttpContext.Session.Clear();
-            return Ok(new { message = "Logged out" });
-        }
+        // ===================== HELPERS =====================
 
-        // GET: /Account/ForgotPassword
-        public IActionResult ForgotPassword()
+        /// <summary>
+        /// Gets the current user's ID from the JWT token claims.
+        /// </summary>
+        /// <exception cref="UnauthorizedAccessException">Thrown when the user is not authenticated.</exception>
+        private int GetCurrentUserId()
         {
-            return View();
-        }
-
-        // GET: /Account/ResetPassword
-        public IActionResult ResetPassword(string token, string otp)
-        {
-            ViewData["Token"] = token;
-            ViewData["Otp"] = otp;
-            return View();
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+            if (userIdClaim == null)
+                throw new UnauthorizedAccessException("User not authenticated");
+            return int.Parse(userIdClaim.Value);
         }
     }
 }

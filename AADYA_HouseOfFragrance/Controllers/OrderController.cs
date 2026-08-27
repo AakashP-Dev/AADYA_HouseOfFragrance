@@ -11,6 +11,11 @@ using AADYA_HouseOfFragrance.Services;
 
 namespace AADYA_HouseOfFragrance.Controllers
 {
+    /// <summary>
+    /// Handles order-related operations including checkout, payment processing,
+    /// order cancellation, and retrieval of order history.
+    /// All endpoints require authentication.
+    /// </summary>
     [Route("api/orders")]
     [ApiController]
     [Authorize]
@@ -25,6 +30,12 @@ namespace AADYA_HouseOfFragrance.Controllers
             _emailService = emailService;
         }
 
+        // ===================== HELPERS =====================
+
+        /// <summary>
+        /// Gets the current user's ID from the JWT token claims.
+        /// </summary>
+        /// <exception cref="UnauthorizedAccessException">Thrown when the user is not authenticated.</exception>
         private int GetCurrentUserId()
         {
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
@@ -33,7 +44,14 @@ namespace AADYA_HouseOfFragrance.Controllers
             return int.Parse(userIdClaim.Value);
         }
 
-        // POST: api/orders/checkout
+        // ===================== CHECKOUT =====================
+
+        /// <summary>
+        /// POST: api/orders/checkout
+        /// Creates a new order from the user's cart items.
+        /// Reduces stock quantities, clears the cart, and returns order details.
+        /// The order status is set to "Pending Payment" until payment is processed.
+        /// </summary>
         [HttpPost("checkout")]
         public async Task<IActionResult> Checkout([FromBody] CheckoutDto request)
         {
@@ -42,16 +60,22 @@ namespace AADYA_HouseOfFragrance.Controllers
                 var userId = GetCurrentUserId();
                 var user = await _context.Users.FindAsync(userId);
 
+                // Ensure session has user ID for server-side authentication
                 HttpContext.Session.SetInt32("UserId", userId);
                 await HttpContext.Session.CommitAsync();
 
                 if (user == null)
                     return Unauthorized(new { message = "User not found." });
 
-                var shippingAddress = string.IsNullOrEmpty(request.ShippingAddress) ? user.Address : request.ShippingAddress;
+                // Validate shipping address
+                var shippingAddress = string.IsNullOrEmpty(request.ShippingAddress)
+                    ? user.Address
+                    : request.ShippingAddress;
+
                 if (string.IsNullOrWhiteSpace(shippingAddress))
                     return BadRequest(new { message = "Shipping address is required." });
 
+                // Get cart items
                 var cartItems = await _context.ShoppingCarts
                     .Include(c => c.ProductVariant)
                     .Where(c => c.UserId == userId)
@@ -63,6 +87,7 @@ namespace AADYA_HouseOfFragrance.Controllers
                 decimal totalAmount = 0;
                 var orderItems = new List<OrderItem>();
 
+                // Process each cart item
                 foreach (var cartItem in cartItems)
                 {
                     var variant = cartItem.ProductVariant;
@@ -70,11 +95,16 @@ namespace AADYA_HouseOfFragrance.Controllers
                         return BadRequest(new { message = "Invalid product variant in cart." });
 
                     if (variant.StockQuantity < cartItem.Quantity)
-                        return BadRequest(new { message = $"Not enough stock for {variant.Product?.Name} ({variant.Size}). Available: {variant.StockQuantity}" });
+                        return BadRequest(new
+                        {
+                            message = $"Not enough stock for {variant.Product?.Name} ({variant.Size}). Available: {variant.StockQuantity}"
+                        });
 
+                    // Reduce stock
                     variant.StockQuantity -= cartItem.Quantity;
                     _context.ProductVariants.Update(variant);
 
+                    // Calculate subtotal
                     var subtotal = variant.Price * cartItem.Quantity;
                     totalAmount += subtotal;
 
@@ -86,13 +116,14 @@ namespace AADYA_HouseOfFragrance.Controllers
                     });
                 }
 
+                // Create order
                 var order = new Order
                 {
                     UserId = userId,
                     OrderStatus = "Pending Payment",
                     ShippingAddress = shippingAddress,
                     TotalAmount = totalAmount,
-                    CreatedAt = DateTime.Now,
+                    CreatedAt = DateTime.UtcNow,
                     PaymentMethod = null,
                     PaymentId = null,
                     OrderItems = orderItems
@@ -102,7 +133,7 @@ namespace AADYA_HouseOfFragrance.Controllers
                 _context.ShoppingCarts.RemoveRange(cartItems);
                 await _context.SaveChangesAsync();
 
-                // Don't send email here - will be sent after payment
+                // No email sent here – will be sent after payment is processed
 
                 return Ok(new
                 {
@@ -119,8 +150,14 @@ namespace AADYA_HouseOfFragrance.Controllers
             }
         }
 
+        // ===================== PAYMENT PROCESSING =====================
 
-        // POST: api/orders/process-payment
+        /// <summary>
+        /// POST: api/orders/process-payment
+        /// Processes payment for a pending order.
+        /// - COD: Keeps status as "Pending Payment" and sends confirmation email.
+        /// - Card/UPI: Simulates successful payment and sets status to "Processing".
+        /// </summary>
         [HttpPost("process-payment")]
         public async Task<IActionResult> ProcessPayment([FromBody] PaymentDto request)
         {
@@ -148,14 +185,14 @@ namespace AADYA_HouseOfFragrance.Controllers
                 if (request.PaymentMethod == "COD")
                 {
                     order.PaymentMethod = "COD";
-                    order.PaymentId = "COD-" + DateTime.Now.Ticks.ToString();
+                    order.PaymentId = "COD-" + DateTime.UtcNow.Ticks.ToString();
                     await _context.SaveChangesAsync();
 
                     // Reload order with full navigation properties for email
                     var savedOrder = await _context.Orders
                         .Include(o => o.OrderItems)
                             .ThenInclude(oi => oi.ProductVariant)
-                                .ThenInclude(v => v.Product)   // ✅ Important: Load Product
+                                .ThenInclude(v => v.Product)
                         .FirstOrDefaultAsync(o => o.OrderId == order.OrderId);
 
                     // Send confirmation email
@@ -173,7 +210,7 @@ namespace AADYA_HouseOfFragrance.Controllers
                     }
                     catch (Exception ex)
                     {
-                        Console.WriteLine($"Email error: {ex.Message}");
+                        Console.WriteLine($"[Email Error] COD confirmation email failed: {ex.Message}");
                     }
 
                     return Ok(new
@@ -192,14 +229,14 @@ namespace AADYA_HouseOfFragrance.Controllers
                 {
                     order.OrderStatus = "Processing";
                     order.PaymentMethod = request.PaymentMethod;
-                    order.PaymentId = "PAY-DUMMY-" + DateTime.Now.Ticks.ToString();
+                    order.PaymentId = "PAY-DUMMY-" + DateTime.UtcNow.Ticks.ToString();
                     await _context.SaveChangesAsync();
 
                     // Reload order with full navigation properties for email
                     var savedOrder = await _context.Orders
                         .Include(o => o.OrderItems)
                             .ThenInclude(oi => oi.ProductVariant)
-                                .ThenInclude(v => v.Product)   // ✅ Important: Load Product
+                                .ThenInclude(v => v.Product)
                         .FirstOrDefaultAsync(o => o.OrderId == order.OrderId);
 
                     // Send confirmation email
@@ -217,7 +254,7 @@ namespace AADYA_HouseOfFragrance.Controllers
                     }
                     catch (Exception ex)
                     {
-                        Console.WriteLine($"Email error: {ex.Message}");
+                        Console.WriteLine($"[Email Error] Payment confirmation email failed: {ex.Message}");
                     }
 
                     return Ok(new
@@ -239,7 +276,13 @@ namespace AADYA_HouseOfFragrance.Controllers
             }
         }
 
-        // POST: api/orders/cancel/{id}
+        // ===================== ORDER CANCELLATION =====================
+
+        /// <summary>
+        /// POST: api/orders/cancel/{id}
+        /// Cancels an order if it hasn't been dispatched yet.
+        /// Restores stock quantities and sends a cancellation confirmation email.
+        /// </summary>
         [HttpPost("cancel/{id}")]
         public async Task<IActionResult> CancelOrder(int id)
         {
@@ -258,7 +301,10 @@ namespace AADYA_HouseOfFragrance.Controllers
                 // Check if order can be cancelled
                 if (order.OrderStatus == "Dispatched" || order.OrderStatus == "Delivered")
                 {
-                    return BadRequest(new { message = "Order cannot be cancelled as it has already been shipped or delivered." });
+                    return BadRequest(new
+                    {
+                        message = "Order cannot be cancelled as it has already been shipped or delivered."
+                    });
                 }
 
                 if (order.OrderStatus == "Cancelled")
@@ -266,7 +312,7 @@ namespace AADYA_HouseOfFragrance.Controllers
                     return BadRequest(new { message = "Order is already cancelled." });
                 }
 
-                // Restore stock
+                // Restore stock for all items
                 foreach (var item in order.OrderItems)
                 {
                     if (item.ProductVariant != null)
@@ -293,7 +339,7 @@ namespace AADYA_HouseOfFragrance.Controllers
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"Email error: {ex.Message}");
+                    Console.WriteLine($"[Email Error] Cancellation email failed: {ex.Message}");
                 }
 
                 return Ok(new { message = "Order cancelled successfully." });
@@ -304,7 +350,12 @@ namespace AADYA_HouseOfFragrance.Controllers
             }
         }
 
-        // GET: api/orders
+        // ===================== ORDER RETRIEVAL =====================
+
+        /// <summary>
+        /// GET: api/orders
+        /// Returns all orders for the current user, ordered by creation date (newest first).
+        /// </summary>
         [HttpGet]
         public async Task<IActionResult> GetMyOrders()
         {
@@ -346,7 +397,10 @@ namespace AADYA_HouseOfFragrance.Controllers
             }
         }
 
-        // GET: api/orders/{id}
+        /// <summary>
+        /// GET: api/orders/{id}
+        /// Returns a specific order for the current user if it belongs to them.
+        /// </summary>
         [HttpGet("{id}")]
         public async Task<IActionResult> GetOrderById(int id)
         {
