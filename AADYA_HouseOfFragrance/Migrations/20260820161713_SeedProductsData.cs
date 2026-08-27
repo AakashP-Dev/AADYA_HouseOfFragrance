@@ -4,15 +4,19 @@
 
 namespace AADYA_HouseOfFragrance.Migrations
 {
-    /// <inheritdoc />
+    /// <summary>
+    /// Seeds the database with 35 products across 3 categories and 70 product variants (6ml & 12ml for each product).
+    /// This migration populates the full fragrance catalog for the AADYA application.
+    /// </summary>
     public partial class SeedProductsData : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             // ============================================
-            // Insert Categories (if not already present)
+            // 1. SEED CATEGORIES (3 Categories)
             // ============================================
+
             migrationBuilder.InsertData(
                 table: "Categories",
                 columns: new[] { "CategoryId", "CategoryName" },
@@ -24,14 +28,15 @@ namespace AADYA_HouseOfFragrance.Migrations
                 });
 
             // ============================================
-            // Insert Products
+            // 2. SEED PRODUCTS (35 Products)
             // ============================================
+
             migrationBuilder.InsertData(
                 table: "Products",
                 columns: new[] { "ProductId", "CategoryId", "Name", "Description", "ImageUrl", "ScentFamily", "RecommendedOccasion", "Intensity", "CreatedAt" },
                 values: new object[,]
                 {
-                    // Attars & Oud (CategoryId = 2)
+                    // ---------- Attars & Oud (CategoryId = 2) ----------
                     { 1, 2, "Oud Al Noor", "Rich oud accords beautifully balanced with warm, refined notes to create a fragrance that is deep, sophisticated, and effortlessly luxurious.", "/images/products/OUD Al Noor.jpeg", "Woody", "Evening", "Bold", DateTime.Now },
                     { 2, 2, "Royal Oud", "Crafted for those who appreciate timeless luxury, Royal Oud is a rich and refined fragrance that showcases the majestic character of oud with a smooth, elegant warmth.", "/images/products/Royal OUD.jpeg", "Woody", "Evening", "Bold", DateTime.Now },
                     { 3, 2, "Oud Habib", "Experience the perfect balance of depth and elegance with Oud Habib. Rich oud is complemented by warm, refined accords to create a fragrance that feels smooth, luxurious, and irresistibly captivating.", "/images/products/OUD Habib.jpeg", "Woody", "Evening", "Bold", DateTime.Now },
@@ -42,7 +47,7 @@ namespace AADYA_HouseOfFragrance.Migrations
                     { 34, 2, "Black Oud", "Darkness, refined into a fragrance. Black Oud carries the unmistakable depth of oud with a darker, more mysterious character—rich, woody, and composed for those who prefer their scent with genuine presence.", "/images/products/Black OUD.jpeg", "Woody", "Evening", "Bold", DateTime.Now },
                     { 35, 2, "Oud", "Deep, woody, and unmistakably commanding. Oud captures the timeless character of one of perfumery's most prized aromas—rich, smoky warmth with an earthy depth that develops beautifully on the skin.", "/images/products/OUD.jpeg", "Woody", "Evening", "Bold", DateTime.Now },
 
-                    // Signature Blends (CategoryId = 1)
+                    // ---------- Signature Blends (CategoryId = 1) ----------
                     { 4, 1, "Ridhaan", "Refined, confident, and effortlessly elegant, Ridhaan is a fragrance crafted for those who appreciate understated luxury.", "/images/products/Ridhaan.jpeg", "Fresh", "Daily", "Subtle", DateTime.Now },
                     { 7, 1, "Lovely", "Soft sweetness has a way of being remembered. Lovely wraps you in a delicate, graceful character that feels warm, charming, and beautifully feminine without becoming overwhelming.", "/images/products/Lovely.jpeg", "Floral", "Daily", "Subtle", DateTime.Now },
                     { 8, 1, "Jack Hobbs", "Sweetness, with a sharper sense of character. Jack Hobbs carries a rich, confident sweetness that feels polished rather than delicate, giving it a distinctive personality that works effortlessly on both men and women.", "/images/products/Jack Hobbs.jpeg", "Spicy", "Evening", "Bold", DateTime.Now },
@@ -60,7 +65,7 @@ namespace AADYA_HouseOfFragrance.Migrations
                     { 29, 1, "S.P. Sandal", "Pure, creamy, and deeply calming. S.P. Sandal celebrates the timeless beauty of authentic sandalwood with its smooth, woody warmth and soft, meditative character that lingers gracefully throughout the day.", "/images/products/S.P.Sandal.jpeg", "Woody", "Spiritual", "Subtle", DateTime.Now },
                     { 32, 1, "Royal 96", "Some fragrances don't simply accompany an occasion—they define it. Royal 96 carries a rich, distinguished character that reflects quiet confidence and timeless refinement, creating a presence that feels composed from the moment it is worn.", "/images/products/Royal 96.jpeg", "Spicy", "Evening", "Bold", DateTime.Now },
 
-                    // Contemporary Fragrances (CategoryId = 3)
+                    // ---------- Contemporary Fragrances (CategoryId = 3) ----------
                     { 5, 3, "Midnight Ice", "Cool, crisp, and effortlessly refined, Midnight Ice opens with refreshing citrus and aromatic notes, unfolding into a clean, invigorating fragrance that feels modern and sophisticated.", "/images/products/Midnight Ice.jpeg", "Citrus", "Daily", "Subtle", DateTime.Now },
                     { 6, 3, "Maverick", "Step into every moment with confidence. Maverick is a vibrant blend of zesty citrus and juicy fruity notes, creating a fragrance that's fresh, energetic, and effortlessly modern.", "/images/products/Maverick.jpeg", "Citrus", "Daily", "Subtle", DateTime.Now },
                     { 10, 3, "Cool Water", "Freshness that feels like stepping into a cool ocean breeze on a clear summer morning. Cool Water carries a crisp, aquatic character that feels clean, refreshing, and effortlessly confident.", "/images/products/Cool Water.jpeg", "Citrus", "Daily", "Subtle", DateTime.Now },
@@ -74,116 +79,117 @@ namespace AADYA_HouseOfFragrance.Migrations
                 });
 
             // ============================================
-            // Insert ProductVariants
+            // 3. SEED PRODUCT VARIANTS (70 Variants)
             // ============================================
+
             migrationBuilder.InsertData(
                 table: "ProductVariants",
                 columns: new[] { "VariantId", "ProductId", "Size", "Price", "StockQuantity" },
                 values: new object[,]
                 {
-                    // Oud Al Noor (1)
+                    // ---------- Oud Al Noor (1) ----------
                     { 101, 1, "6ml", 240, 50 },
                     { 102, 1, "12ml", 410, 30 },
-                    // Royal Oud (2)
+                    // ---------- Royal Oud (2) ----------
                     { 201, 2, "6ml", 330, 40 },
                     { 202, 2, "12ml", 600, 25 },
-                    // Oud Habib (3)
+                    // ---------- Oud Habib (3) ----------
                     { 301, 3, "6ml", 200, 45 },
                     { 302, 3, "12ml", 350, 30 },
-                    // Ridhaan (4)
+                    // ---------- Ridhaan (4) ----------
                     { 401, 4, "6ml", 240, 50 },
                     { 402, 4, "12ml", 430, 30 },
-                    // Midnight Ice (5)
+                    // ---------- Midnight Ice (5) ----------
                     { 501, 5, "6ml", 150, 60 },
                     { 502, 5, "12ml", 260, 40 },
-                    // Maverick (6)
+                    // ---------- Maverick (6) ----------
                     { 601, 6, "6ml", 200, 50 },
                     { 602, 6, "12ml", 350, 30 },
-                    // Lovely (7)
+                    // ---------- Lovely (7) ----------
                     { 701, 7, "6ml", 135, 55 },
                     { 702, 7, "12ml", 225, 35 },
-                    // Jack Hobbs (8)
+                    // ---------- Jack Hobbs (8) ----------
                     { 801, 8, "6ml", 200, 45 },
                     { 802, 8, "12ml", 350, 30 },
-                    // Cairo Evening (9)
+                    // ---------- Cairo Evening (9) ----------
                     { 901, 9, "6ml", 135, 60 },
                     { 902, 9, "12ml", 225, 40 },
-                    // Cool Water (10)
+                    // ---------- Cool Water (10) ----------
                     { 1001, 10, "6ml", 150, 50 },
                     { 1002, 10, "12ml", 250, 35 },
-                    // Red Crystal (11)
+                    // ---------- Red Crystal (11) ----------
                     { 1101, 11, "6ml", 200, 45 },
                     { 1102, 11, "12ml", 350, 30 },
-                    // Fantasy (12)
+                    // ---------- Fantasy (12) ----------
                     { 1201, 12, "6ml", 100, 70 },
                     { 1202, 12, "12ml", 160, 50 },
-                    // Black Onyx (13)
+                    // ---------- Black Onyx (13) ----------
                     { 1301, 13, "6ml", 200, 40 },
                     { 1302, 13, "12ml", 350, 25 },
-                    // Honey Tobacco (14)
+                    // ---------- Honey Tobacco (14) ----------
                     { 1401, 14, "6ml", 200, 45 },
                     { 1402, 14, "12ml", 350, 30 },
-                    // Kesar Chandan (15)
+                    // ---------- Kesar Chandan (15) ----------
                     { 1501, 15, "6ml", 240, 50 },
                     { 1502, 15, "12ml", 450, 30 },
-                    // Velmont (16)
+                    // ---------- Velmont (16) ----------
                     { 1601, 16, "6ml", 200, 50 },
                     { 1602, 16, "12ml", 350, 35 },
-                    // Hawas (17)
+                    // ---------- Hawas (17) ----------
                     { 1701, 17, "6ml", 150, 60 },
                     { 1702, 17, "12ml", 250, 40 },
-                    // Chocolate (18)
+                    // ---------- Chocolate (18) ----------
                     { 1801, 18, "6ml", 150, 55 },
                     { 1802, 18, "12ml", 250, 35 },
-                    // Polo Sport (19)
+                    // ---------- Polo Sport (19) ----------
                     { 1901, 19, "6ml", 135, 60 },
                     { 1902, 19, "12ml", 225, 40 },
-                    // Jasmine (20)
+                    // ---------- Jasmine (20) ----------
                     { 2001, 20, "6ml", 135, 55 },
                     { 2002, 20, "12ml", 225, 35 },
-                    // Golden Ash (21)
+                    // ---------- Golden Ash (21) ----------
                     { 2101, 21, "6ml", 200, 45 },
                     { 2102, 21, "12ml", 350, 30 },
-                    // Maya (22)
+                    // ---------- Maya (22) ----------
                     { 2201, 22, "6ml", 120, 70 },
                     { 2202, 22, "12ml", 200, 50 },
-                    // Honey Ember (23)
+                    // ---------- Honey Ember (23) ----------
                     { 2301, 23, "6ml", 150, 50 },
                     { 2302, 23, "12ml", 260, 35 },
-                    // Echo (24)
+                    // ---------- Echo (24) ----------
                     { 2401, 24, "6ml", 150, 55 },
                     { 2402, 24, "12ml", 260, 35 },
-                    // Berry Blast (25)
+                    // ---------- Berry Blast (25) ----------
                     { 2501, 25, "6ml", 150, 60 },
                     { 2502, 25, "12ml", 250, 40 },
-                    // Marine Haze (26)
+                    // ---------- Marine Haze (26) ----------
                     { 2601, 26, "6ml", 200, 50 },
                     { 2602, 26, "12ml", 250, 35 },
-                    // Turkish Rose (27)
+                    // ---------- Turkish Rose (27) ----------
                     { 2701, 27, "6ml", 390, 30 },
                     { 2702, 27, "12ml", 750, 20 },
-                    // White Onyx (28)
+                    // ---------- White Onyx (28) ----------
                     { 2801, 28, "6ml", 200, 45 },
                     { 2802, 28, "12ml", 350, 30 },
-                    // S.P. Sandal (29)
+                    // ---------- S.P. Sandal (29) ----------
                     { 2901, 29, "6ml", 150, 50 },
                     { 2902, 29, "12ml", 250, 35 },
-                    // White Oud (30)
+                    // ---------- White Oud (30) ----------
                     { 3001, 30, "6ml", 200, 40 },
                     { 3002, 30, "12ml", 350, 25 },
-                    // Musk (31)
+                    // ---------- Musk (31) ----------
                     { 3101, 31, "6ml", 200, 45 },
                     { 3102, 31, "12ml", 350, 30 },
-                    // Royal 96 (32)
+                    // ---------- Royal 96 (32) ----------
                     { 3201, 32, "6ml", 160, 50 },
                     { 3202, 32, "12ml", 300, 35 },
-                    // Shahi Darbar (33)
+                    // ---------- Shahi Darbar (33) ----------
                     { 3301, 33, "6ml", 420, 25 },
                     { 3302, 33, "12ml", 800, 15 },
-                    // Black Oud (34)
+                    // ---------- Black Oud (34) ----------
                     { 3401, 34, "6ml", 600, 20 },
                     { 3402, 34, "12ml", 1100, 10 },
-                    // Oud (35)
+                    // ---------- Oud (35) ----------
                     { 3501, 35, "6ml", 725, 15 },
                     { 3502, 35, "12ml", 1350, 8 }
                 });
@@ -192,6 +198,7 @@ namespace AADYA_HouseOfFragrance.Migrations
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            // Delete data in reverse order of insertion (child tables first, then parent tables)
             migrationBuilder.Sql("DELETE FROM ProductVariants");
             migrationBuilder.Sql("DELETE FROM Products");
             migrationBuilder.Sql("DELETE FROM Categories");

@@ -3,12 +3,18 @@ using AADYA_HouseOfFragrance.Models.Entities;
 
 namespace AADYA_HouseOfFragrance.Data
 {
+    /// <summary>
+    /// Entity Framework Core database context for the AADYA application.
+    /// Manages all database entities and configures relationships, constraints, and seed data.
+    /// </summary>
     public class ApplicationDbContext : DbContext
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
         {
         }
+
+        // ===================== DB SETS =====================
 
         public DbSet<User> Users { get; set; }
         public DbSet<Category> Categories { get; set; }
@@ -20,16 +26,23 @@ namespace AADYA_HouseOfFragrance.Data
         public DbSet<Address> Addresses { get; set; }
         public DbSet<PasswordReset> PasswordResets { get; set; }
 
+        // ===================== MODEL CONFIGURATION =====================
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            // Unique constraint for Email
+            // ============================================
+            // 1. CONSTRAINTS & INDEXES
+            // ============================================
+
+            // Unique constraint for User Email
             modelBuilder.Entity<User>()
                 .HasIndex(u => u.Email)
                 .IsUnique();
 
             // ============================================
-            // SEED CATEGORIES
+            // 2. SEED CATEGORIES (3 Categories)
             // ============================================
+
             modelBuilder.Entity<Category>().HasData(
                 new Category { CategoryId = 1, CategoryName = "Signature Blends" },
                 new Category { CategoryId = 2, CategoryName = "Attars & Oud" },
@@ -37,10 +50,11 @@ namespace AADYA_HouseOfFragrance.Data
             );
 
             // ============================================
-            // SEED PRODUCTS (35 Products)
+            // 3. SEED PRODUCTS (35 Products)
             // ============================================
+
             modelBuilder.Entity<Product>().HasData(
-                // Attars & Oud (CategoryId = 2)
+                // ---------- Attars & Oud (CategoryId = 2) ----------
                 new Product { ProductId = 1, CategoryId = 2, Name = "Oud Al Noor", Description = "Rich oud accords beautifully balanced with warm, refined notes to create a fragrance that is deep, sophisticated, and effortlessly luxurious.", ImageUrl = "/images/products/OUD Al Noor.jpeg", ScentFamily = "Woody", RecommendedOccasion = "Evening", Intensity = "Bold" },
                 new Product { ProductId = 2, CategoryId = 2, Name = "Royal Oud", Description = "Crafted for those who appreciate timeless luxury, Royal Oud is a rich and refined fragrance that showcases the majestic character of oud with a smooth, elegant warmth.", ImageUrl = "/images/products/Royal OUD.jpeg", ScentFamily = "Woody", RecommendedOccasion = "Evening", Intensity = "Bold" },
                 new Product { ProductId = 3, CategoryId = 2, Name = "Oud Habib", Description = "Experience the perfect balance of depth and elegance with Oud Habib. Rich oud is complemented by warm, refined accords to create a fragrance that feels smooth, luxurious, and irresistibly captivating.", ImageUrl = "/images/products/OUD Habib.jpeg", ScentFamily = "Woody", RecommendedOccasion = "Evening", Intensity = "Bold" },
@@ -51,7 +65,7 @@ namespace AADYA_HouseOfFragrance.Data
                 new Product { ProductId = 34, CategoryId = 2, Name = "Black Oud", Description = "Darkness, refined into a fragrance. Black Oud carries the unmistakable depth of oud with a darker, more mysterious character—rich, woody, and composed for those who prefer their scent with genuine presence.", ImageUrl = "/images/products/Black OUD.jpeg", ScentFamily = "Woody", RecommendedOccasion = "Evening", Intensity = "Bold" },
                 new Product { ProductId = 35, CategoryId = 2, Name = "Oud", Description = "Deep, woody, and unmistakably commanding. Oud captures the timeless character of one of perfumery's most prized aromas—rich, smoky warmth with an earthy depth that develops beautifully on the skin.", ImageUrl = "/images/products/OUD.jpeg", ScentFamily = "Woody", RecommendedOccasion = "Evening", Intensity = "Bold" },
 
-                // Signature Blends (CategoryId = 1)
+                // ---------- Signature Blends (CategoryId = 1) ----------
                 new Product { ProductId = 4, CategoryId = 1, Name = "Ridhaan", Description = "Refined, confident, and effortlessly elegant, Ridhaan is a fragrance crafted for those who appreciate understated luxury.", ImageUrl = "/images/products/Ridhaan.jpeg", ScentFamily = "Fresh", RecommendedOccasion = "Daily", Intensity = "Subtle" },
                 new Product { ProductId = 7, CategoryId = 1, Name = "Lovely", Description = "Soft sweetness has a way of being remembered. Lovely wraps you in a delicate, graceful character that feels warm, charming, and beautifully feminine without becoming overwhelming.", ImageUrl = "/images/products/Lovely.jpeg", ScentFamily = "Floral", RecommendedOccasion = "Daily", Intensity = "Subtle" },
                 new Product { ProductId = 8, CategoryId = 1, Name = "Jack Hobbs", Description = "Sweetness, with a sharper sense of character. Jack Hobbs carries a rich, confident sweetness that feels polished rather than delicate, giving it a distinctive personality that works effortlessly on both men and women.", ImageUrl = "/images/products/Jack Hobbs.jpeg", ScentFamily = "Spicy", RecommendedOccasion = "Evening", Intensity = "Bold" },
@@ -69,7 +83,7 @@ namespace AADYA_HouseOfFragrance.Data
                 new Product { ProductId = 29, CategoryId = 1, Name = "S.P. Sandal", Description = "Pure, creamy, and deeply calming. S.P. Sandal celebrates the timeless beauty of authentic sandalwood with its smooth, woody warmth and soft, meditative character that lingers gracefully throughout the day.", ImageUrl = "/images/products/S.P.Sandal.jpeg", ScentFamily = "Woody", RecommendedOccasion = "Spiritual", Intensity = "Subtle" },
                 new Product { ProductId = 32, CategoryId = 1, Name = "Royal 96", Description = "Some fragrances don't simply accompany an occasion—they define it. Royal 96 carries a rich, distinguished character that reflects quiet confidence and timeless refinement, creating a presence that feels composed from the moment it is worn.", ImageUrl = "/images/products/Royal 96.jpeg", ScentFamily = "Spicy", RecommendedOccasion = "Evening", Intensity = "Bold" },
 
-                // Contemporary Fragrances (CategoryId = 3)
+                // ---------- Contemporary Fragrances (CategoryId = 3) ----------
                 new Product { ProductId = 5, CategoryId = 3, Name = "Midnight Ice", Description = "Cool, crisp, and effortlessly refined, Midnight Ice opens with refreshing citrus and aromatic notes, unfolding into a clean, invigorating fragrance that feels modern and sophisticated.", ImageUrl = "/images/products/Midnight Ice.jpeg", ScentFamily = "Citrus", RecommendedOccasion = "Daily", Intensity = "Subtle" },
                 new Product { ProductId = 6, CategoryId = 3, Name = "Maverick", Description = "Step into every moment with confidence. Maverick is a vibrant blend of zesty citrus and juicy fruity notes, creating a fragrance that's fresh, energetic, and effortlessly modern.", ImageUrl = "/images/products/Maverick.jpeg", ScentFamily = "Citrus", RecommendedOccasion = "Daily", Intensity = "Subtle" },
                 new Product { ProductId = 10, CategoryId = 3, Name = "Cool Water", Description = "Freshness that feels like stepping into a cool ocean breeze on a clear summer morning. Cool Water carries a crisp, aquatic character that feels clean, refreshing, and effortlessly confident.", ImageUrl = "/images/products/Cool Water.jpeg", ScentFamily = "Citrus", RecommendedOccasion = "Daily", Intensity = "Subtle" },
@@ -83,8 +97,9 @@ namespace AADYA_HouseOfFragrance.Data
             );
 
             // ============================================
-            // SEED PRODUCT VARIANTS (6ml & 12ml)
+            // 4. SEED PRODUCT VARIANTS (6ml & 12ml per Product)
             // ============================================
+
             modelBuilder.Entity<ProductVariant>().HasData(
                 // Oud Al Noor (1)
                 new ProductVariant { VariantId = 101, ProductId = 1, Size = "6ml", Price = 240, StockQuantity = 50 },

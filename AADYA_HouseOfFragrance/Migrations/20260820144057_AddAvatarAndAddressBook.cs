@@ -5,13 +5,21 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace AADYA_HouseOfFragrance.Migrations
 {
-    /// <inheritdoc />
+    /// <summary>
+    /// Adds user avatar functionality and a full address book for users.
+    /// - Adds AvatarUrl column to Users table (nullable, stores Base64 image data).
+    /// - Creates Addresses table with full address details and default flag.
+    /// </summary>
     public partial class AddAvatarAndAddressBook : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            // Add AvatarUrl column to Users (if not exists)
+            // ============================================
+            // 1. ADD AVATAR COLUMN TO USERS TABLE
+            // ============================================
+
+            // Add AvatarUrl column to Users table (nullable string, stores Base64 image)
             migrationBuilder.AddColumn<string>(
                 name: "AvatarUrl",
                 table: "Users",
@@ -20,7 +28,11 @@ namespace AADYA_HouseOfFragrance.Migrations
                 defaultValue: null)
                 .Annotation("MySql:CharSet", "utf8mb4");
 
-            // Create Addresses table
+            // ============================================
+            // 2. CREATE ADDRESSES TABLE
+            // ============================================
+
+            // Create Addresses table with full address details
             migrationBuilder.CreateTable(
                 name: "Addresses",
                 columns: table => new
@@ -56,7 +68,11 @@ namespace AADYA_HouseOfFragrance.Migrations
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
-            // Create index for UserId in Addresses
+            // ============================================
+            // 3. CREATE INDEX ON USER ID
+            // ============================================
+
+            // Create index for UserId to improve query performance
             migrationBuilder.CreateIndex(
                 name: "IX_Addresses_UserId",
                 table: "Addresses",
@@ -66,9 +82,11 @@ namespace AADYA_HouseOfFragrance.Migrations
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            // Drop tables in reverse order
             migrationBuilder.DropTable(
                 name: "Addresses");
 
+            // Drop the AvatarUrl column
             migrationBuilder.DropColumn(
                 name: "AvatarUrl",
                 table: "Users");

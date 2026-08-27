@@ -4,19 +4,30 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-#pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
-
 namespace AADYA_HouseOfFragrance.Migrations
 {
-    /// <inheritdoc />
+    /// <summary>
+    /// Initial database migration for the AADYA application.
+    /// Creates all core tables: Users, Categories, Products, ProductVariants,
+    /// Orders, OrderItems, ShoppingCarts, and seeds three initial categories.
+    /// </summary>
     public partial class InitialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            // ============================================
+            // 1. DATABASE SETUP
+            // ============================================
+
             migrationBuilder.AlterDatabase()
                 .Annotation("MySql:CharSet", "utf8mb4");
 
+            // ============================================
+            // 2. CREATE TABLES
+            // ============================================
+
+            // --- Categories Table ---
             migrationBuilder.CreateTable(
                 name: "Categories",
                 columns: table => new
@@ -32,6 +43,7 @@ namespace AADYA_HouseOfFragrance.Migrations
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
+            // --- Users Table ---
             migrationBuilder.CreateTable(
                 name: "Users",
                 columns: table => new
@@ -54,6 +66,7 @@ namespace AADYA_HouseOfFragrance.Migrations
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
+            // --- Products Table ---
             migrationBuilder.CreateTable(
                 name: "Products",
                 columns: table => new
@@ -87,6 +100,7 @@ namespace AADYA_HouseOfFragrance.Migrations
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
+            // --- Orders Table ---
             migrationBuilder.CreateTable(
                 name: "Orders",
                 columns: table => new
@@ -113,6 +127,7 @@ namespace AADYA_HouseOfFragrance.Migrations
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
+            // --- ProductVariants Table ---
             migrationBuilder.CreateTable(
                 name: "ProductVariants",
                 columns: table => new
@@ -137,6 +152,7 @@ namespace AADYA_HouseOfFragrance.Migrations
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
+            // --- OrderItems Table ---
             migrationBuilder.CreateTable(
                 name: "OrderItems",
                 columns: table => new
@@ -166,6 +182,7 @@ namespace AADYA_HouseOfFragrance.Migrations
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
+            // --- ShoppingCarts Table ---
             migrationBuilder.CreateTable(
                 name: "ShoppingCarts",
                 columns: table => new
@@ -195,6 +212,10 @@ namespace AADYA_HouseOfFragrance.Migrations
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
+            // ============================================
+            // 3. SEED INITIAL DATA
+            // ============================================
+
             migrationBuilder.InsertData(
                 table: "Categories",
                 columns: new[] { "CategoryId", "CategoryName" },
@@ -204,6 +225,10 @@ namespace AADYA_HouseOfFragrance.Migrations
                     { 2, "Attars & Oud" },
                     { 3, "Contemporary Fragrances" }
                 });
+
+            // ============================================
+            // 4. CREATE INDEXES
+            // ============================================
 
             migrationBuilder.CreateIndex(
                 name: "IX_OrderItems_OrderId",
@@ -240,6 +265,7 @@ namespace AADYA_HouseOfFragrance.Migrations
                 table: "ShoppingCarts",
                 column: "VariantId");
 
+            // Unique constraint on User Email (to prevent duplicate emails)
             migrationBuilder.CreateIndex(
                 name: "IX_Users_Email",
                 table: "Users",
@@ -250,6 +276,7 @@ namespace AADYA_HouseOfFragrance.Migrations
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            // Drop tables in reverse dependency order
             migrationBuilder.DropTable(
                 name: "OrderItems");
 
