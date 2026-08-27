@@ -33,6 +33,7 @@ namespace AADYA_HouseOfFragrance.Models.DTOs
 
     public class StockUpdateDto
     {
-        public int StockQuantity { get; set; }
+        public int Stock6ml { get; set; }
+        public int Stock12ml { get; set; }
     }
 }

@@ -245,6 +245,7 @@ a {
 }
 
 .product-card {
+    position: relative;
     background-color: #FAF6EF;
     border: 1px solid var(--border-color);
     border-radius: 4px;

@@ -184,7 +184,7 @@ namespace AADYA_HouseOfFragrance.Controllers
         [HttpPut("products/{id}/stock")]
         public async Task<IActionResult> UpdateStock(int id, [FromBody] StockUpdateDto request)
         {
-            if (request.StockQuantity < 0)
+            if (request.Stock6ml < 0 || request.Stock12ml < 0)
                 return BadRequest(new { message = "Stock cannot be negative." });
 
             var product = await _context.Products
@@ -196,7 +196,10 @@ namespace AADYA_HouseOfFragrance.Controllers
 
             foreach (var variant in product.Variants)
             {
-                variant.StockQuantity = request.StockQuantity;
+                if (variant.Size == "6ml")
+                    variant.StockQuantity = request.Stock6ml;
+                else if (variant.Size == "12ml")
+                    variant.StockQuantity = request.Stock12ml;
             }
             await _context.SaveChangesAsync();
 

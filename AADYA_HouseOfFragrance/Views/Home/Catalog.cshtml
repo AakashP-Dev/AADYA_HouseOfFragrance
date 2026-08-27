@@ -1,5 +1,5 @@
-﻿@{
-    ViewData["Title"] = "All Fragrances - The Olfactory Collection";
+﻿﻿@{
+ViewData["Title"] = "All Fragrances - The Olfactory Collection";
 }
 
 <!-- 1. CATALOG HERO BANNER -->
@@ -140,10 +140,22 @@
 
         // --- 1. FETCH PRODUCTS ---
         async function loadProducts() {
+            const grid = document.getElementById('productGrid');
+            const countLabel = document.getElementById('productCountLabel');
+            grid.innerHTML = '';
+            countLabel.innerText = 'Loading Fragrances...';
+
             try {
                 const response = await fetch('/api/products');
                 if (!response.ok) throw new Error('Network response was not ok');
                 allProducts = await response.json();
+
+                // Ensure variants exists on each product
+                allProducts = allProducts.map(p => ({
+                    ...p,
+                    variants: p.variants || []
+                }));
+
                 renderCatalog(allProducts);
                 updateStickyTracker();
                 updateCartBadge();
@@ -185,15 +197,21 @@
 
             grid.innerHTML = '';
             products.forEach(product => {
-                const prices = product.variants.map(v => v.price);
-                const minPrice = Math.min(...prices);
-                const maxPrice = Math.max(...prices);
+                const variants = product.variants || [];
+
+                const prices = variants.map(v => v.price || 0);
+                const minPrice = prices.length ? Math.min(...prices) : 0;
+                const maxPrice = prices.length ? Math.max(...prices) : 0;
                 const priceDisplay = minPrice === maxPrice ? `₹${minPrice}.00` : `₹${minPrice}.00 – ₹${maxPrice}.00`;
                 const imgSrc = product.imageUrl || 'https://via.placeholder.com/300x220?text=' + encodeURIComponent(product.name);
-                const avgPrice = prices.reduce((a, b) => a + b, 0) / prices.length;
+                const avgPrice = prices.length ? prices.reduce((a, b) => a + b, 0) / prices.length : 0;
+
+                const totalStock = variants.reduce((sum, v) => sum + (v.stockQuantity || 0), 0);
+                const isOutOfStock = totalStock === 0;
 
                 const card = document.createElement('div');
                 card.className = 'product-card';
+                card.style.position = 'relative';
                 card.dataset.name = product.name;
                 card.dataset.category = getFilterGroup(product);
                 card.dataset.productId = product.productId;
@@ -202,10 +220,13 @@
 
                 card.innerHTML = `
                             <img src="${imgSrc}" alt="${product.name}" onerror="this.src='https://via.placeholder.com/300x220?text=${encodeURIComponent(product.name)}'" />
+                            ${isOutOfStock ? '<span style="position:absolute; top:10px; right:10px; background:#d32f2f; color:white; padding:0.2rem 0.8rem; border-radius:20px; font-size:0.7rem; font-weight:600; z-index:2;">OUT OF STOCK</span>' : ''}
                             <h3>${product.name}</h3>
                             <span class="scent-tag">${product.scentFamily || 'Fragrance'}</span>
                             <div class="product-price">${priceDisplay}</div>
-                            <button class="btn-gold quick-view-btn" onclick="openProductDrawer(${product.productId})">VIEW DETAILS</button>
+                            <button class="btn-gold quick-view-btn" onclick="openProductDrawer(${product.productId})" ${isOutOfStock ? 'disabled style="opacity:0.5; cursor:not-allowed;"' : ''}>
+                                ${isOutOfStock ? 'OUT OF STOCK' : 'VIEW DETAILS'}
+                            </button>
                         `;
                 grid.appendChild(card);
             });
@@ -260,6 +281,10 @@
 
             currentDrawerVariants = product.variants || [];
 
+            // Check total stock for the product
+            const totalStock = currentDrawerVariants.reduce((sum, v) => sum + (v.stockQuantity || 0), 0);
+            const isOutOfStock = totalStock === 0;
+
             document.getElementById('drawerTitle').innerText = product.name;
             document.getElementById('drawerScentTag').innerText = product.scentFamily || 'Fragrance';
             document.getElementById('drawerDesc').innerText = product.description || 'A beautifully crafted artisanal attar.';
@@ -268,19 +293,24 @@
             const container = document.getElementById('variantSelectorContainer');
             container.innerHTML = '';
             currentDrawerVariants.forEach((variant, index) => {
+                const isVariantOutOfStock = (variant.stockQuantity || 0) === 0;
+
                 const row = document.createElement('div');
                 row.className = 'size-qty-row';
                 row.dataset.variantId = variant.variantId;
-                row.dataset.price = variant.price;
+                row.dataset.price = variant.price || 0;
+                row.dataset.stock = variant.stockQuantity || 0;
+
                 row.innerHTML = `
                             <div class="size-info">
-                                <span class="size-title">${variant.size} Bottle</span>
-                                <span class="size-unit-price">₹${variant.price}.00</span>
+                                <span class="size-title">${variant.size || 'N/A'} Bottle</span>
+                                <span class="size-unit-price">₹${variant.price || 0}.00</span>
+                                ${isVariantOutOfStock ? '<span style="color:#d32f2f; font-size:0.7rem; margin-left:0.5rem;">(Out of Stock)</span>' : ''}
                             </div>
                             <div class="qty-selector">
-                                <button type="button" class="qty-btn" onclick="updateDrawerQty(${index}, -1)">&minus;</button>
-                                <input type="text" id="drawerQty_${index}" value="${index === 0 ? 0 : 1}" readonly class="qty-input" />
-                                <button type="button" class="qty-btn" onclick="updateDrawerQty(${index}, 1)">&plus;</button>
+                                <button type="button" class="qty-btn" onclick="updateDrawerQty(${index}, -1)" ${isVariantOutOfStock ? 'disabled style="opacity:0.3; cursor:not-allowed;"' : ''}>&minus;</button>
+                                <input type="text" id="drawerQty_${index}" value="${isVariantOutOfStock ? 0 : (index === 0 ? 0 : 1)}" readonly class="qty-input" />
+                                <button type="button" class="qty-btn" onclick="updateDrawerQty(${index}, 1)" ${isVariantOutOfStock ? 'disabled style="opacity:0.3; cursor:not-allowed;"' : ''}>&plus;</button>
                             </div>
                         `;
                 container.appendChild(row);
@@ -291,9 +321,24 @@
             document.getElementById('productDrawer').classList.add('open');
             document.body.style.overflow = 'hidden';
 
-            const firstVariant = product.variants?.[0];
+            // Load frequently bought items
+            const firstVariant = currentDrawerVariants[0];
             if (firstVariant) {
                 await loadFrequentlyBoughtInDrawer(firstVariant.variantId);
+            }
+
+            // Disable ADD TO CART if out of stock
+            const addBtn = document.querySelector('.drawer-add-btn');
+            if (isOutOfStock) {
+                addBtn.disabled = true;
+                addBtn.style.opacity = '0.5';
+                addBtn.style.cursor = 'not-allowed';
+                addBtn.textContent = 'OUT OF STOCK';
+            } else {
+                addBtn.disabled = false;
+                addBtn.style.opacity = '1';
+                addBtn.style.cursor = 'pointer';
+                addBtn.textContent = 'ADD SELECTED TO CART';
             }
         }
 
@@ -306,7 +351,12 @@
         function updateDrawerQty(index, change) {
             const input = document.getElementById('drawerQty_' + index);
             let val = parseInt(input.value) + change;
+            const stock = parseInt(document.querySelector(`#variantSelectorContainer .size-qty-row:nth-child(${index + 1})`).dataset.stock) || 0;
             if (val < 0) val = 0;
+            if (val > stock) {
+                showToast('Not enough stock!', 'error');
+                return;
+            }
             input.value = val;
             recalculateDrawerTotal();
         }
@@ -315,19 +365,26 @@
             let total = 0;
             const rows = document.querySelectorAll('#variantSelectorContainer .size-qty-row');
             rows.forEach(row => {
-                const price = parseFloat(row.dataset.price);
-                const qty = parseInt(row.querySelector('.qty-input').value);
+                const price = parseFloat(row.dataset.price) || 0;
+                const qty = parseInt(row.querySelector('.qty-input').value) || 0;
                 total += price * qty;
             });
             document.getElementById('drawerTotal').innerText = '₹' + total.toLocaleString('en-IN') + '.00';
         }
 
-        // --- 6. ADD TO CART (REAL API) ---
+        // --- 6. ADD TO CART ---
         async function handleAddToCart() {
             let items = [];
             const rows = document.querySelectorAll('#variantSelectorContainer .size-qty-row');
+            let hasError = false;
+
             rows.forEach(row => {
-                const qty = parseInt(row.querySelector('.qty-input').value);
+                const qty = parseInt(row.querySelector('.qty-input').value) || 0;
+                const stock = parseInt(row.dataset.stock) || 0;
+                if (qty > stock) {
+                    showToast(`Not enough stock! Available: ${stock}`, 'error');
+                    hasError = true;
+                }
                 if (qty > 0) {
                     items.push({
                         variantId: parseInt(row.dataset.variantId),
@@ -336,6 +393,7 @@
                 }
             });
 
+            if (hasError) return;
             if (items.length === 0) {
                 showToast('Please select at least one bottle quantity.', 'error');
                 return;
@@ -387,36 +445,61 @@
             }
         }
 
-        // --- 7. REMOVE MODAL ---
-        function showRemoveModal(itemName, callback) {
-            document.getElementById('removeModalMessage').innerHTML =
-                `Are you sure you want to remove <strong>${itemName}</strong> from your cart?`;
-            removeItemCallback = callback;
-            document.getElementById('removeModal').style.display = 'flex';
+        // --- 7. FREQUENTLY BOUGHT ---
+        async function loadFrequentlyBoughtInDrawer(variantId) {
+            const loading = document.getElementById('drawerFreqBoughtLoading');
+            const content = document.getElementById('drawerFreqBoughtContent');
+            const empty = document.getElementById('drawerFreqBoughtEmpty');
+            const container = document.getElementById('drawerFrequentlyBought');
+
+            container.style.display = 'block';
+            loading.style.display = 'block';
+            content.style.display = 'none';
+            empty.style.display = 'none';
+
+            try {
+                const response = await fetch(`/api/products/${variantId}/frequently-bought-with`);
+                if (!response.ok) throw new Error('Failed to fetch recommendations');
+                const recommendations = await response.json();
+
+                loading.style.display = 'none';
+
+                if (!recommendations || recommendations.length === 0) {
+                    empty.style.display = 'block';
+                    return;
+                }
+
+                content.style.display = 'flex';
+                content.innerHTML = '';
+
+                recommendations.slice(0, 3).forEach(rec => {
+                    const imgSrc = rec.imageUrl || 'https://via.placeholder.com/60x60?text=' + encodeURIComponent(rec.name);
+                    const prices = rec.variants?.map(v => v.price) || [];
+                    const min = prices.length ? Math.min(...prices) : 0;
+                    const priceDisplay = `₹${min}`;
+
+                    const item = document.createElement('div');
+                    item.style.cssText = 'display: flex; align-items: center; gap: 0.6rem; background: var(--warm-ivory); border: 1px solid var(--border-color); border-radius: 4px; padding: 0.4rem 0.8rem 0.4rem 0.4rem; flex: 1; min-width: 140px;';
+                    item.innerHTML = `
+                                <img src="${imgSrc}" alt="${rec.name}" style="width: 40px; height: 40px; object-fit: cover; border-radius: 3px; border: 1px solid var(--border-color);" onerror="this.src='https://via.placeholder.com/40x40?text=${encodeURIComponent(rec.name.charAt(0))}'" />
+                                <div style="flex: 1;">
+                                    <div style="font-size: 0.78rem; font-weight: 600; color: var(--deep-burgundy);">${rec.name}</div>
+                                    <div style="font-size: 0.7rem; color: var(--text-muted);">${priceDisplay}</div>
+                                </div>
+                                <a href="/Home/Catalog?highlight=${encodeURIComponent(rec.name)}" style="font-size: 0.65rem; padding: 0.2rem 0.6rem; background: var(--deep-burgundy); color: var(--warm-ivory); border-radius: 2px; text-decoration: none; white-space: nowrap;">VIEW</a>
+                            `;
+                    content.appendChild(item);
+                });
+
+            } catch (error) {
+                console.error('Error loading frequently bought:', error);
+                loading.style.display = 'none';
+                empty.style.display = 'block';
+                empty.innerHTML = '<span style="font-size: 0.8rem; color: var(--text-muted);">Could not load recommendations.</span>';
+            }
         }
 
-        document.getElementById('removeConfirmYes').addEventListener('click', function () {
-            document.getElementById('removeModal').style.display = 'none';
-            if (removeItemCallback) {
-                removeItemCallback();
-                removeItemCallback = null;
-            }
-        });
-
-        document.getElementById('removeConfirmNo').addEventListener('click', function () {
-            document.getElementById('removeModal').style.display = 'none';
-            removeItemCallback = null;
-        });
-
-        // Close modal on outside click
-        document.getElementById('removeModal').addEventListener('click', function (e) {
-            if (e.target === this) {
-                this.style.display = 'none';
-                removeItemCallback = null;
-            }
-        });
-
-        // --- 8. STICKY 6ML TRACKER ---
+        // --- 8. STICKY TRACKER ---
         async function updateStickyTracker() {
             const token = localStorage.getItem('token');
             if (!token) {
@@ -486,14 +569,12 @@
             }
         }
 
-        // --- 9. CONFIRM REMOVE FROM STICKY TRACKER ---
         function confirmRemoveSixMlItem(itemName, cartItemId) {
-            showRemoveModal(itemName, function () {
+            showRemoveModal(itemName, function() {
                 removeSixMlItem(cartItemId);
             });
         }
 
-        // --- 10. REMOVE 6ML ITEM ---
         async function removeSixMlItem(cartItemId) {
             const token = localStorage.getItem('token');
             if (!token) {
@@ -520,7 +601,7 @@
             }
         }
 
-        // --- 11. CART BADGE ---
+        // --- 9. CART BADGE ---
         async function updateCartBadge() {
             const token = localStorage.getItem('token');
             if (!token) {
@@ -542,7 +623,35 @@
             }
         }
 
-        // --- 12. EVENT LISTENERS ---
+        // --- 10. REMOVE MODAL ---
+        function showRemoveModal(itemName, callback) {
+            document.getElementById('removeModalMessage').innerHTML =
+                `Are you sure you want to remove <strong>${itemName}</strong> from your cart?`;
+            removeItemCallback = callback;
+            document.getElementById('removeModal').style.display = 'flex';
+        }
+
+        document.getElementById('removeConfirmYes').addEventListener('click', function() {
+            document.getElementById('removeModal').style.display = 'none';
+            if (removeItemCallback) {
+                removeItemCallback();
+                removeItemCallback = null;
+            }
+        });
+
+        document.getElementById('removeConfirmNo').addEventListener('click', function() {
+            document.getElementById('removeModal').style.display = 'none';
+            removeItemCallback = null;
+        });
+
+        document.getElementById('removeModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                this.style.display = 'none';
+                removeItemCallback = null;
+            }
+        });
+
+        // --- 11. EVENT LISTENERS ---
         document.getElementById('searchInput').addEventListener('input', applyFiltersAndSort);
         document.getElementById('sortSelect').addEventListener('change', applyFiltersAndSort);
 
@@ -555,7 +664,7 @@
             }
         });
 
-        window.resetCatalogFilters = function () {
+        window.resetCatalogFilters = function() {
             document.getElementById('searchInput').value = '';
             document.getElementById('sortSelect').value = 'popular';
             document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
@@ -563,6 +672,16 @@
             activeFilter = 'all';
             applyFiltersAndSort();
         };
+
+        // --- 12. FALLBACK PRODUCTS ---
+        function getFallbackProducts() {
+            return [
+                { productId: 1, name: "Kesar Chandan", scentFamily: "Spicy", categoryName: "Signature Blends", description: "Luxurious warmth of saffron...", imageUrl: "/images/products/Kesar Chandan.jpeg", variants: [{ variantId: 101, size: "6ml", price: 240, stockQuantity: 50 }, { variantId: 102, size: "12ml", price: 450, stockQuantity: 30 }] },
+                { productId: 2, name: "Black OUD", scentFamily: "Woody", categoryName: "Attars & Oud", description: "Darkness refined into a fragrance.", imageUrl: "/images/products/Black OUD.jpeg", variants: [{ variantId: 201, size: "6ml", price: 600, stockQuantity: 20 }, { variantId: 202, size: "12ml", price: 1100, stockQuantity: 10 }] },
+                { productId: 3, name: "Cairo Evening", scentFamily: "Spicy", categoryName: "Signature Blends", description: "Golden sunsets and ancient streets.", imageUrl: "/images/products/Cairo Evening.jpeg", variants: [{ variantId: 301, size: "6ml", price: 135, stockQuantity: 60 }, { variantId: 302, size: "12ml", price: 225, stockQuantity: 40 }] },
+                { productId: 4, name: "Turkish Rose", scentFamily: "Floral", categoryName: "Signature Blends", description: "Timeless beauty of blooming roses.", imageUrl: "/images/products/Turkish Rose.jpeg", variants: [{ variantId: 401, size: "6ml", price: 390, stockQuantity: 30 }, { variantId: 402, size: "12ml", price: 750, stockQuantity: 20 }] }
+            ];
+        }
 
         // --- 13. URL CATEGORY FILTER ---
         function applyCategoryFromUrl() {
@@ -579,17 +698,7 @@
             }
         }
 
-        // --- 14. FALLBACK DATA ---
-        function getFallbackProducts() {
-            return [
-                { productId: 1, name: "Kesar Chandan", scentFamily: "Spicy", categoryName: "Signature Blends", description: "Luxurious warmth of saffron...", imageUrl: "/images/products/Kesar Chandan.jpeg", variants: [{ variantId: 101, size: "6ml", price: 240 }, { variantId: 102, size: "12ml", price: 450 }] },
-                { productId: 2, name: "Black OUD", scentFamily: "Woody", categoryName: "Attars & Oud", description: "Darkness refined into a fragrance.", imageUrl: "/images/products/Black OUD.jpeg", variants: [{ variantId: 201, size: "6ml", price: 600 }, { variantId: 202, size: "12ml", price: 1100 }] },
-                { productId: 3, name: "Cairo Evening", scentFamily: "Spicy", categoryName: "Signature Blends", description: "Golden sunsets and ancient streets.", imageUrl: "/images/products/Cairo Evening.jpeg", variants: [{ variantId: 301, size: "6ml", price: 135 }, { variantId: 302, size: "12ml", price: 225 }] },
-                { productId: 4, name: "Turkish Rose", scentFamily: "Floral", categoryName: "Signature Blends", description: "Timeless beauty of blooming roses.", imageUrl: "/images/products/Turkish Rose.jpeg", variants: [{ variantId: 401, size: "6ml", price: 390 }, { variantId: 402, size: "12ml", price: 750 }] }
-            ];
-        }
-
-        // --- 15. INIT ---
+        // --- 14. INIT ---
         loadProducts();
 
         window.addEventListener('DOMContentLoaded', () => {
@@ -615,59 +724,5 @@
                 }, 500);
             }
         });
-
-        // --- Load Frequently Bought Items in Drawer ---
-        async function loadFrequentlyBoughtInDrawer(variantId) {
-            const loading = document.getElementById('drawerFreqBoughtLoading');
-            const content = document.getElementById('drawerFreqBoughtContent');
-            const empty = document.getElementById('drawerFreqBoughtEmpty');
-            const container = document.getElementById('drawerFrequentlyBought');
-
-            container.style.display = 'block';
-            loading.style.display = 'block';
-            content.style.display = 'none';
-            empty.style.display = 'none';
-
-            try {
-                const response = await fetch(`/api/products/${variantId}/frequently-bought-with`);
-                if (!response.ok) throw new Error('Failed to fetch recommendations');
-                const recommendations = await response.json();
-
-                loading.style.display = 'none';
-
-                if (!recommendations || recommendations.length === 0) {
-                    empty.style.display = 'block';
-                    return;
-                }
-
-                content.style.display = 'flex';
-                content.innerHTML = '';
-
-                recommendations.slice(0, 3).forEach(rec => {
-                    const imgSrc = rec.imageUrl || 'https://via.placeholder.com/60x60?text=' + encodeURIComponent(rec.name);
-                    const prices = rec.variants?.map(v => v.price) || [];
-                    const min = prices.length ? Math.min(...prices) : 0;
-                    const priceDisplay = `₹${min}`;
-
-                    const item = document.createElement('div');
-                    item.style.cssText = 'display: flex; align-items: center; gap: 0.6rem; background: var(--warm-ivory); border: 1px solid var(--border-color); border-radius: 4px; padding: 0.4rem 0.8rem 0.4rem 0.4rem; flex: 1; min-width: 140px;';
-                    item.innerHTML = `
-                        <img src="${imgSrc}" alt="${rec.name}" style="width: 40px; height: 40px; object-fit: cover; border-radius: 3px; border: 1px solid var(--border-color);" onerror="this.src='https://via.placeholder.com/40x40?text=${encodeURIComponent(rec.name.charAt(0))}'" />
-                        <div style="flex: 1;">
-                            <div style="font-size: 0.78rem; font-weight: 600; color: var(--deep-burgundy);">${rec.name}</div>
-                            <div style="font-size: 0.7rem; color: var(--text-muted);">${priceDisplay}</div>
-                        </div>
-                        <a href="/Home/Catalog?highlight=${encodeURIComponent(rec.name)}" style="font-size: 0.65rem; padding: 0.2rem 0.6rem; background: var(--deep-burgundy); color: var(--warm-ivory); border-radius: 2px; text-decoration: none; white-space: nowrap;">VIEW</a>
-                    `;
-                    content.appendChild(item);
-                });
-
-            } catch (error) {
-                console.error('Error loading frequently bought:', error);
-                loading.style.display = 'none';
-                empty.style.display = 'block';
-                empty.innerHTML = '<span style="font-size: 0.8rem; color: var(--text-muted);">Could not load recommendations.</span>';
-            }
-        }
     </script>
 }
