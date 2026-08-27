@@ -1,4 +1,17 @@
-﻿// --- TOGGLE PASSWORD VISIBILITY ---
+﻿// ==========================================================================
+// UTILITY FUNCTIONS – AADYA: The House of Fragrance
+// ==========================================================================
+
+// ==========================================================================
+// 1. PASSWORD VISIBILITY TOGGLE
+// ==========================================================================
+
+/**
+ * Toggles the visibility of a password input field.
+ * Swaps between text and password types, and toggles eye icon visibility.
+ * @@param {string} inputId - The ID of the input element.
+ * @@param {HTMLElement} btn - The toggle button containing eye icons.
+ */
 function togglePasswordVisibility(inputId, btn) {
     const input = document.getElementById(inputId);
     const eyeOff = btn.querySelector('.eye-off');
@@ -15,7 +28,19 @@ function togglePasswordVisibility(inputId, btn) {
     }
 }
 
-// --- GLOBAL CONFIRMATION MODAL (supports HTML icons) ---
+// ==========================================================================
+// 2. GLOBAL CONFIRMATION MODAL
+// ==========================================================================
+
+/**
+ * Displays a customizable confirmation modal with icon, title, and message.
+ * Supports HTML/SVG content in the icon and message for theming.
+ * @@param {string} iconHtml - HTML/SVG string for the modal icon.
+ * @@param {string} title - Modal title text.
+ * @@param {string} message - Modal message (HTML allowed).
+ * @@param {Function} onConfirm - Callback when confirm button is clicked.
+ * @@param {Function} onCancel - Callback when cancel button is clicked.
+ */
 function showGlobalConfirmModal(iconHtml, title, message, onConfirm, onCancel) {
     const modal = document.getElementById('globalConfirmModal');
     const iconEl = document.getElementById('globalModalIcon');
@@ -24,7 +49,7 @@ function showGlobalConfirmModal(iconHtml, title, message, onConfirm, onCancel) {
     const confirmBtn = document.getElementById('globalModalConfirmBtn');
     const cancelBtn = document.getElementById('globalModalCancelBtn');
 
-    // Set content – use innerHTML to allow SVG
+    // Set content (innerHTML allows SVG icons)
     iconEl.innerHTML = iconHtml || '⚠️';
     titleEl.textContent = title || 'Confirm Action';
     msgEl.innerHTML = message;
@@ -41,6 +66,7 @@ function showGlobalConfirmModal(iconHtml, title, message, onConfirm, onCancel) {
         if (typeof onCancel === 'function') onCancel();
     };
 
+    // Close modal when clicking outside the content
     modal.onclick = function (e) {
         if (e.target === modal) {
             modal.style.display = 'none';
@@ -49,7 +75,14 @@ function showGlobalConfirmModal(iconHtml, title, message, onConfirm, onCancel) {
     };
 }
 
-// --- LOGOUT (uses themed modal with door SVG) ---
+// ==========================================================================
+// 3. LOGOUT
+// ==========================================================================
+
+/**
+ * Logs out the current user with a themed confirmation modal.
+ * Clears localStorage and session, then redirects to home.
+ */
 function logoutUser() {
     const doorIcon = `
         <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom:0.5rem;">
@@ -58,6 +91,7 @@ function logoutUser() {
             <line x1="21" y1="12" x2="9" y2="12" />
         </svg>
     `;
+
     showGlobalConfirmModal(
         doorIcon,
         'Sign Out',
@@ -65,28 +99,48 @@ function logoutUser() {
         function () {
             fetch('/Account/Logout', { method: 'POST' })
                 .finally(() => {
+                    // Clear local storage
                     localStorage.removeItem('token');
                     localStorage.removeItem('userName');
                     localStorage.removeItem('userId');
                     localStorage.removeItem('isAdmin');
+
                     showToast('You have been signed out.', 'success');
                     window.location.href = '/';
                 });
         },
-        function () { }
+        function () { /* User cancelled – do nothing */ }
     );
 }
 
-// --- TOAST NOTIFICATION ---
+// ==========================================================================
+// 4. TOAST NOTIFICATIONS
+// ==========================================================================
+
+/**
+ * Displays a temporary toast notification at the top-right corner.
+ * Automatically disappears after 3 seconds.
+ * @@param {string} message - The message to display.
+ * @@param {string} type - Notification type: 'success', 'error', or 'warning'.
+ */
 function showToast(message, type = 'success') {
     const toast = document.createElement('div');
     toast.className = 'toast-notification';
     toast.textContent = message;
+
+    // Map type to background color
+    const bgColors = {
+        success: '#2e7d32',
+        error: '#d32f2f',
+        warning: '#856404'
+    };
+    const bgColor = bgColors[type] || bgColors.success;
+
     toast.style.cssText = `
         position: fixed;
         top: 20px;
         right: 20px;
-        background: ${type === 'success' ? '#2e7d32' : type === 'error' ? '#d32f2f' : '#856404'};
+        background: ${bgColor};
         color: white;
         padding: 12px 24px;
         border-radius: 4px;
@@ -98,35 +152,56 @@ function showToast(message, type = 'success') {
         animation: slideInTop 0.5s ease;
         transition: opacity 0.5s ease;
     `;
+
     document.body.appendChild(toast);
+
+    // Auto-remove after 3 seconds
     setTimeout(() => {
         toast.style.opacity = '0';
         setTimeout(() => toast.remove(), 500);
     }, 3000);
 }
 
-// --- CART BADGE UPDATE ---
+// ==========================================================================
+// 5. CART BADGE
+// ==========================================================================
+
+/**
+ * Fetches the current user's cart count and updates the badge in the navbar.
+ * If the user is not logged in, resets the badge to 0.
+ */
 async function updateCartBadge() {
     const token = localStorage.getItem('token');
+    const badge = document.getElementById('cartCountBadge');
+
     if (!token) {
-        const badge = document.getElementById('cartCountBadge');
         if (badge) badge.innerText = '0';
         return;
     }
+
     try {
         const res = await fetch('/api/cart', {
             headers: { 'Authorization': 'Bearer ' + token }
         });
         const data = await res.json();
-        const total = (data.items || []).reduce((s, i) => s + i.quantity, 0);
-        const badge = document.getElementById('cartCountBadge');
+
+        const total = (data.items || []).reduce((sum, item) => sum + item.quantity, 0);
         if (badge) badge.innerText = total;
-    } catch (e) {
-        console.error('Badge update error:', e);
+    } catch (error) {
+        console.error('Badge update error:', error);
     }
 }
 
-// --- NAVBAR STATE & DROPDOWN ---
+// ==========================================================================
+// 6. NAVBAR STATE & DROPDOWN (Initialization)
+// ==========================================================================
+
+/**
+ * Initializes the navbar state on page load:
+ * - Shows/hides login/register vs user dropdown based on token presence.
+ * - Toggles admin dashboard link visibility.
+ * - Sets up dropdown toggle behavior.
+ */
 document.addEventListener('DOMContentLoaded', function () {
     const token = localStorage.getItem('token');
     const userName = localStorage.getItem('userName');
@@ -136,6 +211,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const loggedIn = document.getElementById('navLoggedIn');
     const userNameSpan = document.getElementById('navUserName');
 
+    // Show/hide auth sections based on login status
     if (token && userName) {
         loggedOut.style.display = 'none';
         loggedIn.style.display = 'block';
@@ -152,7 +228,7 @@ document.addEventListener('DOMContentLoaded', function () {
         dashboardLink.style.display = isAdmin ? 'flex' : 'none';
     }
 
-    // Show/hide admin button in nav (if using the separate button)
+    // (Optional) Admin button in nav – if the element exists
     const adminNavLink = document.getElementById('adminNavLink');
     if (adminNavLink) {
         adminNavLink.style.display = isAdmin ? 'inline-block' : 'none';
@@ -163,16 +239,19 @@ document.addEventListener('DOMContentLoaded', function () {
     const dropdown = document.getElementById('userDropdown');
 
     if (btn && dropdown) {
+        // Toggle dropdown on button click
         btn.addEventListener('click', function (e) {
             e.stopPropagation();
             const isOpen = dropdown.style.display === 'block';
             dropdown.style.display = isOpen ? 'none' : 'block';
+
             const arrow = btn.querySelector('.dropdown-arrow');
             if (arrow) {
                 arrow.style.transform = isOpen ? 'rotate(0deg)' : 'rotate(180deg)';
             }
         });
 
+        // Close dropdown when clicking outside
         document.addEventListener('click', function () {
             dropdown.style.display = 'none';
             const arrow = btn.querySelector('.dropdown-arrow');
@@ -181,6 +260,7 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
 
+        // Prevent clicks inside dropdown from closing it
         dropdown.addEventListener('click', function (e) {
             e.stopPropagation();
         });

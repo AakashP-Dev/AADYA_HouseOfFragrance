@@ -1,49 +1,108 @@
 ﻿using System.Net;
 using System.Net.Mail;
 using AADYA_HouseOfFragrance.Models.Entities;
+using Microsoft.AspNetCore.Http;
 
 namespace AADYA_HouseOfFragrance.Services
 {
+    /// <summary>
+    /// Service for sending email notifications including OTP, order confirmations,
+    /// status updates, password alerts, and welcome emails.
+    /// Uses SMTP configuration from appsettings.json.
+    /// </summary>
     public class EmailService
     {
         private readonly IConfiguration _configuration;
+        private readonly IHttpContextAccessor? _httpContextAccessor;
 
-        public EmailService(IConfiguration configuration)
+        /// <summary>
+        /// Initializes a new instance of the EmailService.
+        /// </summary>
+        /// <param name="configuration">Configuration for SMTP settings.</param>
+        /// <param name="httpContextAccessor">Optional accessor for building dynamic URLs.</param>
+        public EmailService(IConfiguration configuration, IHttpContextAccessor? httpContextAccessor = null)
         {
             _configuration = configuration;
+            _httpContextAccessor = httpContextAccessor;
         }
 
-        // ---- BASE SEND METHOD ----
+        // ============================================
+        // BASE EMAIL SENDING
+        // ============================================
+
+        /// <summary>
+        /// Sends an email using the configured SMTP server.
+        /// </summary>
+        /// <param name="toEmail">Recipient email address.</param>
+        /// <param name="subject">Email subject line.</param>
+        /// <param name="body">HTML email body.</param>
         public async Task SendEmailAsync(string toEmail, string subject, string body)
         {
-            var smtpSettings = _configuration.GetSection("Smtp");
-            var host = smtpSettings["Host"] ?? "smtp.gmail.com";
-            var portStr = smtpSettings["Port"] ?? "587";
-            int.TryParse(portStr, out int port);
-            var username = smtpSettings["Username"] ?? "";
-            var password = smtpSettings["Password"] ?? "";
-            var fromEmail = smtpSettings["FromEmail"] ?? "noreply@aadya.in";
-
-            var smtpClient = new SmtpClient(host)
+            try
             {
-                Port = port > 0 ? port : 587,
-                Credentials = new NetworkCredential(username, password),
-                EnableSsl = true,
-            };
+                var smtpSettings = _configuration.GetSection("Smtp");
+                var host = smtpSettings["Host"] ?? "smtp.gmail.com";
+                var portStr = smtpSettings["Port"] ?? "587";
+                int.TryParse(portStr, out int port);
+                var username = smtpSettings["Username"] ?? string.Empty;
+                var password = smtpSettings["Password"] ?? string.Empty;
+                var fromEmail = smtpSettings["FromEmail"] ?? "noreply@aadya.in";
 
-            var mailMessage = new MailMessage
+                using var smtpClient = new SmtpClient(host)
+                {
+                    Port = port > 0 ? port : 587,
+                    Credentials = new NetworkCredential(username, password),
+                    EnableSsl = true,
+                    Timeout = 10000 // 10 second timeout
+                };
+
+                using var mailMessage = new MailMessage
+                {
+                    From = new MailAddress(fromEmail, "AADYA: The House of Fragrance"),
+                    Subject = subject,
+                    Body = body,
+                    IsBodyHtml = true
+                };
+
+                mailMessage.To.Add(toEmail);
+                await smtpClient.SendMailAsync(mailMessage);
+            }
+            catch (Exception ex)
             {
-                From = new MailAddress(fromEmail, "AADYA: The House of Fragrance"),
-                Subject = subject,
-                Body = body,
-                IsBodyHtml = true,
-            };
-
-            mailMessage.To.Add(toEmail);
-            await smtpClient.SendMailAsync(mailMessage);
+                // Log error but don't throw - email failures should not break the application flow
+                Console.WriteLine($"[Email Error] Failed to send email to {toEmail}: {ex.Message}");
+                throw; // Re-throw if caller wants to handle it
+            }
         }
 
-        // ---- OTP EMAIL ----
+        // ============================================
+        // HELPER: DYNAMIC BASE URL
+        // ============================================
+
+        /// <summary>
+        /// Gets the base URL dynamically from the current HTTP request.
+        /// Falls back to localhost if no request context is available.
+        /// </summary>
+        private string GetBaseUrl()
+        {
+            if (_httpContextAccessor?.HttpContext?.Request is HttpRequest request)
+            {
+                var scheme = request.Scheme;
+                var host = request.Host.Value;
+                return $"{scheme}://{host}";
+            }
+
+            // Fallback for background jobs or testing
+            return "https://localhost:5000";
+        }
+
+        // ============================================
+        // OTP EMAIL (Password Reset)
+        // ============================================
+
+        /// <summary>
+        /// Generates the HTML body for OTP email.
+        /// </summary>
         public string GetOtpEmailBody(string otp, string userName)
         {
             return $@"
@@ -91,7 +150,13 @@ namespace AADYA_HouseOfFragrance.Services
             ";
         }
 
-        // ---- ORDER CONFIRMATION ----
+        // ============================================
+        // ORDER CONFIRMATION
+        // ============================================
+
+        /// <summary>
+        /// Sends an order confirmation email with all order details.
+        /// </summary>
         public async Task SendOrderConfirmationAsync(string toEmail, string userName, Order order, List<OrderItem> items)
         {
             var subject = $"Order Confirmation #AAD-{order.OrderId:D4} - AADYA";
@@ -101,10 +166,10 @@ namespace AADYA_HouseOfFragrance.Services
 
         private string GetOrderConfirmationBody(Order order, List<OrderItem> items, string userName)
         {
-            // ✅ FIX: Properly get product name with null checks
+            var baseUrl = GetBaseUrl();
+
             var itemsHtml = string.Join("", items.Select(item =>
             {
-                // Get product name from the ProductVariant -> Product navigation
                 var productName = item.ProductVariant?.Product?.Name ?? "Unknown Product";
                 var size = item.ProductVariant?.Size ?? "N/A";
                 var unitPrice = item.UnitPriceAtSale;
@@ -119,9 +184,6 @@ namespace AADYA_HouseOfFragrance.Services
                         <td style='text-align:right;'>₹{total:F2}</td>
                     </tr>";
             }));
-
-            // Get base URL for links
-            var baseUrl = "https://localhost:5000"; // Change to your domain in production
 
             return $@"
             <html>
@@ -174,7 +236,14 @@ namespace AADYA_HouseOfFragrance.Services
             </html>";
         }
 
-        // ---- ORDER STATUS UPDATE ----
+        // ============================================
+        // ORDER STATUS UPDATE
+        // ============================================
+
+        /// <summary>
+        /// Sends an email notification when an order's status changes.
+        /// Optionally includes a reason for cancellation or rejection.
+        /// </summary>
         public async Task SendOrderStatusUpdateAsync(string toEmail, string userName, Order order, string? reason = null)
         {
             var subject = $"Order #AAD-{order.OrderId:D4} Status Update - AADYA";
@@ -184,6 +253,8 @@ namespace AADYA_HouseOfFragrance.Services
 
         private string GetOrderStatusUpdateBody(Order order, string userName, string? reason = null)
         {
+            var baseUrl = GetBaseUrl();
+
             var statusColor = order.OrderStatus.ToLower() switch
             {
                 "delivered" => "#2e7d32",
@@ -192,7 +263,7 @@ namespace AADYA_HouseOfFragrance.Services
                 _ => "#856404"
             };
 
-            var reasonHtml = string.IsNullOrEmpty(reason) ? "" : $"<p><strong>Reason:</strong> {reason}</p>";
+            var reasonHtml = string.IsNullOrEmpty(reason) ? string.Empty : $"<p><strong>Reason:</strong> {reason}</p>";
 
             return $@"
             <html>
@@ -216,14 +287,20 @@ namespace AADYA_HouseOfFragrance.Services
                     <p>Your order <strong>#AAD-{order.OrderId:D4}</strong> has been updated.</p>
                     <p class='status'>Status: {order.OrderStatus}</p>
                     {reasonHtml}
-                    <p>To view full details, please visit your <a href='https://yourdomain.com/Account/Orders'>Order History</a>.</p>
+                    <p>To view full details, please visit your <a href='{baseUrl}/Account/Orders'>Order History</a>.</p>
                     <div class='footer'>&copy; 2026 AADYA: The House of Fragrance. All Rights Reserved.</div>
                 </div>
             </body>
             </html>";
         }
 
-        // ---- PASSWORD CHANGED ALERT ----
+        // ============================================
+        // PASSWORD CHANGED ALERT
+        // ============================================
+
+        /// <summary>
+        /// Sends a security alert email when a user's password is changed.
+        /// </summary>
         public async Task SendPasswordChangedAlertAsync(string toEmail, string userName)
         {
             var subject = "Security Alert: Password Changed - AADYA";
@@ -233,6 +310,8 @@ namespace AADYA_HouseOfFragrance.Services
 
         private string GetPasswordChangedAlertBody(string userName)
         {
+            var baseUrl = GetBaseUrl();
+
             return $@"
             <html>
             <head>
@@ -251,13 +330,20 @@ namespace AADYA_HouseOfFragrance.Services
                     <p>Dear <strong>{userName}</strong>,</p>
                     <div class='alert-box'><strong>⚠️ Security Alert:</strong> Your password was successfully changed.</div>
                     <p>If you did <strong>not</strong> initiate this change, please contact our support team immediately.</p>
+                    <p>You can also <a href='{baseUrl}/Account/Login'>login here</a> to review your account.</p>
                     <div class='footer'>&copy; 2026 AADYA. All Rights Reserved.</div>
                 </div>
             </body>
             </html>";
         }
 
-        // ---- WELCOME EMAIL ----
+        // ============================================
+        // WELCOME EMAIL
+        // ============================================
+
+        /// <summary>
+        /// Sends a welcome email to newly registered users.
+        /// </summary>
         public async Task SendWelcomeEmailAsync(string toEmail, string userName)
         {
             var subject = "Welcome to AADYA: The House of Fragrance";
@@ -267,6 +353,8 @@ namespace AADYA_HouseOfFragrance.Services
 
         private string GetWelcomeEmailBody(string userName)
         {
+            var baseUrl = GetBaseUrl();
+
             return $@"
             <html>
             <head>
@@ -276,7 +364,7 @@ namespace AADYA_HouseOfFragrance.Services
                     .header {{ text-align: center; border-bottom: 2px solid #CBA463; padding-bottom: 1rem; margin-bottom: 1.5rem; }}
                     .header h1 {{ font-family: 'Playfair Display', serif; color: #3B0E14; margin: 0; }}
                     .cta {{ text-align: center; margin: 1.5rem 0; }}
-                    .btn {{ background: #3B0E14; color: #FAF6EF; padding: 0.6rem 1.5rem; text-decoration: none; border-radius: 2px; font-weight: 600; }}
+                    .btn {{ background: #3B0E14; color: #FAF6EF; padding: 0.6rem 1.5rem; text-decoration: none; border-radius: 2px; font-weight: 600; display: inline-block; }}
                     .footer {{ margin-top: 2rem; padding-top: 1rem; border-top: 1px solid #D3C5B2; font-size: 0.75rem; color: #666; text-align: center; }}
                 </style>
             </head>
@@ -290,7 +378,7 @@ namespace AADYA_HouseOfFragrance.Services
                     <p>Thank you for joining AADYA! You are now part of a community that celebrates pure, alcohol-free luxury.</p>
                     <p>Explore our curated collection and find your signature scent.</p>
                     <div class='cta'>
-                        <a href='https://yourdomain.com/Home/Catalog' class='btn'>DISCOVER FRAGRANCES</a>
+                        <a href='{baseUrl}/Home/Catalog' class='btn'>DISCOVER FRAGRANCES</a>
                     </div>
                     <div class='footer'>&copy; 2026 AADYA. All Rights Reserved.</div>
                 </div>
